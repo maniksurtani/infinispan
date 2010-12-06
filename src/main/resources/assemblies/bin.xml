@@ -47,20 +47,6 @@
                      <exclude>**/*.cmd</exclude>
                      <exclude>**/*.py</exclude>
                      <exclude>**/*.rb</exclude>
-                     <exclude>config-samples/*</exclude>
-                  </excludes>
-               </fileSet>
-
-               <fileSet>
-                  <directory>src/main/resources/config-samples/*</directory>
-                  <outputDirectory>etc</outputDirectory>
-                  <lineEnding>unix</lineEnding>
-                  <excludes>
-                     <exclude>**/*.sh</exclude>
-                     <exclude>**/*.bat</exclude>
-                     <exclude>**/*.cmd</exclude>
-                     <exclude>**/*.py</exclude>
-                     <exclude>**/*.rb</exclude>
                   </excludes>
                </fileSet>
 
