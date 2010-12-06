@@ -1,0 +1,13 @@
+<archetype>
+  <id>sample-project</id>
+  <sources>
+     <source>src/main/java/com/mycompany/SampleCacheContainer.java</source>
+     <source>src/main/java/com/mycompany/Application.java</source>
+  </sources>
+  <resources>
+     <resource>src/main/resources/infinispan-local.xml</resource>
+     <resource>src/main/resources/infinispan-clustered-tcp.xml</resource>
+     <resource>src/main/resources/infinispan-clustered-udp.xml</resource>
+     <resource>src/main/resources/infinispan-clustered-ec2.xml</resource>
+  </resources>
+</archetype>
