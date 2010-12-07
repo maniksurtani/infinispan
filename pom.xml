@@ -45,6 +45,7 @@
       <module>demos/gridfs-webdav</module>
       <module>tools</module>
       <module>archetypes/sampleproject</module>
+      <module>archetypes/testcase</module>
    </modules>
 
    <profiles>
