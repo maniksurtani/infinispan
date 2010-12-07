@@ -1,10 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version='1.0' encoding='UTF-8'?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <modelVersion>4.0.0</modelVersion>
    <groupId>${groupId}</groupId>
    <artifactId>${artifactId}</artifactId>
    <packaging>jar</packaging>
-   <version>${version}</version>
+   <version>4.2.0.ALPHA89</version>
    <name>A sample project using Infinispan</name>
    <url>http://www.myorganization.org</url>
 
@@ -18,7 +18,7 @@
 
    <build>
       <plugins>
-         <!-- enforce java 1.6 and maven 2.1.0 -->
+         
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
@@ -43,7 +43,7 @@
             </executions>
          </plugin>
 
-         <!-- by default, compile to JDK 1.6 compatibility -->
+         
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
@@ -72,7 +72,7 @@
 
    <profiles>
       <profile>
-         <!-- This profile is used to run the sample Application.java file.  Remove this in any production usage.  -->
+         
          <id>run</id>
          <activation>
             <activeByDefault>false</activeByDefault>

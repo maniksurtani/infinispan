@@ -1,21 +1,21 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version='1.0' encoding='UTF-8'?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <modelVersion>4.0.0</modelVersion>
    <groupId>${groupId}</groupId>
    <artifactId>${artifactId}</artifactId>
    <packaging>jar</packaging>
-   <version>${version}</version>
+   <version>4.2.0.ALPHA89</version>
    <name>A sample test case for Infinispan</name>
    <url>http://www.myorganization.org</url>
 
 
    <properties>
-      <!-- the default JGroups protocol stack to use -->
+      
       <infinispan.test.jgroups.protocol>tcp</infinispan.test.jgroups.protocol>
-      <!-- the default transaction manager to use -->
+      
       <infinispan.test.jta.tm>dummytm</infinispan.test.jta.tm>
 
-      <!-- Versions of dependencies -->
+      
       <version.infinispan>4.2.0-SNAPSHOT</version.infinispan>
       <version.commons.logging>1.1</version.commons.logging>
       <version.easymock>2.4</version.easymock>
@@ -43,7 +43,7 @@
          <type>test-jar</type>
       </dependency>
 
-      <!-- Other test dependencies -->
+      
       <dependency>
          <groupId>org.testng</groupId>
          <artifactId>testng</artifactId>
@@ -94,7 +94,7 @@
          <optional>true</optional>
       </dependency>
 
-      <!-- used to serialize non-serializable objects for a dummy marshaller -->
+      
       <dependency>
          <groupId>com.thoughtworks.xstream</groupId>
          <artifactId>xstream</artifactId>
@@ -105,7 +105,7 @@
 
    <build>
       <plugins>
-         <!-- enforce java 1.6 and maven 2.1.0 -->
+         
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
@@ -130,7 +130,7 @@
             </executions>
          </plugin>
 
-         <!-- by default, compile to JDK 1.6 compatibility -->
+         
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
@@ -142,7 +142,7 @@
             </configuration>
          </plugin>
 
-         <!-- test runner settings -->
+         
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
@@ -198,7 +198,7 @@
 
    <profiles>
       <profile>
-         <!-- This profile forces the use of the JBoss Transaction Manager rather than the test DummyTransactionManager  -->
+         
          <id>jbosstm</id>
          <activation>
             <activeByDefault>false</activeByDefault>
@@ -209,7 +209,7 @@
       </profile>
 
       <profile>
-         <!-- Uses a TCP configuration for the transport  -->
+         
          <id>tcp</id>
          <activation>
             <activeByDefault>false</activeByDefault>
@@ -220,7 +220,7 @@
       </profile>
 
       <profile>
-         <!-- Uses a UDP configuration for the transport  -->
+         
          <id>udp</id>
          <activation>
             <activeByDefault>false</activeByDefault>
