@@ -1,4 +1,4 @@
-package com.mycompany;
+package ${groupId};
 
 import org.infinispan.Cache;
 import org.infinispan.manager.DefaultCacheManager;

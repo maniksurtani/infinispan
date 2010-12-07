@@ -9,15 +9,16 @@
       <relativePath>../../parent/pom.xml</relativePath>
    </parent>
 
+   <groupId>org.infinispan.archetypes</groupId>
    <artifactId>sample-project</artifactId>
-   <packaging>maven-plugin</packaging>
-   <name>Sample project</name>
+   <packaging>jar</packaging>
+   <name>Infinispan Sample Project Archetype</name>
    <description>Builds a skeleton sample project using Infinispan.</description>
 
    <!-- these deps are here so that we can compile the sample classes -->
    <dependencies>
       <dependency>
-         <groupId>${project.groupId}</groupId>
+         <groupId>org.infinispan</groupId>
          <artifactId>infinispan-core</artifactId>
          <version>${project.version}</version>
       </dependency>
