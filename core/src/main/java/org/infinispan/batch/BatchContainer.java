@@ -37,14 +37,7 @@ import javax.transaction.TransactionManager;
  */
 public class BatchContainer {
    TransactionManager transactionManager;
-   private BatchDetailsTl batchDetailsTl = new BatchDetailsTl();
-
-   private static class BatchDetailsTl extends ThreadLocal<BatchDetails> {
-      @Override
-      protected BatchDetails initialValue() {
-         return new BatchDetails();
-      }
-   }
+   private ThreadLocal<BatchDetails> batchDetailsTl = new ThreadLocal<BatchDetails>();
 
    @Inject
    void inject(TransactionManager transactionManager) {
@@ -60,8 +53,17 @@ public class BatchContainer {
       return startBatch(false);
    }
 
-   public boolean startBatch(boolean autoBatch) throws CacheException {
+   private BatchDetails getOrCreateBatchDetails() {
       BatchDetails bd = batchDetailsTl.get();
+      if (bd == null) {
+         bd = new BatchDetails();
+         batchDetailsTl.set(bd);
+      }
+      return bd;
+   }
+
+   public boolean startBatch(boolean autoBatch) throws CacheException {
+      BatchDetails bd = getOrCreateBatchDetails();
       try {
          if (transactionManager.getTransaction() == null && bd.tx == null) {
             transactionManager.begin();
@@ -74,18 +76,14 @@ public class BatchContainer {
                bd.tx = transactionManager.getTransaction();
             else
                bd.tx = transactionManager.suspend();
-
             return true;
          } else {
             bd.nestedInvocationCount++;
             return false;
          }         
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
+         batchDetailsTl.remove();
          throw new CacheException("Unable to start batch", e);
-      }
-      finally {
-         batchDetailsTl.set(bd);
       }
    }
 
@@ -95,7 +93,10 @@ public class BatchContainer {
 
    public void endBatch(boolean autoBatch, boolean success) {
       BatchDetails bd = batchDetailsTl.get();
-      if (bd.tx == null) return;
+      if (bd == null || bd.tx == null) {
+         batchDetailsTl.remove();
+         return;
+      }
       if (autoBatch) bd.nestedInvocationCount--;
       if (!autoBatch || bd.nestedInvocationCount == 0) {
          Transaction existingTx = null;
@@ -106,21 +107,16 @@ public class BatchContainer {
                transactionManager.resume(bd.tx);
 
             resolveTransaction(bd, success);
-         }
-         catch (Exception e) {
+         } catch (Exception e) {
             throw new CacheException("Unable to end batch", e);
-         }
-         finally {
+         } finally {
             batchDetailsTl.remove();
             try {
                if (!autoBatch && existingTx != null) transactionManager.resume(existingTx);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                throw new CacheException("Failed resuming existing transaction " + existingTx, e);
             }
          }
-      } else {
-         batchDetailsTl.set(bd);
       }
    }
 
@@ -140,11 +136,18 @@ public class BatchContainer {
    }
 
    public Transaction getBatchTransaction() {
-      return batchDetailsTl.get().tx;
+      Transaction tx = null;
+      BatchDetails bd = batchDetailsTl.get();
+      if (bd != null) {
+         tx = bd.tx;
+         if (tx == null) batchDetailsTl.remove();
+      }
+      return tx;
    }
 
    public boolean isSuspendTxAfterInvocation() {
-      return batchDetailsTl.get().suspendTxAfterInvocation;
+      BatchDetails bd = batchDetailsTl.get();
+      return bd != null && bd.suspendTxAfterInvocation;
    }
 
    private static class BatchDetails {
