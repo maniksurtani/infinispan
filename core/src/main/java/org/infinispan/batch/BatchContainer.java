@@ -37,7 +37,7 @@ import javax.transaction.TransactionManager;
  */
 public class BatchContainer {
    TransactionManager transactionManager;
-   private ThreadLocal<BatchDetails> batchDetailsTl = new ThreadLocal<BatchDetails>();
+   private final ThreadLocal<BatchDetails> batchDetailsTl = new ThreadLocal<BatchDetails>();
 
    @Inject
    void inject(TransactionManager transactionManager) {
@@ -53,17 +53,11 @@ public class BatchContainer {
       return startBatch(false);
    }
 
-   private BatchDetails getOrCreateBatchDetails() {
+   public boolean startBatch(boolean autoBatch) throws CacheException {
       BatchDetails bd = batchDetailsTl.get();
       if (bd == null) {
          bd = new BatchDetails();
-         batchDetailsTl.set(bd);
       }
-      return bd;
-   }
-
-   public boolean startBatch(boolean autoBatch) throws CacheException {
-      BatchDetails bd = getOrCreateBatchDetails();
       try {
          if (transactionManager.getTransaction() == null && bd.tx == null) {
             transactionManager.begin();
@@ -76,13 +70,14 @@ public class BatchContainer {
                bd.tx = transactionManager.getTransaction();
             else
                bd.tx = transactionManager.suspend();
+            batchDetailsTl.set(bd);
             return true;
          } else {
             bd.nestedInvocationCount++;
+            batchDetailsTl.set(bd);
             return false;
-         }         
+         }
       } catch (Exception e) {
-         batchDetailsTl.remove();
          throw new CacheException("Unable to start batch", e);
       }
    }
@@ -93,7 +88,10 @@ public class BatchContainer {
 
    public void endBatch(boolean autoBatch, boolean success) {
       BatchDetails bd = batchDetailsTl.get();
-      if (bd == null || bd.tx == null) {
+      if (bd == null) {
+         return;
+      }
+      else if (bd.tx == null) {
          batchDetailsTl.remove();
          return;
       }
