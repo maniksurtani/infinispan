@@ -53,17 +53,11 @@ public class BatchContainer {
       return startBatch(false);
    }
 
-   private BatchDetails getOrCreateBatchDetails() {
+   public boolean startBatch(boolean autoBatch) throws CacheException {
       BatchDetails bd = batchDetailsTl.get();
       if (bd == null) {
          bd = new BatchDetails();
-         batchDetailsTl.set(bd);
       }
-      return bd;
-   }
-
-   public boolean startBatch(boolean autoBatch) throws CacheException {
-      BatchDetails bd = getOrCreateBatchDetails();
       try {
          if (transactionManager.getTransaction() == null && bd.tx == null) {
             transactionManager.begin();
@@ -76,13 +70,14 @@ public class BatchContainer {
                bd.tx = transactionManager.getTransaction();
             else
                bd.tx = transactionManager.suspend();
+            batchDetailsTl.set(bd);
             return true;
          } else {
             bd.nestedInvocationCount++;
+            batchDetailsTl.set(bd);
             return false;
-         }         
+         }
       } catch (Exception e) {
-         batchDetailsTl.remove();
          throw new CacheException("Unable to start batch", e);
       }
    }
