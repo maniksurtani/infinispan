@@ -37,7 +37,7 @@ import javax.transaction.TransactionManager;
  */
 public class BatchContainer {
    TransactionManager transactionManager;
-   private ThreadLocal<BatchDetails> batchDetailsTl = new ThreadLocal<BatchDetails>();
+   private final ThreadLocal<BatchDetails> batchDetailsTl = new ThreadLocal<BatchDetails>();
 
    @Inject
    void inject(TransactionManager transactionManager) {
@@ -93,7 +93,10 @@ public class BatchContainer {
 
    public void endBatch(boolean autoBatch, boolean success) {
       BatchDetails bd = batchDetailsTl.get();
-      if (bd == null || bd.tx == null) {
+      if (bd == null) {
+         return;
+      }
+      else if (bd.tx == null) {
          batchDetailsTl.remove();
          return;
       }
