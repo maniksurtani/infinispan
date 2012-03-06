@@ -24,13 +24,13 @@ package org.infinispan.context.impl;
 
 import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.context.InvocationContext;
-import org.infinispan.transaction.xa.CacheTransaction;
+import org.infinispan.transaction.CacheTransaction;
 import org.infinispan.transaction.xa.GlobalTransaction;
+import org.infinispan.util.customcollections.InfinispanCollection;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.ModificationCollection;
 
 import javax.transaction.Transaction;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Interface defining additional functionality for invocation contexts that propagate within a transaction's scope.
@@ -49,7 +49,7 @@ public interface TxInvocationContext extends InvocationContext {
     * Returns the set of keys that are affected by this transaction.  Used to generate appropriate recipient groups
     * for cluster-wide prepare and commit calls.
     */
-   Set<Object> getAffectedKeys();
+   KeyCollection getAffectedKeys();
 
    /**
     * Returns the id of the transaction associated  with the current call.
@@ -59,7 +59,7 @@ public interface TxInvocationContext extends InvocationContext {
    /**
     * Returns all the modifications performed in the scope of the current transaction.
     */
-   List<WriteCommand> getModifications();
+   ModificationCollection getModifications();
 
    /**
     * Returns the tx associated with the current thread. This method MUST be guarded with a call to {@link
@@ -72,7 +72,7 @@ public interface TxInvocationContext extends InvocationContext {
    /**
     * Registers a new participant with the transaction.
     */
-   void addAllAffectedKeys(Collection<Object> keys);
+   void addAllAffectedKeys(KeyCollection keys);
 
    void addAffectedKey(Object key);
 

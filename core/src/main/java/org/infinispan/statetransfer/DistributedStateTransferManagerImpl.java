@@ -28,6 +28,7 @@ import org.infinispan.factories.annotations.Inject;
 import org.infinispan.jmx.annotations.MBean;
 import org.infinispan.loaders.CacheStore;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.customcollections.KeyCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -74,7 +75,7 @@ public class DistributedStateTransferManagerImpl extends BaseStateTransferManage
       return ConsistentHashHelper.createConsistentHash(configuration, members);
    }
 
-   public void invalidateKeys(List<Object> keysToRemove) {
+   public void invalidateKeys(KeyCollection keysToRemove) {
       try {
          if (keysToRemove.size() > 0) {
             InvalidateCommand invalidateCmd = cf.buildInvalidateFromL1Command(true, keysToRemove);

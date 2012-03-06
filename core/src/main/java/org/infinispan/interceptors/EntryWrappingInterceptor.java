@@ -29,6 +29,7 @@ import org.infinispan.container.DataContainer;
 import org.infinispan.container.EntryFactory;
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.container.entries.InternalCacheEntry;
+import org.infinispan.container.entries.NullMarkerEntryForRemoval;
 import org.infinispan.context.Flag;
 import org.infinispan.context.InvocationContext;
 import org.infinispan.context.SingleKeyNonTxInvocationContext;
@@ -36,6 +37,7 @@ import org.infinispan.context.impl.TxInvocationContext;
 import org.infinispan.factories.annotations.Inject;
 import org.infinispan.interceptors.base.CommandInterceptor;
 import org.infinispan.interceptors.locking.ClusteringDependentLogic;
+import org.infinispan.util.customcollections.CacheEntryCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -173,18 +175,15 @@ public class EntryWrappingInterceptor extends CommandInterceptor {
          CacheEntry entry = ((SingleKeyNonTxInvocationContext)ctx).getCacheEntry();
          commitEntryIfNeeded(ctx, skipOwnershipCheck, entry);
       } else {
-         Set<Map.Entry<Object, CacheEntry>> entries = ctx.getLookedUpEntries().entrySet();
-         Iterator<Map.Entry<Object, CacheEntry>> it = entries.iterator();
+         CacheEntryCollection entries = ctx.getLookedUpEntries();
          final Log log = getLog();
-         while (it.hasNext()) {
-            Map.Entry<Object, CacheEntry> e = it.next();
-            CacheEntry entry = e.getValue();
+         for (CacheEntry entry: entries) {
             if (!commitEntryIfNeeded(ctx, skipOwnershipCheck, entry)) {
                if (trace) {
-                  if (entry==null)
-                     log.tracef("Entry for key %s is null : not calling commitUpdate", e.getKey());
+                  if (entry instanceof NullMarkerEntryForRemoval)
+                     log.tracef("Entry for key %s is null : not calling commitUpdate", entry.getKey());
                   else
-                     log.tracef("Entry for key %s is not changed(%s): not calling commitUpdate", e.getKey(), entry);
+                     log.tracef("Entry for key %s is not changed (%s): not calling commitUpdate", entry.getKey(), entry);
                }
             }
          }

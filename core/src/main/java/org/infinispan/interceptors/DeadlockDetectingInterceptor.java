@@ -24,6 +24,7 @@ package org.infinispan.interceptors;
 
 import org.infinispan.commands.VisitableCommand;
 import org.infinispan.commands.control.LockControlCommand;
+import org.infinispan.commands.control.MultiKeyLockControlCommand;
 import org.infinispan.commands.tx.PrepareCommand;
 import org.infinispan.commands.write.PutKeyValueCommand;
 import org.infinispan.commands.write.RemoveCommand;
@@ -36,7 +37,7 @@ import org.infinispan.transaction.xa.DldGlobalTransaction;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
-import static java.util.Collections.emptySet;
+import java.util.Arrays;
 
 /**
  * This interceptor populates the {@link org.infinispan.transaction.xa.DldGlobalTransaction} with
@@ -88,7 +89,11 @@ public class DeadlockDetectingInterceptor extends CommandInterceptor {
    public Object visitLockControlCommand(TxInvocationContext ctx, LockControlCommand command) throws Throwable {
       DldGlobalTransaction globalTransaction = (DldGlobalTransaction) ctx.getGlobalTransaction();
       if (ctx.isOriginLocal()) {
-         globalTransaction.setRemoteLockIntention(command.getKeys());
+         if (command instanceof MultiKeyLockControlCommand)
+            globalTransaction.setRemoteLockIntention(((MultiKeyLockControlCommand) command).getKeys());
+         else
+            globalTransaction.setRemoteLockIntention(command.getKey());
+
          //in the case of DIST we need to propagate the list of keys. In all other situations in can be determined
          // based on the actual command
          if (configuration.getCacheMode().isDistributed()) {
@@ -107,7 +112,7 @@ public class DeadlockDetectingInterceptor extends CommandInterceptor {
       }
       Object result = invokeNextInterceptor(ctx, command);
       if (ctx.isOriginLocal()) {
-         globalTransaction.setRemoteLockIntention(emptySet());
+         globalTransaction.setRemoteLockIntention(null);
       }
       return result;
    }

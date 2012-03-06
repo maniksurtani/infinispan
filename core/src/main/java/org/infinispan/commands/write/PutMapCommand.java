@@ -29,6 +29,8 @@ import org.infinispan.context.Flag;
 import org.infinispan.context.InvocationContext;
 import org.infinispan.lifecycle.ComponentStatus;
 import org.infinispan.notifications.cachelistener.CacheNotifier;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,6 +44,7 @@ public class PutMapCommand extends AbstractFlagAffectedCommand implements WriteC
    public static final byte COMMAND_ID = 9;
 
    Map<Object, Object> map;
+   KeyCollection keys;
    CacheNotifier notifier;
    long lifespanMillis = -1;
    long maxIdleTimeMillis = -1;
@@ -162,8 +165,9 @@ public class PutMapCommand extends AbstractFlagAffectedCommand implements WriteC
    }
 
    @Override
-   public Set<Object> getAffectedKeys() {
-      return map.keySet();
+   public KeyCollection getAffectedKeys() {
+      if (keys == null) keys = new KeyCollectionImpl(map.keySet());
+      return keys;
    }
 
    @Override

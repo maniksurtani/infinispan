@@ -24,17 +24,17 @@ package org.infinispan.transaction.xa;
 
 import org.infinispan.marshall.Ids;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.customcollections.CustomCollections;
 import org.infinispan.util.Util;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.Collection;
 import java.util.Set;
-
-import static java.util.Collections.emptySet;
 
 /**
  * This class is used when deadlock detection is enabled.
@@ -53,9 +53,9 @@ public class DldGlobalTransaction extends GlobalTransaction {
 
    protected transient volatile Object localLockIntention;
 
-   protected volatile Collection<Object> remoteLockIntention = emptySet();
+   protected volatile KeyCollection remoteLockIntention;
 
-   protected volatile Set<Object> locksAtOrigin = emptySet();
+   protected volatile KeyCollection locksAtOrigin;
 
    public DldGlobalTransaction() {
    }
@@ -123,17 +123,27 @@ public class DldGlobalTransaction extends GlobalTransaction {
       return this.coinToss < other.coinToss;
    }
 
-   public void setRemoteLockIntention(Collection<Object> remoteLockIntention) {
+   public void setRemoteLockIntention(KeyCollection keys) {
       if (trace) {
-         log.tracef("Setting the remote lock intention: %s", remoteLockIntention);
+         log.tracef("Setting the remote lock intention: %s", keys);
       }
-      this.remoteLockIntention = remoteLockIntention;
+      this.remoteLockIntention = keys;
    }
 
-   public Collection<Object> getRemoteLockIntention() {
+   public void setRemoteLockIntention(Object singleKey) {
+      if (trace) {
+         log.tracef("Setting the remote lock intention: %s", singleKey);
+      }
+      if (remoteLockIntention == null)
+         remoteLockIntention = new KeyCollectionImpl(singleKey);
+      else
+         remoteLockIntention.add(singleKey);
+   }
+   public KeyCollection getRemoteLockIntention() {
       return remoteLockIntention;
    }
 
+<<<<<<< Updated upstream
    public boolean hasLockAtOrigin(Collection<Object> remoteLockIntention) {
       log.tracef("Our(%s) locks at origin are: %s. Others remote lock intention is: %s",
                     this, locksAtOrigin, remoteLockIntention);
@@ -141,17 +151,22 @@ public class DldGlobalTransaction extends GlobalTransaction {
          if (this.locksAtOrigin.contains(key)) {
             return true;
          }
+=======
+   public boolean hasLockAtOrigin(KeyCollection remoteLockIntention) {
+      if (log.isTraceEnabled()) {
+         log.tracef("Our locks at origin are: %s. Others remote lock intention is: %s", locksAtOrigin, remoteLockIntention);
+>>>>>>> Stashed changes
       }
-      return false;
+      return !(locksAtOrigin == null || remoteLockIntention == null) && locksAtOrigin.containsAny(remoteLockIntention);
    }
 
-   public void setLocksHeldAtOrigin(Set<Object> locksAtOrigin) {
+   public void setLocksHeldAtOrigin(KeyCollection locksAtOrigin) {
       if (trace) log.tracef("Setting locks at origin for (%s) to %s", this, locksAtOrigin);
       this.locksAtOrigin = locksAtOrigin;
    }
 
-   public Set<Object> getLocksHeldAtOrigin() {
-      return this.locksAtOrigin;
+   public KeyCollection getLocksHeldAtOrigin() {
+      return CustomCollections.nullCheck(locksAtOrigin);
    }
 
    public static class Externalizer extends GlobalTransaction.AbstractGlobalTxExternalizer<DldGlobalTransaction> {
@@ -165,7 +180,7 @@ public class DldGlobalTransaction extends GlobalTransaction {
       public void writeObject(ObjectOutput output, DldGlobalTransaction ddGt) throws IOException {
          super.writeObject(output, ddGt);
          output.writeLong(ddGt.getCoinToss());
-         if (ddGt.locksAtOrigin.isEmpty()) {
+         if (ddGt.locksAtOrigin == null || ddGt.locksAtOrigin.isEmpty()) {
             output.writeObject(null);
          } else {
             output.writeObject(ddGt.locksAtOrigin);
@@ -179,9 +194,9 @@ public class DldGlobalTransaction extends GlobalTransaction {
          ddGt.setCoinToss(input.readLong());
          Object locksAtOriginObj = input.readObject();
          if (locksAtOriginObj == null) {
-            ddGt.setLocksHeldAtOrigin(emptySet());
+            ddGt.setLocksHeldAtOrigin(null);
          } else {
-            ddGt.setLocksHeldAtOrigin((Set<Object>) locksAtOriginObj);
+            ddGt.setLocksHeldAtOrigin((KeyCollection) locksAtOriginObj);
          }
          return ddGt;
       }
@@ -192,6 +207,7 @@ public class DldGlobalTransaction extends GlobalTransaction {
       }
 
       @Override
+      @SuppressWarnings("unchecked")
       public Set<Class<? extends DldGlobalTransaction>> getTypeClasses() {
          return Util.<Class<? extends DldGlobalTransaction>>asSet(DldGlobalTransaction.class);
       }

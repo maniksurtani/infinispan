@@ -28,11 +28,9 @@ import org.infinispan.commands.Visitor;
 import org.infinispan.context.InvocationContext;
 import org.infinispan.distexec.DistributedCallable;
 import org.infinispan.lifecycle.ComponentStatus;
+import org.infinispan.util.customcollections.CustomCollections;
+import org.infinispan.util.customcollections.KeyCollection;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 /**
@@ -48,18 +46,15 @@ public class DistributedExecuteCommand<V> implements VisitableCommand {
    
    private static final long serialVersionUID = -7828117401763700385L;
 
-   private Cache cache;
+   private Cache<Object, Object> cache;
 
-   private Set<Object> keys;
+   private KeyCollection keys;
 
    private Callable<V> callable;
 
 
-   public DistributedExecuteCommand(Collection<Object> inputKeys, Callable<V> callable) {
-      if (inputKeys == null || inputKeys.isEmpty())
-         this.keys = Collections.emptySet();
-      else
-         this.keys = new HashSet<Object>(inputKeys);
+   public DistributedExecuteCommand(KeyCollection inputKeys, Callable<V> callable) {
+      this.keys = inputKeys;
       this.callable = callable;
    }
 
@@ -67,7 +62,7 @@ public class DistributedExecuteCommand<V> implements VisitableCommand {
       this(null, null);
    }
 
-   public void init(Cache cache) {
+   public void init(Cache<Object, Object> cache) {
       this.cache = cache;
    }
 
@@ -93,7 +88,7 @@ public class DistributedExecuteCommand<V> implements VisitableCommand {
       Callable<V> callable = getCallable();
       if (callable instanceof DistributedCallable<?, ?, ?>) {
          DistributedCallable<Object, Object, Object> dc = (DistributedCallable<Object, Object, Object>) callable;
-         dc.setEnvironment(cache, keys);
+         dc.setEnvironment(cache, keys.asSet());
       }
       return callable.call();      
    }
@@ -113,12 +108,12 @@ public class DistributedExecuteCommand<V> implements VisitableCommand {
    }
 
    @Override
+   @SuppressWarnings("unchecked")
    public void setParameters(int commandId, Object[] args) {
       if (commandId != COMMAND_ID)
          throw new IllegalStateException("Invalid method id");
-      int i = 0;
-      this.keys = (Set<Object>) args[i++];
-      this.callable = (Callable) args[i++];
+      this.keys = (KeyCollection) args[0];
+      this.callable = (Callable<V>) args[1];
    }
    
    @Override
@@ -132,7 +127,7 @@ public class DistributedExecuteCommand<V> implements VisitableCommand {
       if (!super.equals(o)) {
          return false;
       }
-      DistributedExecuteCommand<?> that = (DistributedExecuteCommand) o;
+      DistributedExecuteCommand<?> that = (DistributedExecuteCommand<?>) o;
       return !keys.equals(that.keys);
    }
 

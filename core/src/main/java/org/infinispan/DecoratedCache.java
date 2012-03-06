@@ -20,6 +20,7 @@
 package org.infinispan;
 
 import org.infinispan.context.Flag;
+import org.infinispan.util.customcollections.CustomCollections;
 import org.infinispan.util.concurrent.NotifyingFuture;
 
 import java.util.Arrays;
@@ -62,7 +63,7 @@ public class DecoratedCache<K, V> extends AbstractDelegatingAdvancedCache<K, V> 
 
    public DecoratedCache(AdvancedCache<K, V> delegate, ClassLoader classLoader, Flag... flags) {
       super(delegate);
-      if (flags == null || flags.length == 0)
+      if (CustomCollections.isEmpty(flags))
          this.flags = null;
       else {
          this.flags = EnumSet.noneOf(Flag.class);
@@ -93,7 +94,7 @@ public class DecoratedCache<K, V> extends AbstractDelegatingAdvancedCache<K, V> 
 
    @Override
    public AdvancedCache<K, V> withFlags(final Flag... flags) {
-      if (flags == null || flags.length == 0)
+      if (CustomCollections.isEmpty(flags))
          return this;
       else {
          final List<Flag> flagsToAdd = Arrays.asList(flags);
@@ -131,12 +132,13 @@ public class DecoratedCache<K, V> extends AbstractDelegatingAdvancedCache<K, V> 
 
    @Override
    public boolean lock(K... keys) {
-      return cacheImplementation.lock(Arrays.asList(keys), flags, classLoader);
+      return cacheImplementation.lock(flags, classLoader, keys);
    }
 
    @Override
    public boolean lock(Collection<? extends K> keys) {
-      return cacheImplementation.lock(keys, flags, classLoader);
+      if (keys == null || keys.isEmpty()) throw new IllegalArgumentException("Cannot lock empty set of keys");
+      return cacheImplementation.lock(flags, classLoader, keys.toArray());
    }
 
    @Override

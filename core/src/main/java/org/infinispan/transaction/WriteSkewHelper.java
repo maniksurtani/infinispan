@@ -31,7 +31,6 @@ import org.infinispan.container.versioning.VersionGenerator;
 import org.infinispan.context.impl.TxInvocationContext;
 import org.infinispan.remoting.responses.Response;
 import org.infinispan.remoting.responses.SuccessfulResponse;
-import org.infinispan.transaction.xa.CacheTransaction;
 
 /**
  * Encapsulates write skew logic in maintaining version maps, etc.

@@ -24,6 +24,7 @@
 package org.infinispan.interceptors;
 
 import org.infinispan.commands.control.LockControlCommand;
+import org.infinispan.commands.control.MultiKeyLockControlCommand;
 import org.infinispan.commands.read.GetKeyValueCommand;
 import org.infinispan.commands.write.PutKeyValueCommand;
 import org.infinispan.commands.write.PutMapCommand;
@@ -47,15 +48,12 @@ import java.util.Map;
 import static org.infinispan.factories.KnownComponentNames.CACHE_MARSHALLER;
 
 /**
- * Interceptor to verify whether parameters passed into cache are marshallables
- * or not. This is handy in situations where we want to find out before
- * marshalling whether the type of object is marshallable. Such situations
- * include lazy deserialization, or when marshalling happens in a separate
- * thread and marshalling failures might be swallowed. </p>
- *
- * This interceptor offers the possibility to discover these issues way before
- * the code has moved onto a different thread where it's harder to communicate
- * with the original request thread.
+ * Interceptor to verify whether parameters passed into cache are marshallables or not. This is handy in situations
+ * where we want to find out before marshalling whether the type of object is marshallable. Such situations include lazy
+ * deserialization, or when marshalling happens in a separate thread and marshalling failures might be swallowed. </p>
+ * <p/>
+ * This interceptor offers the possibility to discover these issues way before the code has moved onto a different
+ * thread where it's harder to communicate with the original request thread.
  *
  * @author Galder Zamarreño
  * @since 4.2
@@ -90,21 +88,27 @@ public class IsMarshallableInterceptor extends CommandInterceptor {
    public Object visitGetKeyValueCommand(InvocationContext ctx, GetKeyValueCommand command) throws Throwable {
       Object key = command.getKey();
       if (isStoreAsBinary() || getMightGoRemote(ctx, key))
-         checkMarshallable(key);
+         checkMarshallableObject(key);
       return super.visitGetKeyValueCommand(ctx, command);
    }
 
    @Override
    public Object visitLockControlCommand(TxInvocationContext ctx, LockControlCommand command) throws Throwable {
-      if (isStoreAsBinary() || isClusterInvocation(ctx))
-         checkMarshallable(command.getKeys());
+      if (isStoreAsBinary() || isClusterInvocation(ctx)) {
+         if (command instanceof MultiKeyLockControlCommand)
+            checkMarshallable(((MultiKeyLockControlCommand) command).getKeys());
+         else
+            checkMarshallableObject(command.getKey());
+      }
       return super.visitLockControlCommand(ctx, command);
    }
 
    @Override
    public Object visitPutKeyValueCommand(InvocationContext ctx, PutKeyValueCommand command) throws Throwable {
-      if (isStoreAsBinary() || isClusterInvocation(ctx) || isStoreInvocation(ctx))
-         checkMarshallable(command.getKey(), command.getValue());
+      if (isStoreAsBinary() || isClusterInvocation(ctx) || isStoreInvocation(ctx)) {
+         checkMarshallableObject(command.getKey());
+         checkMarshallableObject(command.getValue());
+      }
       return super.visitPutKeyValueCommand(ctx, command);
    }
 
@@ -118,14 +122,16 @@ public class IsMarshallableInterceptor extends CommandInterceptor {
    @Override
    public Object visitRemoveCommand(InvocationContext ctx, RemoveCommand command) throws Throwable {
       if (isStoreAsBinary() || isClusterInvocation(ctx) || isStoreInvocation(ctx))
-         checkMarshallable(command.getKey());
+         checkMarshallableObject(command.getKey());
       return super.visitRemoveCommand(ctx, command);
    }
 
    @Override
    public Object visitReplaceCommand(InvocationContext ctx, ReplaceCommand command) throws Throwable {
-      if (isStoreAsBinary() || isClusterInvocation(ctx) || isStoreInvocation(ctx))
-         checkMarshallable(command.getKey(), command.getNewValue());
+      if (isStoreAsBinary() || isClusterInvocation(ctx) || isStoreInvocation(ctx)) {
+         checkMarshallableObject(command.getKey());
+         checkMarshallableObject(command.getNewValue());
+      }
       return super.visitReplaceCommand(ctx, command);
    }
 
@@ -159,17 +165,19 @@ public class IsMarshallableInterceptor extends CommandInterceptor {
    }
 
    private void checkMarshallable(Object... objs) throws NotSerializableException {
-      for (Object o : objs) {
-         boolean marshallable = false;
-         try {
-            marshallable = marshaller.isMarshallable(o);
-         } catch (Exception e) {
-            throwNotSerializable(o, e);
-         }
+      for (Object o : objs) checkMarshallableObject(o);
+   }
 
-         if (!marshallable)
-            throwNotSerializable(o, null);
+   private void checkMarshallableObject(Object object) throws NotSerializableException {
+      boolean marshallable = false;
+      try {
+         marshallable = marshaller.isMarshallable(object);
+      } catch (Exception e) {
+         throwNotSerializable(object, e);
       }
+
+      if (!marshallable)
+         throwNotSerializable(object, null);
    }
 
    private void throwNotSerializable(Object o, Throwable t) {
@@ -182,8 +190,9 @@ public class IsMarshallableInterceptor extends CommandInterceptor {
    }
 
    private void checkMarshallable(Map<Object, Object> objs) throws NotSerializableException {
-      for (Map.Entry entry : objs.entrySet())
-         checkMarshallable(entry.getKey(), entry.getValue());
+      for (Map.Entry<Object, Object> entry : objs.entrySet()) {
+         checkMarshallableObject(entry.getKey());
+         checkMarshallableObject(entry.getValue());
+      }
    }
-
 }

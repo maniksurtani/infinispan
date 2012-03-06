@@ -25,10 +25,10 @@ package org.infinispan.context;
 
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.context.impl.AbstractInvocationContext;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import org.infinispan.util.customcollections.CacheEntryCollection;
+import org.infinispan.util.customcollections.CacheEntryCollectionImpl;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 
 /**
  * @author Mircea Markus
@@ -38,14 +38,9 @@ public class SingleKeyNonTxInvocationContext extends AbstractInvocationContext {
 
    private final boolean isOriginLocal;
 
-   private Object key;
-
-   /**
-    * It is possible for the key to only be wrapped but not locked, e.g. when a get takes place.
-    */
-   private boolean isLocked;
-
    private CacheEntry cacheEntry;
+   private Object lockedKey;
+   private int keyHashCode;
 
    public SingleKeyNonTxInvocationContext(boolean originLocal) {
       isOriginLocal = originLocal;
@@ -67,21 +62,20 @@ public class SingleKeyNonTxInvocationContext extends AbstractInvocationContext {
    }
 
    @Override
-   public Set<Object> getLockedKeys() {
-      return isLocked && key != null ? Collections.singleton(key) : Collections.emptySet();
+   public KeyCollection getLockedKeys() {
+      return lockedKey == null ? KeyCollectionImpl.EMPTY_KEY_COLLECTION : KeyCollectionImpl.singleton(lockedKey);
    }
 
    @Override
    public void clearLockedKeys() {
-      key = null;
       cacheEntry = null;
    }
 
    @Override
    public void addLockedKey(Object key) {
-      if (cacheEntry != null && !key.equals(this.key))
+      if (cacheEntry != null && !key.equals(cacheEntry.getKey()))
          throw illegalStateException();
-      isLocked = true;
+      lockedKey = key;
    }
 
    private IllegalStateException illegalStateException() {
@@ -90,32 +84,25 @@ public class SingleKeyNonTxInvocationContext extends AbstractInvocationContext {
 
    @Override
    public CacheEntry lookupEntry(Object key) {
-      if (key != null && key.equals(this.key)) return cacheEntry;
+      if (key != null && cacheEntry != null && key.hashCode() == getKeyHashCode() && key.equals(cacheEntry.getKey())) return cacheEntry;
       return null;
    }
 
+   private int getKeyHashCode() {
+      if (keyHashCode == -1) {
+         keyHashCode = cacheEntry.getKey().hashCode();
+      }
+      return keyHashCode;
+   }
+   
    @Override
-   public Map<Object, CacheEntry> getLookedUpEntries() {
-      return key == null ? Collections.<Object, CacheEntry>emptyMap() : Collections.singletonMap(key, cacheEntry);
+   public CacheEntryCollection getLookedUpEntries() {
+      return cacheEntry == null ? CacheEntryCollectionImpl.EMPTY_CACHE_ENTRY_COLLECTION : CacheEntryCollectionImpl.singleton(cacheEntry);
    }
 
    @Override
-   public void putLookedUpEntry(Object key, CacheEntry e) {
-      this.key = key;
+   public void putLookedUpEntry(CacheEntry e) {
       this.cacheEntry = e;
-   }
-
-   @Override
-   public void putLookedUpEntries(Map<Object, CacheEntry> lookedUpEntries) {
-      if (lookedUpEntries.size() > 1) throw illegalStateException();
-      this.key = lookedUpEntries.entrySet().iterator().next();
-      this.cacheEntry = lookedUpEntries.get(this.key);
-   }
-
-   @Override
-   public void removeLookedUpEntry(Object key) {
-      if (key.equals(this.key))
-         clearLockedKeys();
    }
 
    @Override

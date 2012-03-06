@@ -22,7 +22,7 @@
  */
 package org.infinispan.transaction.xa.recovery;
 
-import org.infinispan.transaction.xa.CacheTransaction;
+import org.infinispan.transaction.CacheTransaction;
 
 /**
  * Base interface for transactions that are holders of recovery information.

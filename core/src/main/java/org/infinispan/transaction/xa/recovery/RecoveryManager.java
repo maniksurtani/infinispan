@@ -159,7 +159,7 @@ public interface RecoveryManager {
       /**
        * Each xid has a unique long object associated to it. It makes possible the invocation of recovery operations.
        */
-      public Long getInternalId();
+      public long getInternalId();
 
       /**
        * The value represent transaction's state as described by the {@link Status} field. Multiple values are returned

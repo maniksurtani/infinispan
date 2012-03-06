@@ -43,7 +43,7 @@ public class IncrementalVersionableEntryFactoryImpl extends EntryFactoryImpl {
 
    @Override
    protected MVCCEntry createWrappedEntry(Object key, Object value, EntryVersion version, boolean isForInsert, boolean forRemoval, long lifespan) {
-      if (value == null && !isForInsert) return forRemoval ? new NullMarkerEntryForRemoval(key, version) : NullMarkerEntry.getInstance();
+      if (value == null && !isForInsert) return forRemoval ? new NullMarkerEntryForRemoval(key, version) : new NullMarkerEntry(key);
 
       return new ClusteredRepeatableReadEntry(key, value, version, lifespan);
    }

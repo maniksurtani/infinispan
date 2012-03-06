@@ -92,7 +92,7 @@ public class TxCompletionNotificationCommand extends RecoveryCommand {
          remoteTx = txTable.removeRemoteTransaction(gtx);
       }
       if (remoteTx == null) return null;
-      lockManager.unlock(remoteTx.getLockedKeys(), remoteTx.getGlobalTransaction());
+      lockManager.unlock(remoteTx.getGlobalTransaction(), remoteTx.getLockedKeys());
       return null;
    }
 

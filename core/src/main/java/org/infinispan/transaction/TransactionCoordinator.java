@@ -35,6 +35,7 @@ import org.infinispan.factories.annotations.Start;
 import org.infinispan.factories.annotations.Stop;
 import org.infinispan.interceptors.InterceptorChain;
 import org.infinispan.transaction.xa.GlobalTransaction;
+import org.infinispan.util.customcollections.ModificationCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -99,8 +100,8 @@ public class TransactionCoordinator {
             }
 
             @Override
-            public PrepareCommand createPrepareCommand(GlobalTransaction gtx, List<WriteCommand> modifications) {
-               return commandsFactory.buildVersionedPrepareCommand(gtx, modifications, false);
+            public PrepareCommand createPrepareCommand(GlobalTransaction gtx, ModificationCollection modifications) {
+               return commandsFactory.buildVersionedPrepareCommand(gtx, false, modifications);
             }
          };
       } else {
@@ -111,8 +112,8 @@ public class TransactionCoordinator {
             }
 
             @Override
-            public PrepareCommand createPrepareCommand(GlobalTransaction gtx, List<WriteCommand> modifications) {
-               return commandsFactory.buildPrepareCommand(gtx, modifications, false);
+            public PrepareCommand createPrepareCommand(GlobalTransaction gtx, ModificationCollection modifications) {
+               return commandsFactory.buildPrepareCommand(gtx, false, modifications);
             }
          };
       }
@@ -169,7 +170,7 @@ public class TransactionCoordinator {
          validateNotMarkedForRollback(localTransaction);
 
          if (trace) log.trace("Doing an 1PC prepare call on the interceptor chain");
-         PrepareCommand command = commandsFactory.buildPrepareCommand(localTransaction.getGlobalTransaction(), localTransaction.getModifications(), true);
+         PrepareCommand command = commandsFactory.buildPrepareCommand(localTransaction.getGlobalTransaction(), true, localTransaction.getModifications());
          try {
             invoker.invoke(ctx, command);
          } catch (Throwable e) {
@@ -242,6 +243,6 @@ public class TransactionCoordinator {
 
    private static interface CommandCreator {
       CommitCommand createCommitCommand(GlobalTransaction gtx);
-      PrepareCommand createPrepareCommand(GlobalTransaction gtx, List<WriteCommand> modifications);
+      PrepareCommand createPrepareCommand(GlobalTransaction gtx, ModificationCollection modifications);
    }
 }

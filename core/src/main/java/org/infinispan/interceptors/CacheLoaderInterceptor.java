@@ -43,6 +43,7 @@ import org.infinispan.jmx.annotations.ManagedOperation;
 import org.infinispan.loaders.CacheLoader;
 import org.infinispan.loaders.CacheLoaderManager;
 import org.infinispan.notifications.cachelistener.CacheNotifier;
+import org.infinispan.util.customcollections.KeyCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 import org.rhq.helpers.pluginAnnotations.agent.MeasurementType;
@@ -101,8 +102,8 @@ public class CacheLoaderInterceptor extends JmxStatsCommandInterceptor {
 
    @Override
    public Object visitInvalidateCommand(InvocationContext ctx, InvalidateCommand command) throws Throwable {
-      Object[] keys;
-      if ((keys = command.getKeys()) != null && keys.length > 0) {
+      KeyCollection keys;
+      if ((keys = command.getKeys()) != null && !keys.isEmpty()) {
          for (Object key : command.getKeys()) {
             loadIfNeeded(ctx, key, false, command);
          }
@@ -146,8 +147,8 @@ public class CacheLoaderInterceptor extends JmxStatsCommandInterceptor {
       if (e == null || e.isNull() || e.getValue() == null) {
          InternalCacheEntry loaded = loader.load(key);
          if (loaded != null) {
-            MVCCEntry mvccEntry = entryFactory.wrapEntryForPut(ctx, key, loaded, false);
-            recordLoadedEntry(ctx, key, mvccEntry, loaded);
+            e = entryFactory.wrapEntryForPut(ctx, key, loaded, false);
+            recordLoadedEntry(ctx, key, e, loaded);
             return true;
          } else {
             return false;
@@ -169,7 +170,7 @@ public class CacheLoaderInterceptor extends JmxStatsCommandInterceptor {
     * @param entry       the appropriately locked entry in the caller's context
     * @param loadedEntry the internal entry loaded from the cache store.
     */
-   private MVCCEntry recordLoadedEntry(InvocationContext ctx, Object key, MVCCEntry entry, InternalCacheEntry loadedEntry) throws Exception {
+   private CacheEntry recordLoadedEntry(InvocationContext ctx, Object key, CacheEntry entry, InternalCacheEntry loadedEntry) throws Exception {
       boolean entryExists = loadedEntry != null;
       if (log.isTraceEnabled()) {
          log.trace("Entry exists in loader? " + entryExists);

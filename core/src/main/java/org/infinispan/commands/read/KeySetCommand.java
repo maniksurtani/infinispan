@@ -27,11 +27,11 @@ import org.infinispan.commands.Visitor;
 import org.infinispan.container.DataContainer;
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.context.InvocationContext;
+import org.infinispan.util.customcollections.CacheEntryCollection;
 
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -73,11 +73,12 @@ public class KeySetCommand extends AbstractLocalCommand implements VisitableComm
    }
 
    private static class FilteredKeySet extends AbstractSet<Object> {
+
       final Set<Object> keySet;
-      final Map<Object, CacheEntry> lookedUpEntries;
+      final CacheEntryCollection lookedUpEntries;
       final DataContainer container;
 
-      FilteredKeySet(Set<Object> keySet, Map<Object, CacheEntry> lookedUpEntries, DataContainer container) {
+      FilteredKeySet(Set<Object> keySet, CacheEntryCollection lookedUpEntries, DataContainer container) {
          this.keySet = keySet;
          this.lookedUpEntries = lookedUpEntries;
          this.container = container;
@@ -93,7 +94,7 @@ public class KeySetCommand extends AbstractLocalCommand implements VisitableComm
                size--;
          }
          // Update according to keys added or removed in tx
-         for (CacheEntry e: lookedUpEntries.values()) {
+         for (CacheEntry e: lookedUpEntries) {
             if (e.isCreated()) {
                size ++;
             } else if (e.isRemoved()) {
@@ -105,7 +106,7 @@ public class KeySetCommand extends AbstractLocalCommand implements VisitableComm
 
       @Override
       public boolean contains(Object o) {
-         CacheEntry e = lookedUpEntries.get(o);
+         CacheEntry e = null; // TODO: MS: FIGURE THIS OUT! CustomCollections.findCacheEntry(lookedUpEntries, o);
          if (e == null || e.isRemoved()) {
             return false;
          } else if (e.isChanged() || e.isCreated()) {
@@ -151,7 +152,7 @@ public class KeySetCommand extends AbstractLocalCommand implements VisitableComm
 
       private class Itr implements Iterator<Object> {
 
-         private final Iterator<CacheEntry> it1 = lookedUpEntries.values().iterator();
+         private final Iterator<CacheEntry> it1 = lookedUpEntries.iterator();
          private final Iterator<Object> it2 = keySet.iterator();
          private boolean atIt1 = true;
          private Object next;
@@ -181,7 +182,7 @@ public class KeySetCommand extends AbstractLocalCommand implements VisitableComm
                boolean found = false;
                while (it2.hasNext()) {
                   Object k = it2.next();
-                  CacheEntry e = lookedUpEntries.get(k);
+                  CacheEntry e = lookedUpEntries.findCacheEntry(k);
                   if (e == null || !e.isRemoved()) {
                      next = k;
                      found = true;

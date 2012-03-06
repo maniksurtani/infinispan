@@ -23,12 +23,11 @@
 package org.infinispan.context.impl;
 
 import org.infinispan.container.entries.CacheEntry;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import org.infinispan.util.customcollections.CustomCollections;
+import org.infinispan.util.customcollections.CacheEntryCollection;
+import org.infinispan.util.customcollections.CacheEntryCollectionImpl;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 
 /**
  * Context to be used for non transactional calls, both remote and local.
@@ -38,46 +37,33 @@ import java.util.Set;
  */
 public class NonTxInvocationContext extends AbstractInvocationContext {
 
-   private static final int INITIAL_CAPACITY = 4;
-   protected final Map<Object, CacheEntry> lookedUpEntries;
-
-   protected Set<Object> lockedKeys;
+   private CacheEntryCollection lookedUpEntries;
+   private KeyCollection lockedKeys;
 
    public NonTxInvocationContext(int numEntries, boolean local) {
-      lookedUpEntries = new HashMap<Object, CacheEntry>(numEntries);
+      lookedUpEntries = new CacheEntryCollectionImpl(numEntries);
       setOriginLocal(local);
    }
 
    public NonTxInvocationContext() {
-      lookedUpEntries = new HashMap<Object, CacheEntry>(INITIAL_CAPACITY);
    }
 
+   @Override
    public CacheEntry lookupEntry(Object k) {
-      return lookedUpEntries.get(k);
+      return lookedUpEntries.findCacheEntry(k);
    }
 
-   public void removeLookedUpEntry(Object key) {
-      lookedUpEntries.remove(key);
-   }
-
-   public void putLookedUpEntry(Object key, CacheEntry e) {
-      lookedUpEntries.put(key, e);
-   }
-
-   public void putLookedUpEntries(Map<Object, CacheEntry> newLookedUpEntries) {
-      for (Map.Entry<Object, CacheEntry> ce: newLookedUpEntries.entrySet()) {
-         lookedUpEntries.put(ce.getKey(), ce.getValue());
-      }
+   @Override
+   public void putLookedUpEntry(CacheEntry e) {
+      lookedUpEntries.add(e);
    }
 
    public void clearLookedUpEntries() {
       lookedUpEntries.clear();
    }
 
-   @SuppressWarnings("unchecked")
-   public Map<Object, CacheEntry> getLookedUpEntries() {
-      return (Map<Object, CacheEntry>)
-            (lookedUpEntries == null ? Collections.emptyMap() : lookedUpEntries);
+   public CacheEntryCollection getLookedUpEntries() {
+      return lookedUpEntries;
    }
 
    public boolean isOriginLocal() {
@@ -100,25 +86,28 @@ public class NonTxInvocationContext extends AbstractInvocationContext {
    public void reset() {
       super.reset();
       clearLookedUpEntries();
-      if (lockedKeys != null) lockedKeys.clear();
+      if (lockedKeys != null) lockedKeys = null;
    }
 
    @Override
    public NonTxInvocationContext clone() {
       NonTxInvocationContext dolly = (NonTxInvocationContext) super.clone();
-      dolly.lookedUpEntries.putAll(lookedUpEntries);
+      dolly.lookedUpEntries = lookedUpEntries.clone();
+      if (lockedKeys != null) dolly.lockedKeys = lockedKeys.clone();
       return dolly;
    }
 
    @Override
    public void addLockedKey(Object key) {
-      if (lockedKeys == null) lockedKeys = new HashSet<Object>(INITIAL_CAPACITY);
-      lockedKeys.add(key);
+      if (lockedKeys == null)
+         lockedKeys = new KeyCollectionImpl(key);
+      else
+         lockedKeys.add(key);
    }
 
    @Override
-   public Set<Object> getLockedKeys() {
-      return lockedKeys == null ? Collections.emptySet() : lockedKeys;
+   public KeyCollection getLockedKeys() {
+      return CustomCollections.nullCheck(lockedKeys);
    }
 
    @Override

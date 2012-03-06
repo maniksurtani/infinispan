@@ -24,6 +24,7 @@
 package org.infinispan.interceptors.locking;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,6 +47,9 @@ import org.infinispan.context.InvocationContext;
 import org.infinispan.context.impl.TxInvocationContext;
 import org.infinispan.factories.annotations.Inject;
 import org.infinispan.util.TimSort;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
+import org.infinispan.util.customcollections.ModificationCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -91,15 +95,15 @@ public class OptimisticLockingInterceptor extends AbstractTxLockingInterceptor {
          log.trace("Not using lock reordering as we have a single key.");
          acquireLocksVisitingCommands(ctx, command);
       } else {
-         Object[] orderedKeys = sort(command.getModifications());
+         KeyCollection orderedKeys = sort(command.getModifications());
          boolean hasClear = orderedKeys == null;
          if (hasClear) {
             log.trace("Not using lock reordering as the prepare contains a clear command.");
             acquireLocksVisitingCommands(ctx, command);
          } else {
-            log.tracef("Using lock reordering, order is: %s", orderedKeys);
+            if (log.isTraceEnabled()) log.tracef("Using lock reordering, order is: %s", orderedKeys);
             acquireAllLocks(ctx, orderedKeys);
-            ctx.addAllAffectedKeys(Arrays.asList(orderedKeys));
+            ctx.addAllAffectedKeys(orderedKeys);
          }
       }
       return invokeNextAndCommitIf1Pc(ctx, command);
@@ -207,7 +211,7 @@ public class OptimisticLockingInterceptor extends AbstractTxLockingInterceptor {
       @Override
       public Object visitApplyDeltaCommand(InvocationContext ctx, ApplyDeltaCommand command) throws Throwable {
          if (cdl.localNodeIsOwner(command.getKey())) {
-            Object[] compositeKeys = command.getCompositeKeys();
+            KeyCollection compositeKeys = command.getCompositeKeys();
             for (Object key : compositeKeys) {
                lockAndRegisterBackupLock((TxInvocationContext) ctx, key);
             }            
@@ -224,8 +228,8 @@ public class OptimisticLockingInterceptor extends AbstractTxLockingInterceptor {
       }
    }
    
-   private Object[] sort(WriteCommand[] writes) {
-      Set<Object> set = new HashSet<Object>();
+   private KeyCollection sort(ModificationCollection writes) {
+      KeyCollection kc = new KeyCollectionImpl(writes.size(), true);
       for (WriteCommand wc: writes) {
          switch (wc.getCommandId()) {
             case ClearCommand.COMMAND_ID:
@@ -233,27 +237,25 @@ public class OptimisticLockingInterceptor extends AbstractTxLockingInterceptor {
             case PutKeyValueCommand.COMMAND_ID:
             case RemoveCommand.COMMAND_ID:
             case ReplaceCommand.COMMAND_ID:
-               set.add(((DataWriteCommand) wc).getKey());
+               kc.add(((DataWriteCommand) wc).getKey());
                break;
             case PutMapCommand.COMMAND_ID:
-               set.addAll(wc.getAffectedKeys());
+               kc.addAll(wc.getAffectedKeys());
                break;
             case ApplyDeltaCommand.COMMAND_ID:
                ApplyDeltaCommand command = (ApplyDeltaCommand) wc;
                if (cdl.localNodeIsOwner(command.getKey())) {
-                  Object[] compositeKeys = command.getCompositeKeys();
-                  set.addAll(Arrays.asList(compositeKeys));
+                  KeyCollection compositeKeys = command.getCompositeKeys();
+                  kc.addAll(compositeKeys);
                }
                break;
          }
       }
-
-      Object[] sorted = set.toArray(new Object[set.size()]);
-      TimSort.sort(sorted, keyComparator);
-      return sorted;
+      kc.sort(keyComparator);
+      return kc;
    }
 
-   private void acquireAllLocks(TxInvocationContext ctx, Object[] orderedKeys) throws InterruptedException {
+   private void acquireAllLocks(TxInvocationContext ctx, KeyCollection orderedKeys) throws InterruptedException {
       for (Object key: orderedKeys) lockAndRegisterBackupLock(ctx, key);
    }
 

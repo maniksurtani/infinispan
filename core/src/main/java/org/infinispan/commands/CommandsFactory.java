@@ -55,6 +55,8 @@ import org.infinispan.factories.scopes.Scopes;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.statetransfer.LockInfo;
 import org.infinispan.transaction.xa.GlobalTransaction;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.ModificationCollection;
 
 import javax.transaction.xa.Xid;
 import java.util.Collection;
@@ -110,7 +112,7 @@ public interface CommandsFactory {
     * @param keys keys to invalidate
     * @return an InvalidateCommand
     */
-   InvalidateCommand buildInvalidateCommand(Object... keys);
+   InvalidateCommand buildInvalidateCommand(KeyCollection keys);
 
    /**
     * Builds an InvalidateFromL1Command
@@ -118,21 +120,12 @@ public interface CommandsFactory {
     * @param keys keys to invalidate
     * @return an InvalidateFromL1Command
     */
-   InvalidateCommand buildInvalidateFromL1Command(boolean forRehash, Object... keys);
-
-   /**
-    * Builds an InvalidateFromL1Command
-    * @param forRehash set to true if the invalidation is happening due to a new node taking ownership.  False if it is due to a write, changing the state of the entry.
-    * @param keys keys to invalidate
-    * @return an InvalidateFromL1Command
-    */
-   InvalidateCommand buildInvalidateFromL1Command(boolean forRehash, Collection<Object> keys);
-
+   InvalidateCommand buildInvalidateFromL1Command(boolean forRehash, KeyCollection keys);
 
    /**
     * @see #buildInvalidateFromL1Command(org.infinispan.remoting.transport.Address, boolean, java.util.Collection)
     */
-   InvalidateCommand buildInvalidateFromL1Command(Address origin, boolean forRehash, Collection<Object> keys);
+   InvalidateCommand buildInvalidateFromL1Command(Address origin, boolean forRehash, KeyCollection key);
 
    /**
     * Builds a ReplaceCommand
@@ -201,21 +194,21 @@ public interface CommandsFactory {
    /**
     * Builds a PrepareCommand
     * @param gtx global transaction associated with the prepare
-    * @param modifications list of modifications
     * @param onePhaseCommit is this a one-phase or two-phase transaction?
+    * @param modifications list of modifications
     * @return a PrepareCommand
     */
-   PrepareCommand buildPrepareCommand(GlobalTransaction gtx, List<WriteCommand> modifications, boolean onePhaseCommit);
+   PrepareCommand buildPrepareCommand(GlobalTransaction gtx, boolean onePhaseCommit, ModificationCollection modifications);
 
    /**
     * Builds a VersionedPrepareCommand
     *
     * @param gtx global transaction associated with the prepare
-    * @param modifications list of modifications
     * @param onePhase
+    * @param modifications list of modifications
     * @return a VersionedPrepareCommand
     */
-   VersionedPrepareCommand buildVersionedPrepareCommand(GlobalTransaction gtx, List<WriteCommand> modifications, boolean onePhase);
+   VersionedPrepareCommand buildVersionedPrepareCommand(GlobalTransaction gtx, boolean onePhase, ModificationCollection modifications);
 
    /**
     * Builds a CommitCommand
@@ -273,23 +266,15 @@ public interface CommandsFactory {
    ClusteredGetCommand buildClusteredGetCommand(Object key, Set<Flag> flags, boolean acquireRemoteLock, GlobalTransaction gtx);
 
    /**
-    * Builds a LockControlCommand to control explicit remote locking
-    *
-    *
-    * @param keys keys to lock
-    * @param gtx
-    * @return a LockControlCommand
-    */
-   LockControlCommand buildLockControlCommand(Collection keys, Set<Flag> flags, GlobalTransaction gtx);
-
-   /**
     * Same as {@link #buildLockControlCommand(Object, java.util.Set, org.infinispan.transaction.xa.GlobalTransaction)}
     * but for locking a single key vs a collection of keys.
     */
    LockControlCommand buildLockControlCommand(Object key, Set<Flag> flags, GlobalTransaction gtx);
 
 
-   LockControlCommand buildLockControlCommand(Collection keys, Set<Flag> flags);
+   LockControlCommand buildLockControlCommand(Set<Flag> flags, KeyCollection keys);
+
+   LockControlCommand buildLockControlCommand(Set<Flag> flags, GlobalTransaction gtx, KeyCollection keys);
 
    /**
     * Builds a RehashControlCommand for coordinating a rehash event.  This version of this factory method creates a simple
@@ -332,7 +317,7 @@ public interface CommandsFactory {
     * @param keys keys used in Callable 
     * @return a DistributedExecuteCommand
     */
-   <T>DistributedExecuteCommand<T> buildDistributedExecuteCommand(Callable<T> callable, Address sender, Collection keys);
+   <T>DistributedExecuteCommand<T> buildDistributedExecuteCommand(Callable<T> callable, Address sender, KeyCollection keys);
    
    /**
     * Builds a MapReduceCommand used for migration and execution of MapReduce tasks.
@@ -343,7 +328,7 @@ public interface CommandsFactory {
     * @param keys keys used in MapReduceTask
     * @return a MapReduceCommand
     */
-   MapReduceCommand buildMapReduceCommand(Mapper m, Reducer r, Address sender, Collection keys);
+   MapReduceCommand buildMapReduceCommand(Mapper<Object, Object, Object, Object> m, Reducer<Object, Object> r, KeyCollection keys);
 
    /**
     * @see GetInDoubtTxInfoCommand
@@ -370,5 +355,7 @@ public interface CommandsFactory {
     * @return ApplyDeltaCommand instance
     * @see ApplyDeltaCommand
     */
-   ApplyDeltaCommand buildApplyDeltaCommand(Object deltaAwareValueKey, Delta delta, Collection keys);
+   ApplyDeltaCommand buildApplyDeltaCommand(Object deltaAwareValueKey, Delta delta, KeyCollection keys);
+
+   InvalidateCommand buildInvalidateCommandForSingleKey(Object key);
 }

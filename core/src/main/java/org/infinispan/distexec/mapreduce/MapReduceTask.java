@@ -44,6 +44,7 @@ import org.infinispan.util.concurrent.AbstractInProcessFuture;
 import org.infinispan.util.concurrent.FutureListener;
 import org.infinispan.util.concurrent.NotifyingFuture;
 import org.infinispan.util.concurrent.NotifyingNotifiableFuture;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -233,7 +234,7 @@ public class MapReduceTask<KIn, VIn, KOut, VOut> {
       MapReduceCommand selfCmd = null;
       Map<Address, Response> results = new HashMap<Address, Response>();
       if (inputTaskKeysEmpty()) {
-         cmd = factory.buildMapReduceCommand(mapper, reducer, rpc.getAddress(), keys);
+         cmd = factory.buildMapReduceCommand(cast(mapper), cast(reducer), KeyCollectionImpl.fromCollection(keys));
          selfCmd = cmd;
          try {
             log.debugf("Invoking %s across entire cluster ", cmd);
@@ -251,9 +252,9 @@ public class MapReduceTask<KIn, VIn, KOut, VOut> {
             Address address = e.getKey();
             List<KIn> keys = e.getValue();
             if (address.equals(rpc.getAddress())) {
-               selfCmd = factory.buildMapReduceCommand(clone(mapper), clone(reducer), rpc.getAddress(), keys);
+               selfCmd = factory.buildMapReduceCommand(clone(mapper), clone(reducer), KeyCollectionImpl.fromCollection(keys));
             } else {
-               cmd = factory.buildMapReduceCommand(mapper, reducer, rpc.getAddress(), keys);
+               cmd = factory.buildMapReduceCommand(cast(mapper), cast(reducer), KeyCollectionImpl.fromCollection(keys));
                try {
                   log.debugf("Invoking %s on %s", cmd, address);
                   MapReduceFuture future = new MapReduceFuture();
@@ -417,12 +418,12 @@ public class MapReduceTask<KIn, VIn, KOut, VOut> {
       return addressToKey;
    }
    
-   protected Mapper<KIn, VIn, KOut, VOut> clone(Mapper<KIn, VIn, KOut, VOut> mapper){      
-      return Util.cloneWithMarshaller(marshaller, mapper);
+   protected Mapper<Object, Object, Object, Object> clone(Mapper<KIn, VIn, KOut, VOut> mapper){
+      return cast(Util.cloneWithMarshaller(marshaller, mapper));
    }
    
-   protected Reducer<KOut, VOut> clone(Reducer<KOut, VOut> reducer){      
-      return Util.cloneWithMarshaller(marshaller, reducer);
+   protected Reducer<Object, Object> clone(Reducer<KOut, VOut> reducer){
+      return cast(Util.cloneWithMarshaller(marshaller, reducer));
    }
    
    private void ensureProperCacheState(AdvancedCache<KIn, VIn> cache) throws NullPointerException,
@@ -489,5 +490,15 @@ public class MapReduceTask<KIn, VIn, KOut, VOut> {
       public void setNetworkFuture(Future<Object> future) {
          this.futureResult = future;
       }
+   }
+   
+   @SuppressWarnings("unchecked")
+   private Mapper<Object, Object, Object, Object> cast(Mapper<KIn, VIn, KOut, VOut> mapper) {
+      return (Mapper<Object, Object, Object, Object>) mapper;
+   }
+
+   @SuppressWarnings("unchecked")
+   private Reducer<Object, Object> cast(Reducer<KOut, VOut> reducer) {
+      return (Reducer<Object, Object>) reducer;
    }
 }

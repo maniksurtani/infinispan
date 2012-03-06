@@ -23,6 +23,7 @@
 package org.infinispan.context;
 
 import org.infinispan.container.entries.CacheEntry;
+import org.infinispan.util.customcollections.CacheEntryCollection;
 
 import java.util.Map;
 
@@ -47,24 +48,18 @@ public interface EntryLookup {
     * <p/>
     * @return a map of looked up entries.
     */
-   Map<Object, CacheEntry> getLookedUpEntries();
+   CacheEntryCollection getLookedUpEntries();
 
    /**
     * Puts an entry in the registry of looked up entries in the current scope.
     * <p/>
     *
-    * @param key key to store
     * @param e   entry to store
     */
-   void putLookedUpEntry(Object key, CacheEntry e);
-
-   void putLookedUpEntries(Map<Object, CacheEntry> lookedUpEntries);
-
-   void removeLookedUpEntry(Object key);
+   void putLookedUpEntry(CacheEntry e);
 
    /**
     * Clears the collection of entries looked up
     */
    void clearLookedUpEntries();
-
 }

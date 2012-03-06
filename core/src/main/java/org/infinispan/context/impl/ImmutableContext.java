@@ -24,10 +24,13 @@ import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.context.Flag;
 import org.infinispan.context.InvocationContext;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.customcollections.CacheEntryCollection;
+import org.infinispan.util.customcollections.CacheEntryCollectionImpl;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -50,22 +53,12 @@ public final class ImmutableContext implements InvocationContext {
    }
 
    @Override
-   public Map<Object, CacheEntry> getLookedUpEntries() {
-      return Collections.emptyMap();
+   public CacheEntryCollection getLookedUpEntries() {
+      return CacheEntryCollectionImpl.EMPTY_CACHE_ENTRY_COLLECTION;
    }
 
    @Override
-   public void putLookedUpEntry(Object key, CacheEntry e) {
-      throw newUnsupportedMethod();
-   }
-
-   @Override
-   public void putLookedUpEntries(Map<Object, CacheEntry> lookedUpEntries) {
-      throw newUnsupportedMethod();
-   }
-
-   @Override
-   public void removeLookedUpEntry(Object key) {
+   public void putLookedUpEntry(CacheEntry e) {
       throw newUnsupportedMethod();
    }
 
@@ -133,8 +126,8 @@ public final class ImmutableContext implements InvocationContext {
    }
 
    @Override
-   public Set<Object> getLockedKeys() {
-      return Collections.emptySet();
+   public KeyCollection getLockedKeys() {
+      return KeyCollectionImpl.EMPTY_KEY_COLLECTION;
    }
 
    @Override

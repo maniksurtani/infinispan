@@ -22,18 +22,13 @@
  */
 package org.infinispan.transaction;
 
-import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.transaction.xa.InvalidTransactionException;
+import org.infinispan.util.customcollections.CacheEntryCollectionImpl;
+import org.infinispan.util.customcollections.ModificationCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 /**
  * Defines the state of a remotely originated transaction.
@@ -47,33 +42,38 @@ public class RemoteTransaction extends AbstractCacheTransaction implements Clone
 
    private volatile boolean valid = true;
 
+<<<<<<< Updated upstream
    /**
     * During state transfer only the locks are being migrated over, but no modifications.
     */
    private boolean missingModifications;
 
    public RemoteTransaction(WriteCommand[] modifications, GlobalTransaction tx, int viewId) {
+=======
+   public RemoteTransaction(ModificationCollection modifications, GlobalTransaction tx, int viewId) {
+>>>>>>> Stashed changes
       super(tx, viewId);
-      this.modifications = modifications == null || modifications.length == 0 ? Collections.<WriteCommand>emptyList() : Arrays.asList(modifications);
-      lookedUpEntries = new HashMap<Object, CacheEntry>(this.modifications.size());
+      this.modifications = modifications;
    }
 
    public RemoteTransaction(GlobalTransaction tx, int viewId) {
       super(tx, viewId);
-      this.modifications = new LinkedList<WriteCommand>();
-      lookedUpEntries = new HashMap<Object, CacheEntry>(2);
    }
 
    public void invalidate() {
       valid = false;
    }
 
-   public void putLookedUpEntry(Object key, CacheEntry e) {
+   @Override
+   public void putLookedUpEntry(CacheEntry e) {
       if (valid) {
          if (log.isTraceEnabled()) {
-            log.tracef("Adding key %s to tx %s", key, getGlobalTransaction());
+            log.tracef("Adding key %s to tx %s", e.getKey(), getGlobalTransaction());
          }
-         lookedUpEntries.put(key, e);
+         if (lookedUpEntries == null)
+            lookedUpEntries = new CacheEntryCollectionImpl(e);
+         else
+            lookedUpEntries.add(e);
       } else {
          throw new InvalidTransactionException("This remote transaction " + getGlobalTransaction() + " is invalid");
       }
@@ -93,12 +93,11 @@ public class RemoteTransaction extends AbstractCacheTransaction implements Clone
    }
 
    @Override
-   @SuppressWarnings("unchecked")
-   public Object clone() {
+   public RemoteTransaction clone() {
       try {
          RemoteTransaction dolly = (RemoteTransaction) super.clone();
-         dolly.modifications = new ArrayList<WriteCommand>(modifications);
-         dolly.lookedUpEntries = new HashMap<Object, CacheEntry>(lookedUpEntries);
+         dolly.modifications = modifications == null ? null : modifications.clone();
+         dolly.lookedUpEntries = lookedUpEntries == null ? null : lookedUpEntries.clone();
          return dolly;
       } catch (CloneNotSupportedException e) {
          throw new IllegalStateException("Impossible!!");

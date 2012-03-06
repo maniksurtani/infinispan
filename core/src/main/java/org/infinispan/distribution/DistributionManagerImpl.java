@@ -47,6 +47,8 @@ import org.infinispan.remoting.transport.Address;
 import org.infinispan.statetransfer.StateTransferManager;
 import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.util.Immutables;
+import org.infinispan.util.customcollections.InfinispanCollection;
+import org.infinispan.util.customcollections.KeyCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 import org.rhq.helpers.pluginAnnotations.agent.Operation;
@@ -145,11 +147,11 @@ public class DistributionManagerImpl implements DistributionManager {
       return getConsistentHash().primaryLocation(key);
    }
 
-   public Map<Object, List<Address>> locateAll(Collection<Object> keys) {
+   public Map<Object, List<Address>> locateAll(KeyCollection keys) {
       return locateAll(keys, getReplCount());
    }
 
-   public Map<Object, List<Address>> locateAll(Collection<Object> keys, int numOwners) {
+   private Map<Object, List<Address>> locateAll(KeyCollection keys, int numOwners) {
       return getConsistentHash().locateAll(keys, numOwners);
    }
 
@@ -215,8 +217,8 @@ public class DistributionManagerImpl implements DistributionManager {
       return stateTransferManager.isJoinComplete();
    }
 
-   public Collection<Address> getAffectedNodes(Collection<Object> affectedKeys) {
-      if (affectedKeys == null || affectedKeys.isEmpty()) {
+   public Collection<Address> getAffectedNodes(KeyCollection affectedKeys) {
+      if (affectedKeys == null || affectedKeys.size() == 0) {
          if (trace) log.trace("affected keys are empty");
          return Collections.emptyList();
       }
@@ -225,6 +227,7 @@ public class DistributionManagerImpl implements DistributionManager {
       for (List<Address> addresses : locateAll(affectedKeys).values()) an.addAll(addresses);
       return Immutables.immutableListConvert(an);
    }
+
 
    @ManagedOperation(description = "Tells you whether a given key is local to this instance of the cache.  Only works with String keys.")
    @Operation(displayName = "Is key local?")

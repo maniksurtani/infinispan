@@ -22,22 +22,22 @@
  */
 package org.infinispan.context.impl;
 
-import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.transaction.AbstractCacheTransaction;
 import org.infinispan.transaction.LocalTransaction;
 import org.infinispan.transaction.xa.GlobalTransaction;
+import org.infinispan.util.customcollections.CacheEntryCollection;
+import org.infinispan.util.customcollections.CacheEntryCollectionImpl;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
+import org.infinispan.util.customcollections.ModificationCollection;
+import org.infinispan.util.customcollections.ModificationCollectionImpl;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Invocation context to be used for locally originated transactions.
@@ -47,8 +47,6 @@ import java.util.Set;
  * @since 4.0
  */
 public class LocalTxInvocationContext extends AbstractTxInvocationContext {
-
-   public static final Map<Object,CacheEntry> EMPTY_ENTRY_MAP = new HashMap<Object, CacheEntry>(0);
 
    private LocalTransaction localTransaction;
 
@@ -77,34 +75,28 @@ public class LocalTxInvocationContext extends AbstractTxInvocationContext {
       return localTransaction.getGlobalTransaction();
    }
 
-   public List<WriteCommand> getModifications() {
-      return localTransaction == null ? null : localTransaction.getModifications();
+   @Override
+   public ModificationCollection getModifications() {
+      return localTransaction == null ? ModificationCollectionImpl.EMPTY_MODIFICATION_COLLECTION : localTransaction.getModifications();
    }
 
    public void setLocalTransaction(LocalTransaction localTransaction) {
       this.localTransaction = localTransaction;
    }
 
+   @Override
    public CacheEntry lookupEntry(Object key) {
       return localTransaction != null ? localTransaction.lookupEntry(key) : null;
    }
 
-   public Map<Object, CacheEntry> getLookedUpEntries() {
-      return localTransaction != null ? localTransaction.getLookedUpEntries() : EMPTY_ENTRY_MAP;
+   @Override
+   public CacheEntryCollection getLookedUpEntries() {
+      return localTransaction == null ? CacheEntryCollectionImpl.EMPTY_CACHE_ENTRY_COLLECTION : localTransaction.getLookedUpEntries();
    }
 
-   public void putLookedUpEntry(Object key, CacheEntry e) {
-      localTransaction.putLookedUpEntry(key, e);
-   }
-
-   public void putLookedUpEntries(Map<Object, CacheEntry> lookedUpEntries) {
-      for (Map.Entry<Object, CacheEntry> ce : lookedUpEntries.entrySet()) {
-         localTransaction.putLookedUpEntry(ce.getKey(), ce.getValue());
-      }
-   }
-
-   public void removeLookedUpEntry(Object key) {
-      localTransaction.removeLookedUpEntry(key);
+   @Override
+   public void putLookedUpEntry(CacheEntry e) {
+      localTransaction.putLookedUpEntry(e);
    }
 
    public void clearLookedUpEntries() {
@@ -130,8 +122,8 @@ public class LocalTxInvocationContext extends AbstractTxInvocationContext {
    }
 
    @Override
-   public Set<Object> getLockedKeys() {
-      return localTransaction == null ? Collections.emptySet() : localTransaction.getLockedKeys();
+   public KeyCollection getLockedKeys() {
+      return localTransaction == null ? KeyCollectionImpl.EMPTY_KEY_COLLECTION : localTransaction.getLockedKeys();
    }
 
    @Override

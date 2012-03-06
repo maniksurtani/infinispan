@@ -39,6 +39,7 @@ import org.infinispan.transaction.xa.recovery.RecoveryAwareGlobalTransaction;
 import org.infinispan.transaction.xa.recovery.RecoveryAwareLocalTransaction;
 import org.infinispan.transaction.xa.recovery.RecoveryAwareRemoteTransaction;
 import org.infinispan.util.ClusterIdGenerator;
+import org.infinispan.util.customcollections.ModificationCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -83,7 +84,7 @@ public class TransactionFactory {
          }
 
          @Override
-         public RemoteTransaction newRemoteTransaction(WriteCommand[] modifications, GlobalTransaction tx, int viewId) {
+         public RemoteTransaction newRemoteTransaction(ModificationCollection modifications, GlobalTransaction tx, int viewId) {
             return new RecoveryAwareRemoteTransaction(modifications, tx, viewId);
          }
 
@@ -110,7 +111,7 @@ public class TransactionFactory {
          }
 
          @Override
-         public RemoteTransaction newRemoteTransaction(WriteCommand[] modifications, GlobalTransaction tx, int viewId) {
+         public RemoteTransaction newRemoteTransaction(ModificationCollection modifications, GlobalTransaction tx, int viewId) {
             return new RemoteTransaction(modifications, tx, viewId);
          }
 
@@ -137,7 +138,7 @@ public class TransactionFactory {
          }
 
          @Override
-         public RemoteTransaction newRemoteTransaction(WriteCommand[] modifications, GlobalTransaction tx, int viewId) {
+         public RemoteTransaction newRemoteTransaction(ModificationCollection modifications, GlobalTransaction tx, int viewId) {
             return new RemoteTransaction(modifications, tx, viewId);
          }
 
@@ -165,7 +166,7 @@ public class TransactionFactory {
          }
 
          @Override
-         public RemoteTransaction newRemoteTransaction(WriteCommand[] modifications, GlobalTransaction tx, int viewId) {
+         public RemoteTransaction newRemoteTransaction(ModificationCollection modifications, GlobalTransaction tx, int viewId) {
             return new RecoveryAwareRemoteTransaction(modifications, tx, viewId);
          }
 
@@ -191,7 +192,7 @@ public class TransactionFactory {
          }
 
          @Override
-         public RemoteTransaction newRemoteTransaction(WriteCommand[] modifications, GlobalTransaction tx, int viewId) {
+         public RemoteTransaction newRemoteTransaction(ModificationCollection modifications, GlobalTransaction tx, int viewId) {
             return new RemoteTransaction(modifications, tx, viewId);
          }
 
@@ -217,7 +218,7 @@ public class TransactionFactory {
          }
 
          @Override
-         public RemoteTransaction newRemoteTransaction(WriteCommand[] modifications, GlobalTransaction tx, int viewId) {
+         public RemoteTransaction newRemoteTransaction(ModificationCollection modifications, GlobalTransaction tx, int viewId) {
             return new RemoteTransaction(modifications, tx, viewId);
          }
 
@@ -246,7 +247,7 @@ public class TransactionFactory {
        */
       private final Random rnd = new Random();
 
-      public abstract RemoteTransaction newRemoteTransaction(WriteCommand[] modifications, GlobalTransaction tx, int viewId);
+      public abstract RemoteTransaction newRemoteTransaction(ModificationCollection modifications, GlobalTransaction tx, int viewId);
 
       public abstract RemoteTransaction newRemoteTransaction(GlobalTransaction tx, int viewId);
    }
@@ -264,7 +265,7 @@ public class TransactionFactory {
       return txFactoryEnum.newLocalTransaction(tx, gtx, implicitTransaction, viewId);
    }
 
-   public RemoteTransaction newRemoteTransaction(WriteCommand[] modifications, GlobalTransaction tx, int viewId) {
+   public RemoteTransaction newRemoteTransaction(ModificationCollection modifications, GlobalTransaction tx, int viewId) {
       return txFactoryEnum.newRemoteTransaction(modifications, tx, viewId);
    }
 

@@ -25,6 +25,8 @@ package org.infinispan.context;
 
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.customcollections.CacheEntryCollection;
+import org.infinispan.util.customcollections.KeyCollection;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -63,23 +65,13 @@ public class InvocationContextFlagsOverride implements InvocationContext {
    }
 
    @Override
-   public Map<Object, CacheEntry> getLookedUpEntries() {
+   public CacheEntryCollection getLookedUpEntries() {
       return delegate.getLookedUpEntries();
    }
 
    @Override
-   public void putLookedUpEntry(Object key, CacheEntry e) {
-      delegate.putLookedUpEntry(key, e);
-   }
-
-   @Override
-   public void putLookedUpEntries(Map<Object, CacheEntry> lookedUpEntries) {
-      delegate.putLookedUpEntries(lookedUpEntries);
-   }
-
-   @Override
-   public void removeLookedUpEntry(Object key) {
-      delegate.removeLookedUpEntry(key);
+   public void putLookedUpEntry(CacheEntry e) {
+      delegate.putLookedUpEntry(e);
    }
 
    @Override
@@ -154,7 +146,7 @@ public class InvocationContextFlagsOverride implements InvocationContext {
    }
 
    @Override
-   public Set<Object> getLockedKeys() {
+   public KeyCollection getLockedKeys() {
       return delegate.getLockedKeys();
    }
    

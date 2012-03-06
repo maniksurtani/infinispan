@@ -39,7 +39,7 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 /**
- * This acts both as an local {@link org.infinispan.transaction.xa.CacheTransaction} and implementor of an {@link
+ * This acts both as an local {@link org.infinispan.transaction.CacheTransaction} and implementor of an {@link
  * javax.transaction.xa.XAResource} that will be called by tx manager on various tx stages.
  *
  * @author Mircea.Markus@jboss.com

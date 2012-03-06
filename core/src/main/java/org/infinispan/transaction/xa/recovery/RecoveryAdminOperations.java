@@ -168,8 +168,13 @@ public class RecoveryAdminOperations {
    private RecoveryManager.InDoubtTxInfo lookupRecoveryInfo(Long internalId) {
       Set<RecoveryManager.InDoubtTxInfo> info = getRecoveryInfoFromCluster();
       for (RecoveryManager.InDoubtTxInfo i : info) {
+<<<<<<< Updated upstream
          if (i.getInternalId().equals(internalId)) {
             log.tracef("Found matching recovery info: %s", i);
+=======
+         if (i.getInternalId() == internalId) {
+            if (log.isTraceEnabled()) log.tracef("Found matching recovery info: %s", i);
+>>>>>>> Stashed changes
             return i;
          }
       }

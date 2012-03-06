@@ -28,14 +28,13 @@ import org.infinispan.transaction.xa.DldGlobalTransaction;
 import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.transaction.xa.TransactionFactory;
 import org.infinispan.util.Util;
+import org.infinispan.util.customcollections.KeyCollection;
 
 import javax.transaction.xa.Xid;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Set;
-
-import static java.util.Collections.emptySet;
 
 /**
  * DldGlobalTransaction that also holds xid information, required for recovery.
@@ -83,7 +82,7 @@ public class RecoveryAwareDldGlobalTransaction extends DldGlobalTransaction impl
       public void writeObject(ObjectOutput output, RecoveryAwareDldGlobalTransaction globalTransaction) throws IOException {
          super.writeObject(output, globalTransaction);
          output.writeLong(globalTransaction.getCoinToss());
-         if (globalTransaction.locksAtOrigin.isEmpty()) {
+         if (globalTransaction.locksAtOrigin == null || globalTransaction.locksAtOrigin.isEmpty()) {
             output.writeObject(null);
          } else {
             output.writeObject(globalTransaction.locksAtOrigin);
@@ -105,9 +104,9 @@ public class RecoveryAwareDldGlobalTransaction extends DldGlobalTransaction impl
          globalTransaction.setCoinToss(input.readLong());
          Object locksAtOriginObj = input.readObject();
          if (locksAtOriginObj == null) {
-            globalTransaction.setLocksHeldAtOrigin(emptySet());
+            globalTransaction.setLocksHeldAtOrigin(null);
          } else {
-            globalTransaction.setLocksHeldAtOrigin((Set<Object>) locksAtOriginObj);
+            globalTransaction.setLocksHeldAtOrigin((KeyCollection) locksAtOriginObj);
          }
 
          Xid xid = (Xid) input.readObject();
@@ -122,6 +121,7 @@ public class RecoveryAwareDldGlobalTransaction extends DldGlobalTransaction impl
       }
 
       @Override
+      @SuppressWarnings("unchecked")
       public Set<Class<? extends RecoveryAwareDldGlobalTransaction>> getTypeClasses() {
          return Util.<Class<? extends RecoveryAwareDldGlobalTransaction>>asSet(RecoveryAwareDldGlobalTransaction.class);
       }

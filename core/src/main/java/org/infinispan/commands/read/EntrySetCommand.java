@@ -29,6 +29,7 @@ import org.infinispan.container.InternalEntryFactory;
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.container.entries.InternalCacheEntry;
 import org.infinispan.context.InvocationContext;
+import org.infinispan.util.customcollections.CacheEntryCollection;
 
 import java.util.AbstractSet;
 import java.util.Collection;
@@ -79,9 +80,9 @@ public class EntrySetCommand extends AbstractLocalCommand implements VisitableCo
 
    private class FilteredEntrySet extends AbstractSet<InternalCacheEntry> {
       final Set<InternalCacheEntry> entrySet;
-      final Map<Object, CacheEntry> lookedUpEntries;
+      final CacheEntryCollection lookedUpEntries;
 
-      FilteredEntrySet(Set<InternalCacheEntry> entrySet, Map<Object, CacheEntry> lookedUpEntries) {
+      FilteredEntrySet(Set<InternalCacheEntry> entrySet, CacheEntryCollection lookedUpEntries) {
          this.entrySet = entrySet;
          this.lookedUpEntries = lookedUpEntries;
       }
@@ -100,7 +101,7 @@ public class EntrySetCommand extends AbstractLocalCommand implements VisitableCo
             }
          }
          // Update according to entries added or removed in tx
-         for (CacheEntry e: lookedUpEntries.values()) {
+         for (CacheEntry e: lookedUpEntries) {
             if (e.isCreated()) {
                size ++;
             } else if (e.isRemoved()) {
@@ -118,7 +119,7 @@ public class EntrySetCommand extends AbstractLocalCommand implements VisitableCo
 
          @SuppressWarnings("rawtypes")
          Map.Entry e = (Map.Entry) o;
-         CacheEntry ce = lookedUpEntries.get(e.getKey());
+         CacheEntry ce = lookedUpEntries.findCacheEntry(e.getKey());
          if (ce == null || ce.isRemoved()) {
             return false;
          }
@@ -166,7 +167,7 @@ public class EntrySetCommand extends AbstractLocalCommand implements VisitableCo
 
       private class Itr implements Iterator<InternalCacheEntry> {
 
-         private final Iterator<CacheEntry> it1 = lookedUpEntries.values().iterator();
+         private final Iterator<CacheEntry> it1 = lookedUpEntries.iterator();
          private final Iterator<InternalCacheEntry> it2 = entrySet.iterator();
          private boolean atIt1 = true;
          private InternalCacheEntry next;
@@ -197,7 +198,7 @@ public class EntrySetCommand extends AbstractLocalCommand implements VisitableCo
                while (it2.hasNext()) {
                   InternalCacheEntry ice = it2.next();
                   Object key = ice.getKey();
-                  CacheEntry e = lookedUpEntries.get(key);
+                  CacheEntry e = lookedUpEntries.findCacheEntry(key);
                   if (e == null) {
                      next = ice;
                      found = true;

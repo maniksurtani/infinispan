@@ -25,6 +25,7 @@ package org.infinispan.commands;
 import org.infinispan.CacheException;
 import org.infinispan.commands.control.CacheViewControlCommand;
 import org.infinispan.commands.control.LockControlCommand;
+import org.infinispan.commands.control.MultiKeyLockControlCommand;
 import org.infinispan.commands.control.StateTransferControlCommand;
 import org.infinispan.commands.module.ExtendedModuleCommandFactory;
 import org.infinispan.commands.module.ModuleCommandFactory;
@@ -169,6 +170,9 @@ public class RemoteCommandsFactory {
          switch (id) {
             case LockControlCommand.COMMAND_ID:
                command = new LockControlCommand(cacheName);
+               break;
+            case MultiKeyLockControlCommand.COMMAND_ID:
+               command = new MultiKeyLockControlCommand(cacheName);
                break;
             case PrepareCommand.COMMAND_ID:
                command = new PrepareCommand(cacheName);

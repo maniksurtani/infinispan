@@ -45,11 +45,16 @@ import org.infinispan.remoting.rpc.RpcManager;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.transaction.synchronization.SyncLocalTransaction;
 import org.infinispan.transaction.synchronization.SynchronizationAdapter;
-import org.infinispan.transaction.xa.CacheTransaction;
 import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.transaction.xa.TransactionFactory;
 import org.infinispan.util.Util;
+<<<<<<< Updated upstream
 import org.infinispan.util.concurrent.ConcurrentMapFactory;
+=======
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
+import org.infinispan.util.customcollections.ModificationCollection;
+>>>>>>> Stashed changes
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -63,7 +68,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static java.util.Collections.emptySet;
 import static org.infinispan.util.Util.currentMillisFromNanotime;
 
 /**
@@ -157,12 +161,11 @@ public class TransactionTable {
       shutDownGracefully();
    }
 
-   public Set<Object> getLockedKeysForRemoteTransaction(GlobalTransaction gtx) {
+   public KeyCollection getLockedKeysForRemoteTransaction(GlobalTransaction gtx) {
       RemoteTransaction transaction = remoteTransactions.get(gtx);
-      if (transaction == null) return emptySet();
+      if (transaction == null) return KeyCollectionImpl.EMPTY_KEY_COLLECTION;
       return transaction.getLockedKeys();
    }
-
 
    public void remoteTransactionPrepared(GlobalTransaction gtx) {
       //do nothing
@@ -262,7 +265,7 @@ public class TransactionTable {
     * @throws IllegalStateException if an attempt to create a {@link RemoteTransaction} for an already registered id is
     *                               made.
     */
-   public RemoteTransaction createRemoteTransaction(GlobalTransaction globalTx, WriteCommand[] modifications) {
+   public RemoteTransaction createRemoteTransaction(GlobalTransaction globalTx, ModificationCollection modifications) {
       RemoteTransaction remoteTransaction = modifications == null ? txFactory.newRemoteTransaction(globalTx, currentViewId)
             : txFactory.newRemoteTransaction(modifications, globalTx, currentViewId);
       registerRemoteTransaction(globalTx, remoteTransaction);

@@ -30,8 +30,10 @@ import org.infinispan.context.Flag;
 import org.infinispan.context.InvocationContext;
 import org.infinispan.lifecycle.ComponentStatus;
 import org.infinispan.notifications.cachelistener.CacheNotifier;
+import org.infinispan.util.Util;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -60,7 +62,7 @@ public class ClearCommand extends AbstractFlagAffectedCommand implements WriteCo
    }
 
    public Object perform(InvocationContext ctx) throws Throwable {
-      for (CacheEntry e : ctx.getLookedUpEntries().values()) {
+      for (CacheEntry e : ctx.getLookedUpEntries()) {
          if (e instanceof MVCCEntry) {
             MVCCEntry me = (MVCCEntry) e;
             Object k = me.getKey(), v = me.getValue();
@@ -109,8 +111,8 @@ public class ClearCommand extends AbstractFlagAffectedCommand implements WriteCo
       return false;
    }
 
-   public Set<Object> getAffectedKeys() {
-      return Collections.emptySet();
+   public KeyCollection getAffectedKeys() {
+      return KeyCollectionImpl.EMPTY_KEY_COLLECTION;
    }
 
    @Override

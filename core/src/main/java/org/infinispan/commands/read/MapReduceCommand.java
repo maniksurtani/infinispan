@@ -32,7 +32,11 @@ import org.infinispan.distexec.mapreduce.Reducer;
 import org.infinispan.distribution.DistributionManager;
 import org.infinispan.interceptors.InterceptorChain;
 import org.infinispan.remoting.transport.Address;
+<<<<<<< Updated upstream
 import org.infinispan.util.concurrent.ConcurrentMapFactory;
+=======
+import org.infinispan.util.customcollections.CustomCollections;
+>>>>>>> Stashed changes
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -58,8 +62,8 @@ public class MapReduceCommand extends BaseRpcCommand {
    public static final int COMMAND_ID = 20;
    private static final Log log = LogFactory.getLog(MapReduceCommand.class);
    protected Set<Object> keys;
-   private Mapper  mapper;
-   private Reducer  reducer;
+   private Mapper<Object, Object, Object, Object>  mapper;
+   private Reducer<Object, Object>  reducer;
    
    private InterceptorChain invoker;
    private CommandsFactory commandsFactory;
@@ -75,9 +79,9 @@ public class MapReduceCommand extends BaseRpcCommand {
       super(cacheName);
    }
 
-   public MapReduceCommand(Mapper m, Reducer r, String cacheName, Object... inputKeys) {
+   public MapReduceCommand(Mapper<Object, Object, Object, Object> m, Reducer<Object, Object> r, String cacheName, Object... inputKeys) {
       super(cacheName);
-      if (inputKeys == null || inputKeys.length == 0) {
+      if (CustomCollections.isEmpty(inputKeys)) {
          this.keys = new HashSet<Object>();
       } else {
          this.keys = new HashSet<Object>();
@@ -87,17 +91,6 @@ public class MapReduceCommand extends BaseRpcCommand {
       this.reducer = r;
    }
 
-   public MapReduceCommand(Mapper m, Reducer r, String cacheName, Collection<Object> inputKeys) {
-      super(cacheName);
-      if (inputKeys == null || inputKeys.isEmpty())
-         this.keys = new HashSet<Object>();
-      else
-         this.keys = new HashSet<Object>(inputKeys);
-     
-      this.mapper = m;
-      this.reducer = r;
-   }
-   
    public void init(CommandsFactory factory, InterceptorChain invoker,
             InvocationContextContainer icc, DistributionManager dm, Address localAddress) {
       this.commandsFactory = factory;

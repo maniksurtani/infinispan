@@ -22,6 +22,7 @@ package org.infinispan.marshall.exts;
 import org.infinispan.commands.RemoteCommandsFactory;
 import org.infinispan.commands.RemoveCacheCommand;
 import org.infinispan.commands.control.CacheViewControlCommand;
+import org.infinispan.commands.control.MultiKeyLockControlCommand;
 import org.infinispan.commands.control.StateTransferControlCommand;
 import org.infinispan.commands.control.LockControlCommand;
 import org.infinispan.commands.read.MapReduceCommand;
@@ -80,7 +81,7 @@ public final class CacheRpcCommandExternalizer extends AbstractExternalizer<Cach
    @Override
    public Set<Class<? extends CacheRpcCommand>> getTypeClasses() {
       Set<Class<? extends CacheRpcCommand>> coreCommands = Util.asSet(
-            MapReduceCommand.class, LockControlCommand.class,
+            MapReduceCommand.class, LockControlCommand.class, MultiKeyLockControlCommand.class,
             StateTransferControlCommand.class, ClusteredGetCommand.class,
             MultipleRpcCommand.class, SingleRpcCommand.class, CommitCommand.class,
             PrepareCommand.class, RollbackCommand.class, RemoveCacheCommand.class,

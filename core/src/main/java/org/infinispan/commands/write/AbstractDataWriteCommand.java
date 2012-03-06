@@ -24,6 +24,8 @@ package org.infinispan.commands.write;
 
 import org.infinispan.commands.read.AbstractDataCommand;
 import org.infinispan.context.Flag;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 
 import java.util.Collections;
 import java.util.Set;
@@ -43,8 +45,8 @@ public abstract class AbstractDataWriteCommand extends AbstractDataCommand imple
       super(key, flags);
    }
 
-   public Set<Object> getAffectedKeys() {
-      return Collections.singleton(key);
+   public KeyCollection getAffectedKeys() {
+      return KeyCollectionImpl.singleton(key);
    }
 
    @Override

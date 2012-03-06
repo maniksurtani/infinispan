@@ -31,6 +31,8 @@ import org.infinispan.atomic.Delta;
 import org.infinispan.commands.Visitor;
 import org.infinispan.context.InvocationContext;
 import org.infinispan.lifecycle.ComponentStatus;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 
 
 /**
@@ -41,14 +43,14 @@ public class ApplyDeltaCommand extends AbstractDataWriteCommand {
    
    public static final int COMMAND_ID = 25;
    private Object deltaAwareValueKey;
-   private Collection<Object> keys;
+   private KeyCollection keys;
    private Delta delta;
    
    public ApplyDeltaCommand() {
       super();
    }
    
-   public ApplyDeltaCommand(Object deltaAwareValueKey, Delta delta, Collection<Object> keys) {      
+   public ApplyDeltaCommand(Object deltaAwareValueKey, Delta delta, KeyCollection keys) {
       if (keys == null || keys.isEmpty())
          throw new IllegalArgumentException("At least one key to be locked needs to be specified");
       else
@@ -99,29 +101,27 @@ public class ApplyDeltaCommand extends AbstractDataWriteCommand {
 
    @SuppressWarnings("unchecked")
    public void setParameters(int commandId, Object[] args) {
-      // TODO: Check duplicated in all commands? A better solution is needed.
       if (commandId != COMMAND_ID)
          throw new IllegalStateException("Unusupported command id:" + commandId);
-      int i = 0;
-      deltaAwareValueKey = args[i++];
-      delta = (Delta)args[i++];
-      keys = (List<Object>) args[i++];
+      deltaAwareValueKey = args[0];
+      delta = (Delta)args[1];
+      keys = (KeyCollection) args[2];
    }
    @Override
    public Object acceptVisitor(InvocationContext ctx, Visitor visitor) throws Throwable {
       return visitor.visitApplyDeltaCommand(ctx, this);
    }
 
-   public Object[] getKeys() {
-      return keys.toArray();
+   public KeyCollection getKeys() {
+      return keys;
    }
    
-   public Object[] getCompositeKeys(){
-      List<DeltaCompositeKey> composite = new ArrayList<DeltaCompositeKey>(keys.size());
+   public KeyCollection getCompositeKeys(){
+      KeyCollection composite = new KeyCollectionImpl(keys.size());
       for (Object k : keys) {
          composite.add(new DeltaCompositeKey(deltaAwareValueKey, k));         
       }      
-      return composite.toArray();      
+      return composite;
    }
 
    @Override

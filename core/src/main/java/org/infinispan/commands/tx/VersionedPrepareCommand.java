@@ -22,9 +22,9 @@ package org.infinispan.commands.tx;
 import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.container.versioning.EntryVersionsMap;
 import org.infinispan.transaction.xa.GlobalTransaction;
+import org.infinispan.util.customcollections.ModificationCollection;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Same as {@link PrepareCommand} except that the transaction originator makes evident the versions of entries touched
@@ -41,9 +41,9 @@ public class VersionedPrepareCommand extends PrepareCommand {
       super("");
    }
 
-   public VersionedPrepareCommand(String cacheName, GlobalTransaction gtx, List<WriteCommand> modifications, boolean onePhase) {
+   public VersionedPrepareCommand(String cacheName, GlobalTransaction gtx, boolean onePhase, ModificationCollection modifications) {
       // VersionedPrepareCommands are *always* 2-phase, except when retrying a prepare.
-      super(cacheName, gtx, modifications, onePhase);
+      super(cacheName, gtx, onePhase, modifications);
    }
 
    public VersionedPrepareCommand(String cacheName) {
@@ -65,30 +65,16 @@ public class VersionedPrepareCommand extends PrepareCommand {
 
    @Override
    public Object[] getParameters() {
-      int numMods = modifications == null ? 0 : modifications.length;
-      int i = 0;
-      final int params = 4;
-      Object[] retval = new Object[numMods + params];
-      retval[i++] = globalTx;
-      retval[i++] = onePhaseCommit;
-      retval[i++] = versionsSeen;
-      retval[i++] = numMods;
-      if (numMods > 0) System.arraycopy(modifications, 0, retval, params, numMods);
-      return retval;
+      return new Object[]{globalTx, onePhaseCommit, versionsSeen, modifications};
    }
 
    @Override
    @SuppressWarnings("unchecked")
    public void setParameters(int commandId, Object[] args) {
-      int i = 0;
-      globalTx = (GlobalTransaction) args[i++];
-      onePhaseCommit = (Boolean) args[i++];
-      versionsSeen = (EntryVersionsMap) args[i++];
-      int numMods = (Integer) args[i++];
-      if (numMods > 0) {
-         modifications = new WriteCommand[numMods];
-         System.arraycopy(args, i, modifications, 0, numMods);
-      }
+      globalTx = (GlobalTransaction) args[0];
+      onePhaseCommit = (Boolean) args[1];
+      versionsSeen = (EntryVersionsMap) args[2];
+      modifications = (ModificationCollection) args[3];
    }
 
    @Override

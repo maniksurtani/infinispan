@@ -33,6 +33,7 @@ import org.infinispan.factories.annotations.Inject;
 import org.infinispan.interceptors.base.CommandInterceptor;
 import org.infinispan.util.concurrent.TimeoutException;
 import org.infinispan.util.concurrent.locks.LockManager;
+import org.infinispan.util.customcollections.KeyCollection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,10 +79,10 @@ public abstract class AbstractLockingInterceptor extends CommandInterceptor {
          return null;
       }
 
-      Object keys [] = command.getKeys();
+      KeyCollection keys = command.getKeys();
       try {
-         if (keys != null && keys.length >= 1) {
-            ArrayList<Object> keysCopy = new ArrayList<Object>(Arrays.asList(keys));
+         if (keys != null && !keys.isEmpty()) {
+            KeyCollection keysCopy = keys.clone();
             for (Object key : command.getKeys()) {
                ctx.setFlags(Flag.ZERO_LOCK_ACQUISITION_TIMEOUT);
                try {
@@ -93,7 +94,7 @@ public abstract class AbstractLockingInterceptor extends CommandInterceptor {
                      return null;
                }
             }
-            command.setKeys(keysCopy.toArray());
+            command.setKeys(keysCopy);
          }
          return invokeNextInterceptor(ctx, command);
       } catch (Throwable te) {

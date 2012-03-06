@@ -24,6 +24,7 @@ package org.infinispan.commands.write;
 
 import org.infinispan.commands.FlagAffectedCommand;
 import org.infinispan.commands.VisitableCommand;
+import org.infinispan.util.customcollections.KeyCollection;
 
 import java.util.Set;
 
@@ -57,5 +58,5 @@ public interface WriteCommand extends VisitableCommand, FlagAffectedCommand {
     * @return a collection of keys affected by this write command.  Some commands - such as ClearCommand - may return
     * an empty collection for this method.
     */
-   Set<Object> getAffectedKeys();
+   KeyCollection getAffectedKeys();
 }

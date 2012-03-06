@@ -37,8 +37,8 @@ import org.infinispan.factories.annotations.Inject;
 import org.infinispan.factories.annotations.Start;
 import org.infinispan.remoting.rpc.RpcManager;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.transaction.CacheTransaction;
 import org.infinispan.transaction.TransactionTable;
-import org.infinispan.transaction.xa.CacheTransaction;
 import org.infinispan.util.concurrent.TimeoutException;
 
 /**

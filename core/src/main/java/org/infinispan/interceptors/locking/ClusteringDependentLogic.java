@@ -23,16 +23,12 @@
 
 package org.infinispan.interceptors.locking;
 
-import org.infinispan.CacheException;
 import org.infinispan.commands.tx.VersionedPrepareCommand;
-import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.config.Configuration;
 import org.infinispan.container.DataContainer;
 import org.infinispan.container.entries.CacheEntry;
-import org.infinispan.container.entries.ClusteredRepeatableReadEntry;
 import org.infinispan.container.versioning.EntryVersion;
 import org.infinispan.container.versioning.EntryVersionsMap;
-import org.infinispan.container.versioning.IncrementableEntryVersion;
 import org.infinispan.container.versioning.VersionGenerator;
 import org.infinispan.context.impl.TxInvocationContext;
 import org.infinispan.distribution.DistributionManager;
@@ -41,8 +37,9 @@ import org.infinispan.factories.scopes.Scope;
 import org.infinispan.factories.scopes.Scopes;
 import org.infinispan.remoting.rpc.RpcManager;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.transaction.CacheTransaction;
 import org.infinispan.transaction.WriteSkewHelper;
-import org.infinispan.transaction.xa.CacheTransaction;
+import org.infinispan.util.customcollections.KeyCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -69,7 +66,7 @@ public interface ClusteringDependentLogic {
 
    void commitEntry(CacheEntry entry, EntryVersion newVersion, boolean skipOwnershipCheck);
 
-   Collection<Address> getOwners(Collection<Object> keys);
+   Collection<Address> getOwners(KeyCollection keys);
 
    EntryVersionsMap createNewVersionsAndCheckForWriteSkews(VersionGenerator versionGenerator, TxInvocationContext context, VersionedPrepareCommand prepareCommand);
    
@@ -115,7 +112,7 @@ public interface ClusteringDependentLogic {
       }
 
       @Override
-      public Collection<Address> getOwners(Collection<Object> keys) {
+      public Collection<Address> getOwners(KeyCollection keys) {
          return null;
       }
       
@@ -196,7 +193,7 @@ public interface ClusteringDependentLogic {
       }
 
       @Override
-      public Collection<Address> getOwners(Collection<Object> keys) {
+      public Collection<Address> getOwners(KeyCollection keys) {
          return dm.getAffectedNodes(keys);
       }
 

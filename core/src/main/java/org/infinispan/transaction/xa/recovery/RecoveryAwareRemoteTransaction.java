@@ -26,6 +26,7 @@ import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.transaction.RemoteTransaction;
+import org.infinispan.util.customcollections.ModificationCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -40,15 +41,13 @@ import java.util.Collection;
  */
 public class RecoveryAwareRemoteTransaction extends RemoteTransaction implements RecoveryAwareTransaction {
 
+   public static final int UNKNOWN_TRANSACTION_STATUS = -1;
    private static final Log log = LogFactory.getLog(RecoveryAwareRemoteTransaction.class);
-
    private boolean prepared;
-
    private boolean isOrphan;
+   private int status;
 
-   private Integer status;
-
-   public RecoveryAwareRemoteTransaction(WriteCommand[] modifications, GlobalTransaction tx, int viewId) {
+   public RecoveryAwareRemoteTransaction(ModificationCollection modifications, GlobalTransaction tx, int viewId) {
       super(modifications, tx, viewId);
    }
 
@@ -120,10 +119,10 @@ public class RecoveryAwareRemoteTransaction extends RemoteTransaction implements
     *    <li> - {@link Status#STATUS_PREPARED} if the tx is prepared </li>
     *    <li> - {@link Status#STATUS_COMMITTED} if the tx is committed</li>
     *    <li> - {@link Status#STATUS_ROLLEDBACK} if the tx is rollback</li>
-    *    <li> - null otherwise</li>
+    *    <li> - {@link RecoveryAwareRemoteTransaction#UNKNOWN_TRANSACTION_STATUS} for anything else.</li>
     * </ul>
     */
-   public Integer getStatus() {
+   public int getStatus() {
       return status;
    }
 }

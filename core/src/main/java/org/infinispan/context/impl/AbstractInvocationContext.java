@@ -22,14 +22,15 @@
  */
 package org.infinispan.context.impl;
 
+import org.infinispan.context.Flag;
+import org.infinispan.context.InvocationContext;
+import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.customcollections.CustomCollections;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
-
-import org.infinispan.context.Flag;
-import org.infinispan.context.InvocationContext;
-import org.infinispan.remoting.transport.Address;
 
 /**
  * Common features of transaction and invocation contexts
@@ -39,7 +40,6 @@ import org.infinispan.remoting.transport.Address;
  * @since 4.0
  */
 public abstract class AbstractInvocationContext implements InvocationContext {
-
    protected EnumSet<Flag> flags;
 
    // since this is finite, small, and strictly an internal API, it is cheaper/quicker to use bitmasking rather than
@@ -114,7 +114,7 @@ public abstract class AbstractInvocationContext implements InvocationContext {
    }
 
    public void setFlags(Flag... flags) {
-      if (flags == null || flags.length == 0) return;
+      if (CustomCollections.isEmpty(flags)) return;
       if (this.flags == null)
          this.flags = EnumSet.copyOf(Arrays.asList(flags));
       else
@@ -142,14 +142,9 @@ public abstract class AbstractInvocationContext implements InvocationContext {
       contextFlags = 0;
    }
 
-   public boolean isFlagsUninitialized() {
-      return flags == null;
-   }
-
    public boolean hasLockedKey(Object key) {
       return getLockedKeys().contains(key);
    }
-
 
    public boolean isUseFutureReturnType() {
       return isContextFlagSet(ContextFlag.USE_FUTURE_RETURN_TYPE);

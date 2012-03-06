@@ -24,7 +24,9 @@ package org.infinispan.util.concurrent.locks;
 
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.context.InvocationContext;
+import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.util.concurrent.TimeoutException;
+import org.infinispan.util.customcollections.KeyCollection;
 
 import java.util.Collection;
 
@@ -50,11 +52,6 @@ public interface LockManager {
     * @throws InterruptedException if interrupted
     */
    boolean lockAndRecord(Object key, InvocationContext ctx, long timeoutMillis) throws InterruptedException;
-
-   /**
-    * Releases the lock passed in.
-    */
-   void unlock(Collection<Object> lockedKeys, Object lockOwner);
 
    /**
     * Releases locks present in an invocation context and transaction entry, if one is available.
@@ -152,4 +149,5 @@ public interface LockManager {
     */
    boolean acquireLockNoCheck(InvocationContext ctx, Object key) throws InterruptedException, TimeoutException;
 
+   void unlock(GlobalTransaction globalTransaction, KeyCollection keys);
 }

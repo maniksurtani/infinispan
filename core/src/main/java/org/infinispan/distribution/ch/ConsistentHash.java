@@ -23,8 +23,8 @@
 package org.infinispan.distribution.ch;
 
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.customcollections.InfinispanCollection;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,7 +74,7 @@ public interface ConsistentHash {
     * @param replCount replication count (number of copies) for each key
     * @return Map of locations, keyed on key.
     */
-   Map<Object, List<Address>> locateAll(Collection<Object> keys, int replCount);
+   Map<Object, List<Address>> locateAll(InfinispanCollection keys, int replCount);
 
    /**
     * Test to see whether a key is mapped to a given address.

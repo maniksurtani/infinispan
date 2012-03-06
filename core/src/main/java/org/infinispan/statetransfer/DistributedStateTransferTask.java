@@ -33,6 +33,8 @@ import org.infinispan.transaction.TransactionTable;
 import org.infinispan.transaction.xa.CacheTransaction;
 import org.infinispan.util.Immutables;
 import org.infinispan.util.ReadOnlyDataContainerBackedKeySet;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -69,7 +71,7 @@ public class DistributedStateTransferTask extends BaseStateTransferTask {
 
    private final DistributionManager dm;
    private final DistributedStateTransferManagerImpl stateTransferManager;
-   private List<Object> keysToRemove;
+   private KeyCollection keysToRemove;
    private Collection<Address> oldCacheSet;
    private Collection<Address> newCacheSet;
    private TransactionTable transactionTable;
@@ -100,7 +102,7 @@ public class DistributedStateTransferTask extends BaseStateTransferTask {
                newViewId, self, dataContainer.size());
       newCacheSet = Collections.emptySet();
       oldCacheSet = Collections.emptySet();
-      keysToRemove = new ArrayList<Object>();
+      keysToRemove = new KeyCollectionImpl(0);
 
       // Don't need to log anything, all transactions will be blocked
       //distributionManager.getTransactionLogger().enable();
@@ -213,7 +215,7 @@ public class DistributedStateTransferTask extends BaseStateTransferTask {
     * @param keysToRemove A list that the keys that we need to remove will be added to
     */
    private void rebalance(Object key, InternalCacheEntry value, int numOwners, ConsistentHash chOld, ConsistentHash chNew,
-                            CacheStore cacheStore, Map<Address, Collection<InternalCacheEntry>> states, List<Object> keysToRemove) throws StateTransferCancelledException {
+                            CacheStore cacheStore, Map<Address, Collection<InternalCacheEntry>> states, KeyCollection keysToRemove) throws StateTransferCancelledException {
       // 1. Get the old and new servers for key K
       List<Address> oldOwners = chOld.locate(key, numOwners);
       List<Address> newOwners = chNew.locate(key, numOwners);

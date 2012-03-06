@@ -75,6 +75,8 @@ import org.infinispan.util.ByteArrayKey;
 import org.infinispan.util.FastCopyHashMap;
 import org.infinispan.util.Immutables;
 import org.infinispan.util.concurrent.TimeoutException;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
+import org.infinispan.util.customcollections.ModificationCollectionImpl;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 import org.jboss.marshalling.TraceInformation;
@@ -108,6 +110,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.infinispan.test.TestingUtil.extractCacheMarshaller;
 import static org.infinispan.test.TestingUtil.k;
+import static org.infinispan.util.customcollections.ModificationCollectionImpl.fromArray;
 import static org.testng.AssertJUnit.assertEquals;
 
 @Test(groups = "functional", testName = "marshall.VersionAwareMarshallerTest")
@@ -255,13 +258,13 @@ public class VersionAwareMarshallerTest extends AbstractInfinispanTest {
 
       // EvictCommand does not have an empty constructor, so doesn't look to be one that is marshallable.
 
-      InvalidateCommand c7 = new InvalidateCommand(null, null, "key1", "key2");
+      InvalidateCommand c7 = new InvalidateCommand(null, KeyCollectionImpl.fromArray("key1", "key2"));
       bytes = marshaller.objectToByteBuffer(c7);
       InvalidateCommand rc7 = (InvalidateCommand) marshaller.objectFromByteBuffer(bytes);
       assert rc7.getCommandId() == c7.getCommandId() : "Writen[" + c7.getCommandId() + "] and read[" + rc7.getCommandId() + "] objects should be the same";
       assert Arrays.equals(rc7.getParameters(), c7.getParameters()) : "Writen[" + c7.getParameters() + "] and read[" + rc7.getParameters() + "] objects should be the same";
 
-      InvalidateCommand c71 = new InvalidateL1Command(false, null, null, null, null, "key1", "key2");
+      InvalidateCommand c71 = new InvalidateL1Command(false, null, null, null, null, KeyCollectionImpl.fromArray("key1", "key2"));
       bytes = marshaller.objectToByteBuffer(c71);
       InvalidateCommand rc71 = (InvalidateCommand) marshaller.objectFromByteBuffer(bytes);
       assert rc71.getCommandId() == c71.getCommandId() : "Writen[" + c71.getCommandId() + "] and read[" + rc71.getCommandId() + "] objects should be the same";
@@ -286,7 +289,7 @@ public class VersionAwareMarshallerTest extends AbstractInfinispanTest {
 
       Address local = new JGroupsAddress(new IpAddress(12345));
       GlobalTransaction gtx = gtf.newGlobalTransaction(local, false);
-      PrepareCommand c11 = new PrepareCommand(cacheName, gtx, true, c5, c6, c8, c10);
+      PrepareCommand c11 = new PrepareCommand(cacheName, gtx, true, fromArray(c5, c6, c8, c10));
       marshallAndAssertEquality(c11);
 
       CommitCommand c12 = new CommitCommand(cacheName, gtx);

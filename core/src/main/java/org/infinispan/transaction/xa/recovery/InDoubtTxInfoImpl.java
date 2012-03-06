@@ -42,15 +42,18 @@ import java.util.Set;
 */
 public class InDoubtTxInfoImpl implements RecoveryManager.InDoubtTxInfo {
    private Xid xid;
-   private Long internalId;
+   private long internalId;
    private Set<Integer> status;
    private transient Set<Address> owners = new HashSet<Address>();
    private transient boolean isLocal;
 
-   public InDoubtTxInfoImpl(Xid xid, Long internalId, Integer status) {
+   public InDoubtTxInfoImpl(Xid xid, long internalId, int status) {
       this.xid = xid;
       this.internalId = internalId;
-      this.status = Collections.singleton(status);
+      if (status == RecoveryAwareRemoteTransaction.UNKNOWN_TRANSACTION_STATUS)
+         this.status = Collections.emptySet();
+      else
+         this.status = Collections.singleton(status);
    }
 
    public InDoubtTxInfoImpl(Xid xid, long internalId, Set<Integer> status) {
@@ -69,7 +72,7 @@ public class InDoubtTxInfoImpl implements RecoveryManager.InDoubtTxInfo {
    }
 
    @Override
-   public Long getInternalId() {
+   public long getInternalId() {
       return internalId;
    }
 
@@ -112,8 +115,9 @@ public class InDoubtTxInfoImpl implements RecoveryManager.InDoubtTxInfo {
       }
 
       @Override
+      @SuppressWarnings("unchecked")
       public InDoubtTxInfoImpl readObject(ObjectInput input) throws IOException, ClassNotFoundException {
-         return new InDoubtTxInfoImpl((Xid) input.readObject(), input.readLong(), (Set<Integer>)input.readObject());
+         return new InDoubtTxInfoImpl((Xid) input.readObject(), input.readLong(), (Set<Integer>) input.readObject());
       }
 
       @Override
@@ -122,6 +126,7 @@ public class InDoubtTxInfoImpl implements RecoveryManager.InDoubtTxInfo {
       }
 
       @Override
+      @SuppressWarnings("unchecked")
       public Set<Class<? extends InDoubtTxInfoImpl>> getTypeClasses() {
          return Util.<Class<? extends InDoubtTxInfoImpl>>asSet(InDoubtTxInfoImpl.class);
       }
@@ -135,7 +140,7 @@ public class InDoubtTxInfoImpl implements RecoveryManager.InDoubtTxInfo {
       InDoubtTxInfoImpl that = (InDoubtTxInfoImpl) o;
 
       if (isLocal != that.isLocal) return false;
-      if (internalId != null ? !internalId.equals(that.internalId) : that.internalId != null) return false;
+      if (internalId != that.internalId) return false;
       if (owners != null ? !owners.equals(that.owners) : that.owners != null) return false;
       if (status != null ? !status.equals(that.status) : that.status != null) return false;
       if (xid != null ? !xid.equals(that.xid) : that.xid != null) return false;
@@ -146,7 +151,7 @@ public class InDoubtTxInfoImpl implements RecoveryManager.InDoubtTxInfo {
    @Override
    public int hashCode() {
       int result = xid != null ? xid.hashCode() : 0;
-      result = 31 * result + (internalId != null ? internalId.hashCode() : 0);
+      result = 31 * result + (int) internalId;
       result = 31 * result + (status != null ? status.hashCode() : 0);
       result = 31 * result + (owners != null ? owners.hashCode() : 0);
       result = 31 * result + (isLocal ? 1 : 0);

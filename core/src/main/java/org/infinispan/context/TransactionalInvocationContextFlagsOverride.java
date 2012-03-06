@@ -23,16 +23,16 @@
 
 package org.infinispan.context;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import javax.transaction.Transaction;
 
 import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.context.impl.TxInvocationContext;
-import org.infinispan.transaction.xa.CacheTransaction;
+import org.infinispan.transaction.CacheTransaction;
 import org.infinispan.transaction.xa.GlobalTransaction;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.ModificationCollection;
 
 /**
  * Extension of InvocationContextFlagsOverride to be used when a TxInvocationContext
@@ -57,7 +57,7 @@ public class TransactionalInvocationContextFlagsOverride extends InvocationConte
    }
 
    @Override
-   public Set<Object> getAffectedKeys() {
+   public KeyCollection getAffectedKeys() {
       return delegate.getAffectedKeys();
    }
 
@@ -67,12 +67,12 @@ public class TransactionalInvocationContextFlagsOverride extends InvocationConte
    }
 
    @Override
-   public List<WriteCommand> getModifications() {
+   public ModificationCollection getModifications() {
       return delegate.getModifications();
    }
 
    @Override
-   public void addAllAffectedKeys(Collection<Object> keys) {
+   public void addAllAffectedKeys(KeyCollection keys) {
       delegate.addAllAffectedKeys(keys);
    }
 

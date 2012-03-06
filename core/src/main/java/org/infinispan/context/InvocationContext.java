@@ -22,9 +22,9 @@
  */
 package org.infinispan.context;
 
-import java.util.Set;
-
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.customcollections.InfinispanCollection;
+import org.infinispan.util.customcollections.KeyCollection;
 
 /**
  * A context that contains information pertaining to a given invocation.  These contexts typically have the lifespan of
@@ -85,7 +85,7 @@ public interface InvocationContext extends EntryLookup, FlagContainer, Cloneable
    /**
     * Returns the set of keys that are locked for writing.
     */
-   Set<Object> getLockedKeys();
+   KeyCollection getLockedKeys();
 
    void clearLockedKeys();
 

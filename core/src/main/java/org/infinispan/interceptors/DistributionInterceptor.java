@@ -24,6 +24,7 @@ package org.infinispan.interceptors;
 
 import org.infinispan.commands.CommandsFactory;
 import org.infinispan.commands.control.LockControlCommand;
+import org.infinispan.commands.control.MultiKeyLockControlCommand;
 import org.infinispan.commands.read.GetKeyValueCommand;
 import org.infinispan.commands.tx.CommitCommand;
 import org.infinispan.commands.tx.PrepareCommand;
@@ -58,11 +59,12 @@ import org.infinispan.util.Immutables;
 import org.infinispan.util.concurrent.NotifyingFutureImpl;
 import org.infinispan.util.concurrent.NotifyingNotifiableFuture;
 import org.infinispan.util.concurrent.locks.LockManager;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -91,12 +93,9 @@ public class DistributionInterceptor extends BaseRpcInterceptor {
    LockManager lockManager;
 
    static final RecipientGenerator CLEAR_COMMAND_GENERATOR = new RecipientGenerator() {
+      @Override
       public List<Address> generateRecipients() {
          return null;
-      }
-
-      public Collection<Object> getKeys() {
-         return Collections.emptySet();
       }
    };
    private boolean isPessimisticCache;
@@ -240,7 +239,7 @@ public class DistributionInterceptor extends BaseRpcInterceptor {
                      if (isWrite)
                         lockAndWrap(ctx, key, ice);
                      else
-                        ctx.putLookedUpEntry(key, ice);
+                        ctx.putLookedUpEntry(ice);
                   }
                }
             }
@@ -283,7 +282,7 @@ public class DistributionInterceptor extends BaseRpcInterceptor {
    public Object visitPutMapCommand(InvocationContext ctx, PutMapCommand command) throws Throwable {
       // don't bother with a remote get for the PutMapCommand!
       return handleWriteCommand(ctx, command,
-                                new MultipleKeysRecipientGenerator(command.getMap().keySet()), true, false);
+                                new MultipleKeysRecipientGenerator(command.getAffectedKeys()), true, false);
    }
 
    @Override
@@ -309,7 +308,11 @@ public class DistributionInterceptor extends BaseRpcInterceptor {
       if (ctx.isOriginLocal()) {
          int newCacheViewId = -1;
          stateTransferLock.waitForStateTransferToEnd(ctx, command, newCacheViewId);
-         final Collection<Address> affectedNodes = dm.getAffectedNodes(command.getKeys());
+
+         final Collection<Address> affectedNodes = command instanceof MultiKeyLockControlCommand ?
+               dm.getAffectedNodes(((MultiKeyLockControlCommand) command).getKeys()) :
+               dm.locate(command.getKey());
+
          ((LocalTxInvocationContext) ctx).remoteLocksAcquired(affectedNodes);
          rpcManager.invokeRemotely(affectedNodes, command, true, true);
       }
@@ -336,7 +339,7 @@ public class DistributionInterceptor extends BaseRpcInterceptor {
          sendCommitCommand(ctx, command, preparedOn);
          blockOnL1FutureIfNeeded(f);
 
-      } else if (isL1CacheEnabled && !ctx.isOriginLocal() && !ctx.getLockedKeys().isEmpty()) {
+      } else if (isL1CacheEnabled && !ctx.isOriginLocal() && ctx.getLockedKeys().size() > 0) {
          // We fall into this block if we are a remote node, happen to be the primary data owner and have locked keys.
          // it is still our responsibility to invalidate L1 caches in the cluster.
          blockOnL1FutureIfNeeded(flushL1Caches(ctx));
@@ -391,7 +394,7 @@ public class DistributionInterceptor extends BaseRpcInterceptor {
    
    protected PrepareCommand buildPrepareCommandForResend(TxInvocationContext ctx, CommitCommand command) {
       // Make sure this is 1-Phase!!
-      return cf.buildPrepareCommand(command.getGlobalTransaction(), ctx.getModifications(), true);
+      return cf.buildPrepareCommand(command.getGlobalTransaction(), true, ctx.getModifications());
    }
 
    @Override
@@ -410,7 +413,7 @@ public class DistributionInterceptor extends BaseRpcInterceptor {
          prepareOnAffectedNodes(ctx, command, recipients, sync);
 
          ((LocalTxInvocationContext) ctx).remoteLocksAcquired(recipients);
-      } else if (isL1CacheEnabled && command.isOnePhaseCommit() && !ctx.isOriginLocal() && !ctx.getLockedKeys().isEmpty()) {
+      } else if (isL1CacheEnabled && command.isOnePhaseCommit() && !ctx.isOriginLocal() && ctx.getLockedKeys().size() > 0) {
          // We fall into this block if we are a remote node, happen to be the primary data owner and have locked keys.
          // it is still our responsibility to invalidate L1 caches in the cluster.
          flushL1Caches(ctx);
@@ -437,7 +440,12 @@ public class DistributionInterceptor extends BaseRpcInterceptor {
       //   a) unsafeUnreliableReturnValues is false
       //   b) unsafeUnreliableReturnValues is true, we are in a TX and the command is conditional
       if (isNeedReliableReturnValues(ctx) || (isConditionalCommand && ctx.isInTxScope())) {
-         for (Object k : keygen.getKeys()) remoteGetAndStoreInL1(ctx, k, true);
+         if (keygen.useSingleKey()) {
+            Object key = keygen.getKey();
+            if (key != null) remoteGetAndStoreInL1(ctx, key, true);
+         } else {
+            for (Object k : keygen.getKeys()) remoteGetAndStoreInL1(ctx, k, true);
+         }
       }
    }
 
@@ -481,7 +489,7 @@ public class DistributionInterceptor extends BaseRpcInterceptor {
                	if (rpcManager.getTransport().getMembers().size() > numCallRecipients) {
                		// Command was successful, we have a number of receipients and L1 should be flushed, so request any L1 invalidations from this node
                		if (trace) log.tracef("Put occuring on node, requesting L1 cache invalidation for keys %s. Other data owners are %s", command.getAffectedKeys(), dm.getAffectedNodes(command.getAffectedKeys()));
-               		future = l1Manager.flushCache(recipientGenerator.getKeys(), returnValue, null);
+                     future = flushL1AndGetFuture(recipientGenerator, returnValue, null);
                	} else {
                      if (trace) log.tracef("Not performing invalidation! numCallRecipients=%s", numCallRecipients);
                   }
@@ -498,23 +506,33 @@ public class DistributionInterceptor extends BaseRpcInterceptor {
                }
                if (future != null && sync) {
                   future.get(); // wait for the inval command to complete
-                  if (trace) log.tracef("Finished invalidating keys %s ", recipientGenerator.getKeys());
+                  if (trace) log.tracef("Finished invalidating keys %s ", recipientGenerator.printKeys());
                }
             } else {
             	// Piggyback remote puts and cause L1 invalidations
             	if (isL1CacheEnabled && !skipL1Invalidation) {
                	// Command was successful and L1 should be flushed, so request any L1 invalidations from this node
             		if (trace) log.tracef("Put occuring on node, requesting cache invalidation for keys %s. Origin of command is remote", command.getAffectedKeys());
-            		future = l1Manager.flushCache(recipientGenerator.getKeys(), returnValue, ctx.getOrigin());
+            		future = flushL1AndGetFuture(recipientGenerator, returnValue, ctx.getOrigin());
             		if (sync) {
             			future.get(); // wait for the inval command to complete
-                     if (trace) log.tracef("Finished invalidating keys %s ", recipientGenerator.getKeys());
+                     if (trace) log.tracef("Finished invalidating keys %s ", recipientGenerator.printKeys());
             		}
             	}
             }
          }
       }
       return returnValue;
+   }
+   
+   private NotifyingNotifiableFuture<Object> flushL1AndGetFuture(RecipientGenerator recipientGenerator, Object returnValue, Address origin) {
+      if (recipientGenerator.useSingleKey()) {
+         Object key = recipientGenerator.getKey();
+         if (key != null) return l1Manager.flushSingleKeyFromCache(key, returnValue, origin);
+      } else {
+         return l1Manager.flushCache(recipientGenerator.getKeys(), returnValue, origin);
+      }
+      return null;
    }
 
    /**
@@ -525,43 +543,62 @@ public class DistributionInterceptor extends BaseRpcInterceptor {
       return configuration.getNumOwners() == 1 && (recipients = recipientGenerator.generateRecipients()) != null && recipients.size() == 1 && recipients.get(0).equals(rpcManager.getTransport().getAddress());
    }
 
-   interface KeyGenerator {
-      Collection<Object> getKeys();
+   abstract static class KeyGenerator {
+      public KeyCollection getKeys() {
+         return KeyCollectionImpl.EMPTY_KEY_COLLECTION;
+      }
+
+      public Object getKey() {
+         return null;
+      }
+
+      public boolean useSingleKey() {
+         return true;
+      }
+      
+      public String printKeys() {
+         if (useSingleKey()) {
+            Object k = getKey();
+            return k == null ? "null" : k.toString();
+         } else {
+            return getKeys().toString();
+         }
+      }
+   }
+   
+   abstract static class RecipientGenerator extends KeyGenerator {
+      abstract List<Address> generateRecipients();
    }
 
-   interface RecipientGenerator extends KeyGenerator {
-      List<Address> generateRecipients();
-   }
-
-   class SingleKeyRecipientGenerator implements RecipientGenerator {
+   class SingleKeyRecipientGenerator extends RecipientGenerator {
       final Object key;
-      final Set<Object> keys;
       List<Address> recipients = null;
 
       SingleKeyRecipientGenerator(Object key) {
          this.key = key;
-         keys = Collections.singleton(key);
       }
 
+      @Override
       public List<Address> generateRecipients() {
          if (recipients == null) recipients = dm.locate(key);
          return recipients;
       }
 
-      public Collection<Object> getKeys() {
-         return keys;
+      @Override
+      public Object getKey() {
+         return key;
       }
    }
 
-   class MultipleKeysRecipientGenerator implements RecipientGenerator {
-
-      final Collection<Object> keys;
+   class MultipleKeysRecipientGenerator extends RecipientGenerator {
+      final KeyCollection keys;
       List<Address> recipients = null;
 
-      MultipleKeysRecipientGenerator(Collection<Object> keys) {
+      MultipleKeysRecipientGenerator(KeyCollection keys) {
          this.keys = keys;
       }
 
+      @Override
       public List<Address> generateRecipients() {
          if (recipients == null) {
             Set<Address> addresses = new HashSet<Address>();
@@ -572,9 +609,14 @@ public class DistributionInterceptor extends BaseRpcInterceptor {
          return recipients;
       }
 
-      public Collection<Object> getKeys() {
+      @Override
+      public boolean useSingleKey() {
+         return false;
+      }
+
+      @Override
+      public KeyCollection getKeys() {
          return keys;
       }
    }
-
 }

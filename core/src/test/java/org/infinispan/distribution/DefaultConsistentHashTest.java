@@ -27,6 +27,8 @@ import org.infinispan.distribution.ch.ConsistentHashHelper;
 import org.infinispan.distribution.ch.DefaultConsistentHash;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.test.AbstractInfinispanTest;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -83,7 +85,7 @@ public class DefaultConsistentHashTest extends AbstractInfinispanTest {
       DefaultConsistentHash ch = createConsistentHash(servers);
 
       Object k1 = "key1", k2 = "key2", k3 = "key3";
-      Collection<Object> keys = Arrays.asList(k1, k2, k3);
+      KeyCollection keys = KeyCollectionImpl.fromArray(k1, k2, k3);
       Map<Object, List<Address>> locations = ch.locateAll(keys, 3);
 
       assert locations.size() == 3;

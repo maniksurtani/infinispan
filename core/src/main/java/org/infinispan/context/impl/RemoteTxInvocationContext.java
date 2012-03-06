@@ -27,6 +27,9 @@ import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.transaction.AbstractCacheTransaction;
 import org.infinispan.transaction.RemoteTransaction;
 import org.infinispan.transaction.xa.GlobalTransaction;
+import org.infinispan.util.customcollections.CacheEntryCollection;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.ModificationCollection;
 
 import javax.transaction.Transaction;
 import java.util.List;
@@ -48,6 +51,7 @@ public class RemoteTxInvocationContext extends AbstractTxInvocationContext {
    public RemoteTxInvocationContext() {
    }
 
+   @Override
    public Transaction getTransaction() {
       // this method is only valid for locally originated transactions!
       return null;
@@ -59,10 +63,12 @@ public class RemoteTxInvocationContext extends AbstractTxInvocationContext {
       return true;
    }
 
+   @Override
    public Object getLockOwner() {
       return remoteTransaction.getGlobalTransaction();
    }
 
+   @Override
    public GlobalTransaction getGlobalTransaction() {
       return remoteTransaction.getGlobalTransaction();
    }
@@ -71,7 +77,8 @@ public class RemoteTxInvocationContext extends AbstractTxInvocationContext {
       return false;
    }
 
-   public List<WriteCommand> getModifications() {
+   @Override
+   public ModificationCollection getModifications() {
       return remoteTransaction.getModifications();
    }
 
@@ -79,30 +86,24 @@ public class RemoteTxInvocationContext extends AbstractTxInvocationContext {
       this.remoteTransaction = remoteTransaction;
    }
 
+   @Override
    public CacheEntry lookupEntry(Object key) {
       return remoteTransaction.lookupEntry(key);
    }
 
-   public Map<Object, CacheEntry> getLookedUpEntries() {
+   @Override
+   public CacheEntryCollection getLookedUpEntries() {
       return remoteTransaction.getLookedUpEntries();
    }
 
-   public void putLookedUpEntry(Object key, CacheEntry e) {
-      remoteTransaction.putLookedUpEntry(key, e);
+   @Override
+   public void putLookedUpEntry(CacheEntry e) {
+      remoteTransaction.putLookedUpEntry(e);
    }
 
-   public void removeLookedUpEntry(Object key) {
-      remoteTransaction.removeLookedUpEntry(key);
-   }
-
+   @Override
    public void clearLookedUpEntries() {
       remoteTransaction.clearLookedUpEntries();
-   }
-
-   public void putLookedUpEntries(Map<Object, CacheEntry> lookedUpEntries) {
-      for (Map.Entry<Object, CacheEntry> ce: lookedUpEntries.entrySet()) {
-         remoteTransaction.putLookedUpEntry(ce.getKey(), ce.getValue());
-      }
    }
 
    @Override
@@ -131,7 +132,7 @@ public class RemoteTxInvocationContext extends AbstractTxInvocationContext {
    }
 
    @Override
-   public Set<Object> getLockedKeys() {
+   public KeyCollection getLockedKeys() {
       return remoteTransaction.getLockedKeys();
    }
 

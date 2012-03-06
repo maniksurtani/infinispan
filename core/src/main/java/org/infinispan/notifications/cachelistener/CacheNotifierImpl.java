@@ -33,7 +33,7 @@ import org.infinispan.notifications.cachelistener.annotation.*;
 import org.infinispan.notifications.cachelistener.event.*;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.transaction.xa.GlobalTransaction;
-import org.infinispan.util.InfinispanCollections;
+import org.infinispan.util.customcollections.CustomCollections;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.infinispan.notifications.cachelistener.event.Event.Type.*;
-import static org.infinispan.util.InfinispanCollections.transformCollectionToMap;
+import static org.infinispan.util.customcollections.CustomCollections.transformCollectionToMap;
 
 /**
  * Helper class that handles all notifications to registered listeners.
@@ -194,7 +194,7 @@ public final class CacheNotifierImpl extends AbstractListenerImpl implements Cac
          if (!cacheEntriesEvictedListeners.isEmpty()) {
             EventImpl<Object, Object> e = EventImpl.createEvent(cache, CACHE_ENTRY_EVICTED);
             Map<Object, Object> evictedKeysAndValues = transformCollectionToMap(entries,
-                                                                                new InfinispanCollections.MapMakerFunction<Object, Object, InternalCacheEntry>() {
+                                                                                new CustomCollections.MapMakerFunction<Object, Object, InternalCacheEntry>() {
                                                                                    public Map.Entry<Object, Object> transform(final InternalCacheEntry input) {
                                                                                       return new Map.Entry<Object, Object>() {
 

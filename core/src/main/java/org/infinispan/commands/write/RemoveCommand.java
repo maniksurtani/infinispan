@@ -25,6 +25,7 @@ package org.infinispan.commands.write;
 import org.infinispan.commands.Visitor;
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.container.entries.MVCCEntry;
+import org.infinispan.container.entries.NullMarkerEntryForRemoval;
 import org.infinispan.context.Flag;
 import org.infinispan.context.InvocationContext;
 import org.infinispan.lifecycle.ComponentStatus;
@@ -50,7 +51,7 @@ public class RemoveCommand extends AbstractDataWriteCommand {
    /**
     * When not null, value indicates that the entry should only be removed if the key is mapped to this value. By the
     * time the RemoveCommand needs to be marshalled, the condition must have been true locally already, so there's no
-    * need to marshall the value. *
+    * need to marshall the value.
     */
    protected transient Object value;
 
@@ -84,7 +85,7 @@ public class RemoveCommand extends AbstractDataWriteCommand {
          }
       }
 
-      if (!(e instanceof MVCCEntry)) ctx.putLookedUpEntry(key, null);
+      if (!(e instanceof MVCCEntry)) ctx.putLookedUpEntry(new NullMarkerEntryForRemoval(key, null));
 
       if (value != null && e.getValue() != null && !e.getValue().equals(value)) {
          successful = false;

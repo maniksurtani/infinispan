@@ -52,7 +52,11 @@ import org.infinispan.loaders.modifications.Modification;
 import org.infinispan.loaders.modifications.Remove;
 import org.infinispan.loaders.modifications.Store;
 import org.infinispan.transaction.xa.GlobalTransaction;
+<<<<<<< Updated upstream
 import org.infinispan.util.concurrent.ConcurrentMapFactory;
+=======
+import org.infinispan.util.customcollections.ModificationCollection;
+>>>>>>> Stashed changes
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 import org.rhq.helpers.pluginAnnotations.agent.MeasurementType;
@@ -60,6 +64,7 @@ import org.rhq.helpers.pluginAnnotations.agent.Metric;
 import org.rhq.helpers.pluginAnnotations.agent.Operation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -251,7 +256,7 @@ public class CacheStoreInterceptor extends JmxStatsCommandInterceptor {
       if (transactionContext == null) {
          throw new Exception("transactionContext for transaction " + gtx + " not found in transaction table");
       }
-      List<WriteCommand> modifications = transactionContext.getModifications();
+      ModificationCollection modifications = transactionContext.getModifications();
 
       if (!transactionContext.hasModifications()) {
          if (getLog().isTraceEnabled()) getLog().trace("Transaction has not logged any modifications!");

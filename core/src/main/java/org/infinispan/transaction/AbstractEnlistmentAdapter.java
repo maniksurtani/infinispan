@@ -25,7 +25,6 @@ import org.infinispan.config.Configuration;
 import org.infinispan.interceptors.locking.ClusteringDependentLogic;
 import org.infinispan.remoting.rpc.RpcManager;
 import org.infinispan.remoting.transport.Address;
-import org.infinispan.transaction.xa.CacheTransaction;
 import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;

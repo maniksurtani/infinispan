@@ -41,9 +41,9 @@ import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -109,7 +109,7 @@ public class StaleTransactionCleanupService {
       int numOwners = transactionTable.configuration.getNumOwners();
       for (RemoteTransaction remoteTx : transactionTable.getRemoteTransactions()) {
          GlobalTransaction gtx = remoteTx.getGlobalTransaction();
-         List<Object> keys = new ArrayList<Object>();
+         List<Object> keys = new LinkedList<Object>();
          boolean txHasLocalKeys = false;
          for (Object key : remoteTx.getLockedKeys()) {
             boolean wasLocal = chOld.isKeyLocalToAddress(self, key, numOwners);
@@ -123,7 +123,7 @@ public class StaleTransactionCleanupService {
             log.tracef("Unlocking keys %s for remote transaction %s as we are no longer an owner", keys, gtx);
             Set<Flag> flags = EnumSet.of(Flag.CACHE_MODE_LOCAL);
             String cacheName = transactionTable.configuration.getName();
-            LockControlCommand unlockCmd = new LockControlCommand(keys, cacheName, flags, gtx);
+            LockControlCommand unlockCmd = new LockControlCommand(cacheName, flags, gtx, keys.toArray());
             unlockCmd.init(invoker, transactionTable.icc, transactionTable);
             unlockCmd.setUnlock(true);
             try {

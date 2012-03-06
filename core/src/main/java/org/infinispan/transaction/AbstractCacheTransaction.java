@@ -23,20 +23,14 @@
 
 package org.infinispan.transaction;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.container.versioning.EntryVersionsMap;
-import org.infinispan.transaction.xa.CacheTransaction;
 import org.infinispan.transaction.xa.GlobalTransaction;
+import org.infinispan.util.customcollections.CustomCollections;
+import org.infinispan.util.customcollections.CacheEntryCollection;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
+import org.infinispan.util.customcollections.ModificationCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -54,13 +48,16 @@ public abstract class AbstractCacheTransaction implements CacheTransaction {
    protected final GlobalTransaction tx;
    private static Log log = LogFactory.getLog(AbstractCacheTransaction.class);
    private static final boolean trace = log.isTraceEnabled();
+<<<<<<< Updated upstream
    private static final int INITIAL_LOCK_CAPACITY = 4;
+=======
+>>>>>>> Stashed changes
 
-   protected List<WriteCommand> modifications;
-   protected HashMap<Object, CacheEntry> lookedUpEntries;
-   protected Set<Object> affectedKeys = null;
-   protected Set<Object> lockedKeys;
-   protected Set<Object> backupKeyLocks = null;
+   protected ModificationCollection modifications;
+   protected CacheEntryCollection lookedUpEntries;
+   protected KeyCollection affectedKeys = null;
+   protected KeyCollection lockedKeys;
+   protected KeyCollection backupKeyLocks = null;
    private boolean txComplete = false;
    protected volatile boolean prepared;
    private volatile boolean needToNotifyWaiters = false;
@@ -77,25 +74,21 @@ public abstract class AbstractCacheTransaction implements CacheTransaction {
       return tx;
    }
 
-   public List<WriteCommand> getModifications() {
-      return modifications;
+   public ModificationCollection getModifications() {
+      return CustomCollections.nullCheck(modifications);
    }
 
-   public void setModifications(WriteCommand[] modifications) {
-      this.modifications = Arrays.asList(modifications);
+   public void setModifications(ModificationCollection modifications) {
+      this.modifications = modifications;
    }
 
-   public Map<Object, CacheEntry> getLookedUpEntries() {
-      return lookedUpEntries;
+   @Override
+   public CacheEntryCollection getLookedUpEntries() {
+      return CustomCollections.nullCheck(lookedUpEntries);
    }
 
    public CacheEntry lookupEntry(Object key) {
-      if (lookedUpEntries == null) return null;
-      return lookedUpEntries.get(key);
-   }
-
-   public void removeLookedUpEntry(Object key) {
-      if (lookedUpEntries != null) lookedUpEntries.remove(key);
+      return lookedUpEntries == null ? null : lookedUpEntries.findCacheEntry(key);
    }
 
    public void clearLookedUpEntries() {
@@ -150,18 +143,27 @@ public abstract class AbstractCacheTransaction implements CacheTransaction {
 
    @Override
    public void addBackupLockForKey(Object key) {
-      if (backupKeyLocks == null) backupKeyLocks = new HashSet<Object>(INITIAL_LOCK_CAPACITY);
-      backupKeyLocks.add(key);
+      if (backupKeyLocks == null)
+         backupKeyLocks = new KeyCollectionImpl(key);
+      else
+         backupKeyLocks.add(key);
    }
 
    public void registerLockedKey(Object key) {
+<<<<<<< Updated upstream
       if (lockedKeys == null) lockedKeys = new HashSet<Object>(INITIAL_LOCK_CAPACITY);
       if (trace) log.tracef("Registering locked key: %s", key);
       lockedKeys.add(key);
+=======
+      if (lockedKeys == null)
+         lockedKeys = new KeyCollectionImpl(key);
+      else
+         lockedKeys.add(key);
+>>>>>>> Stashed changes
    }
 
-   public Set<Object> getLockedKeys() {
-      return lockedKeys == null ? Collections.emptySet() : lockedKeys;
+   public KeyCollection getLockedKeys() {
+      return CustomCollections.nullCheck(lockedKeys);
    }
 
    public void clearLockedKeys() {
@@ -173,22 +175,22 @@ public abstract class AbstractCacheTransaction implements CacheTransaction {
       return (lockedKeys != null && lockedKeys.contains(key)) || (backupKeyLocks != null && backupKeyLocks.contains(key));
    }
 
-   public Set<Object> getAffectedKeys() {
-      return affectedKeys == null ? Collections.emptySet() : affectedKeys;
+   public KeyCollection getAffectedKeys() {
+      return CustomCollections.nullCheck(affectedKeys);
    }
 
    public void addAffectedKey(Object key) {
-      initAffectedKeys();
-      affectedKeys.add(key);
+      if (affectedKeys == null)
+         affectedKeys = new KeyCollectionImpl(key);
+      else
+         affectedKeys.add(key);
    }
 
-   public void addAllAffectedKeys(Collection<Object> keys) {
-      initAffectedKeys();
-      affectedKeys.addAll(keys);
-   }
-
-   private void initAffectedKeys() {
-      if (affectedKeys == null) affectedKeys = new HashSet<Object>(INITIAL_LOCK_CAPACITY);
+   public void addAllAffectedKeys(KeyCollection keys) {
+      if (affectedKeys == null)
+         affectedKeys = keys.clone();
+      else
+         affectedKeys.addAll(keys);
    }
 
    @Override

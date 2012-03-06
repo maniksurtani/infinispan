@@ -28,11 +28,11 @@ import org.infinispan.container.DataContainer;
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.container.entries.InternalCacheEntry;
 import org.infinispan.context.InvocationContext;
+import org.infinispan.util.customcollections.CacheEntryCollection;
 
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -75,9 +75,9 @@ public class ValuesCommand extends AbstractLocalCommand implements VisitableComm
    private static class FilteredValues extends AbstractCollection<Object> {
       final Collection<Object> values;
       final Set<InternalCacheEntry> entrySet;
-      final Map<Object, CacheEntry> lookedUpEntries;
+      final CacheEntryCollection lookedUpEntries;
 
-      FilteredValues(DataContainer container, Map<Object, CacheEntry> lookedUpEntries) {
+      FilteredValues(DataContainer container, CacheEntryCollection lookedUpEntries) {
          values = container.values();
          entrySet = container.entrySet();
          this.lookedUpEntries = lookedUpEntries;
@@ -97,7 +97,7 @@ public class ValuesCommand extends AbstractLocalCommand implements VisitableComm
             }
          }
          // Update according to entries added or removed in tx
-         for (CacheEntry e: lookedUpEntries.values()) {
+         for (CacheEntry e: lookedUpEntries) {
             if (e.isCreated()) {
                size ++;
             } else if (e.isRemoved()) {
@@ -109,7 +109,7 @@ public class ValuesCommand extends AbstractLocalCommand implements VisitableComm
 
       @Override
       public boolean contains(Object o) {
-         for (CacheEntry e: lookedUpEntries.values()) {
+         for (CacheEntry e: lookedUpEntries) {
             if (o.equals(e.getValue())) {
                return !e.isRemoved();
             }
@@ -155,7 +155,7 @@ public class ValuesCommand extends AbstractLocalCommand implements VisitableComm
 
       private class Itr implements Iterator<Object> {
 
-         private final Iterator<CacheEntry> it1 = lookedUpEntries.values().iterator();
+         private final Iterator<CacheEntry> it1 = lookedUpEntries.iterator();
          private final Iterator<InternalCacheEntry> it2 = entrySet.iterator();
          private boolean atIt1 = true;
          private Object next;
@@ -187,7 +187,7 @@ public class ValuesCommand extends AbstractLocalCommand implements VisitableComm
                while (it2.hasNext()) {
                   InternalCacheEntry ice = it2.next();
                   Object key = ice.getKey();
-                  CacheEntry e = lookedUpEntries.get(key);
+                  CacheEntry e = lookedUpEntries.findCacheEntry(key);
                   if (ice.canExpire()) {
                      if (currentTimeMillis == 0)
                         currentTimeMillis = System.currentTimeMillis();

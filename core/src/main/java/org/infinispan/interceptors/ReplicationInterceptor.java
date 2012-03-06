@@ -116,7 +116,7 @@ public class ReplicationInterceptor extends BaseRpcInterceptor {
 
    protected PrepareCommand buildPrepareCommandForResend(TxInvocationContext ctx, CommitCommand command) {
       // Make sure this is 1-Phase!!
-      return cf.buildPrepareCommand(command.getGlobalTransaction(), ctx.getModifications(), true);
+      return cf.buildPrepareCommand(command.getGlobalTransaction(), true, ctx.getModifications());
    }
 
    @Override

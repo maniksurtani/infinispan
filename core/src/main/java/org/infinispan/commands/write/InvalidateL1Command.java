@@ -23,7 +23,6 @@
 package org.infinispan.commands.write;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.concurrent.locks.LockSupport;
 
 import org.infinispan.commands.Visitor;
@@ -35,6 +34,7 @@ import org.infinispan.distribution.DataLocality;
 import org.infinispan.distribution.DistributionManager;
 import org.infinispan.notifications.cachelistener.CacheNotifier;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.customcollections.KeyCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -61,22 +61,12 @@ public class InvalidateL1Command extends InvalidateCommand {
    }
 
    public InvalidateL1Command(boolean forRehash, DataContainer dc, Configuration config, DistributionManager dm,
-                              CacheNotifier notifier, Object... keys) {
-      super(notifier, keys);
-      writeOrigin = null;
-      this.dm = dm;
-      this.forRehash = forRehash;
-      this.dataContainer = dc;
-      this.config = config;
-   }
-
-   public InvalidateL1Command(boolean forRehash, DataContainer dc, Configuration config, DistributionManager dm,
-                              CacheNotifier notifier, Collection<Object> keys) {
+                              CacheNotifier notifier, KeyCollection keys) {
       this(null, forRehash, dc, config, dm, notifier, keys);
    }
 
    public InvalidateL1Command(Address writeOrigin, boolean forRehash, DataContainer dc, Configuration config,
-                              DistributionManager dm, CacheNotifier notifier, Collection<Object> keys) {
+                              DistributionManager dm, CacheNotifier notifier, KeyCollection keys) {
       super(notifier, keys);
       this.writeOrigin = writeOrigin;
       this.dm = dm;
@@ -127,7 +117,7 @@ public class InvalidateL1Command extends InvalidateCommand {
       return null;
    }
 
-   public void setKeys(Object[] keys) {
+   public void setKeys(KeyCollection keys) {
       this.keys = keys;
    }
 
@@ -158,31 +148,14 @@ public class InvalidateL1Command extends InvalidateCommand {
 
    @Override
    public Object[] getParameters() {
-      if (keys == null || keys.length == 0) {
-         return new Object[]{forRehash, writeOrigin};
-      } else if (keys.length == 1) {
-         return new Object[]{forRehash, writeOrigin, 1,  keys[0]};
-      } else {
-         Object[] retval = new Object[keys.length + 3];
-         retval[0] = forRehash;
-         retval[1] = writeOrigin;
-         retval[2] = keys.length;
-         System.arraycopy(keys, 0, retval, 3, keys.length);
-         return retval;
-      }
+      return new Object[]{forRehash, writeOrigin, keys};
    }
 
    @Override
    public void setParameters(int commandId, Object[] args) {
       forRehash = (Boolean) args[0];
       writeOrigin = (Address) args[1];
-      int size = (Integer) args[2];
-      keys = new Object[size];
-      if (size == 1) {
-         keys[0] = args[3];
-      } else if (size > 0) {
-         System.arraycopy(args, 3, keys, 0, size);
-      }
+      keys = (KeyCollection) args[2];
    }
 
    @Override
@@ -200,7 +173,7 @@ public class InvalidateL1Command extends InvalidateCommand {
    @Override
    public String toString() {
       return getClass().getSimpleName() + "{" +
-            "num keys=" + (keys == null ? 0 : keys.length) +
+            "num keys=" + (keys == null ? 0 : keys.size()) +
             ", forRehash=" + forRehash +
             ", origin=" + writeOrigin +
             '}';

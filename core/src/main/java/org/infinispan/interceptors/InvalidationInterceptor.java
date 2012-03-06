@@ -46,6 +46,9 @@ import org.infinispan.jmx.annotations.ManagedOperation;
 import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.util.concurrent.NotifyingFutureImpl;
 import org.infinispan.util.concurrent.NotifyingNotifiableFuture;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
+import org.infinispan.util.customcollections.ModificationCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 import org.rhq.helpers.pluginAnnotations.agent.DataType;
@@ -55,7 +58,7 @@ import org.rhq.helpers.pluginAnnotations.agent.Operation;
 import org.rhq.helpers.pluginAnnotations.agent.Parameter;
 
 import javax.transaction.Transaction;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -131,7 +134,7 @@ public class InvalidationInterceptor extends BaseRpcInterceptor {
 
    @Override
    public Object visitPutMapCommand(InvocationContext ctx, PutMapCommand command) throws Throwable {
-      Object[] keys = command.getMap() == null ? null : command.getMap().keySet().toArray();
+      Set<Object> keys = command.getMap() == null ? Collections.emptySet() : command.getMap().keySet();
       return handleInvalidate(ctx, command, keys);
    }
 
@@ -141,31 +144,39 @@ public class InvalidationInterceptor extends BaseRpcInterceptor {
       log.tracef("Entering InvalidationInterceptor's prepare phase.  Ctx flags are %s", ctx.getFlags());
       // fetch the modifications before the transaction is committed (and thus removed from the txTable)
       if (shouldInvokeRemoteTxCommand(ctx)) {
-         List<WriteCommand> mods = Arrays.asList(command.getModifications());
+         ModificationCollection mods = command.getModifications();
          Transaction runningTransaction = ctx.getTransaction();
          if (runningTransaction == null) throw new IllegalStateException("we must have an associated transaction");
-         broadcastInvalidateForPrepare(mods, runningTransaction, ctx);
+         broadcastInvalidateForPrepare(mods, ctx);
       } else {
          log.tracef("Nothing to invalidate - no modifications in the transaction.");
       }
       return retval;
    }
 
-   private Object handleInvalidate(InvocationContext ctx, WriteCommand command, Object... keys) throws Throwable {
+   private Object handleInvalidate(InvocationContext ctx, WriteCommand command, Object key) throws Throwable {
       Object retval = invokeNextInterceptor(ctx, command);
       if (command.isSuccessful() && !ctx.isInTxScope()) {
-         if (keys != null && keys.length != 0) {
-            return invalidateAcrossCluster(isSynchronous(ctx), ctx, keys, ctx.isUseFutureReturnType(), retval);
+         return invalidateAcrossCluster(isSynchronous(ctx), ctx, key, ctx.isUseFutureReturnType(), retval);
+      }
+      return retval;
+   }
+
+   private Object handleInvalidate(InvocationContext ctx, WriteCommand command, Set<Object> keys) throws Throwable {
+      Object retval = invokeNextInterceptor(ctx, command);
+      if (command.isSuccessful() && !ctx.isInTxScope()) {
+         if (keys != null && !keys.isEmpty()) {
+            return invalidateAcrossCluster(isSynchronous(ctx), ctx, KeyCollectionImpl.fromCollection(keys), ctx.isUseFutureReturnType(), retval);
          }
       }
       return retval;
    }
 
-   private void broadcastInvalidateForPrepare(List<WriteCommand> modifications, Transaction tx, InvocationContext ctx) throws Throwable {
+   private void broadcastInvalidateForPrepare(ModificationCollection modifications, InvocationContext ctx) throws Throwable {
       if (ctx.isInTxScope() && !isLocalModeForced(ctx)) {
          if (modifications == null || modifications.isEmpty()) return;
          InvalidationFilterVisitor filterVisitor = new InvalidationFilterVisitor(modifications.size());
-         filterVisitor.visitCollection(null, modifications);
+         filterVisitor.visitModifications(null, modifications);
 
          if (filterVisitor.containsPutForExternalRead) {
             log.debug("Modification list contains a putForExternalRead operation.  Not invalidating.");
@@ -173,7 +184,7 @@ public class InvalidationInterceptor extends BaseRpcInterceptor {
             log.debug("Modification list contains a local mode flagged operation.  Not invalidating.");
          } else {
             try {
-               invalidateAcrossCluster(defaultSynchronous, ctx, filterVisitor.result.toArray(), false, null);
+               invalidateAcrossCluster(defaultSynchronous, ctx, filterVisitor.result, false, null);
             } catch (Throwable t) {
                log.warn("Unable to broadcast evicts as a part of the prepare phase.  Rolling back.", t);
                if (t instanceof RuntimeException)
@@ -186,12 +197,12 @@ public class InvalidationInterceptor extends BaseRpcInterceptor {
    }
 
    public static class InvalidationFilterVisitor extends AbstractVisitor {
-      Set<Object> result;
+      KeyCollection result;
       public boolean containsPutForExternalRead = false;
       public boolean containsLocalModeFlag = false;
 
       public InvalidationFilterVisitor(int maxSetSize) {
-         result = new HashSet<Object>(maxSetSize);
+         result = new KeyCollectionImpl(maxSetSize);
       }
 
       private void processCommand(FlagAffectedCommand command) {
@@ -222,12 +233,14 @@ public class InvalidationInterceptor extends BaseRpcInterceptor {
    }
 
 
-   protected Object invalidateAcrossCluster(boolean synchronous, InvocationContext ctx, Object[] keys, boolean useFuture,
+   protected Object invalidateAcrossCluster(boolean synchronous, InvocationContext ctx, Object keys, boolean useFuture,
                                             final Object retvalForFuture) throws Throwable {
       if (!isLocalModeForced(ctx)) {
          // increment invalidations counter if statistics maintained
          incrementInvalidations();
-         final InvalidateCommand command = commandsFactory.buildInvalidateCommand(keys);
+         final InvalidateCommand command = keys instanceof KeyCollection ?
+               commandsFactory.buildInvalidateCommand((KeyCollection) keys) :
+               commandsFactory.buildInvalidateCommandForSingleKey(keys);
          if (log.isDebugEnabled())
             log.debug("Cache [" + rpcManager.getTransport().getAddress() + "] replicating " + command);
          // voila, invalidated!

@@ -25,6 +25,7 @@ package org.infinispan.commands;
 import org.infinispan.Cache;
 import org.infinispan.atomic.Delta;
 import org.infinispan.commands.control.LockControlCommand;
+import org.infinispan.commands.control.MultiKeyLockControlCommand;
 import org.infinispan.commands.control.StateTransferControlCommand;
 import org.infinispan.commands.module.ModuleCommandInitializer;
 import org.infinispan.commands.read.DistributedExecuteCommand;
@@ -82,6 +83,9 @@ import org.infinispan.transaction.xa.DldGlobalTransaction;
 import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.transaction.xa.recovery.RecoveryManager;
 import org.infinispan.util.concurrent.locks.LockManager;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
+import org.infinispan.util.customcollections.ModificationCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -106,7 +110,7 @@ public class CommandsFactoryImpl implements CommandsFactory {
 
    private DataContainer dataContainer;
    private CacheNotifier notifier;
-   private Cache cache;
+   private Cache<Object, Object> cache;
    private String cacheName;
 
    // some stateless commands can be reused so that they aren't constructed again all the time.
@@ -127,7 +131,7 @@ public class CommandsFactoryImpl implements CommandsFactory {
    private Map<Byte, ModuleCommandInitializer> moduleCommandInitializers;
 
    @Inject
-   public void setupDependencies(DataContainer container, CacheNotifier notifier, Cache cache,
+   public void setupDependencies(DataContainer container, CacheNotifier notifier, Cache<Object, Object> cache,
                                  InterceptorChain interceptorChain, DistributionManager distributionManager,
                                  InvocationContextContainer icc, TransactionTable txTable, Configuration configuration,
                                  @ComponentName(KnownComponentNames.MODULE_COMMAND_INITIALIZERS) Map<Byte, ModuleCommandInitializer> moduleCommandInitializers,
@@ -166,20 +170,21 @@ public class CommandsFactoryImpl implements CommandsFactory {
       return new RemoveCommand(key, value, notifier, flags);
    }
 
-   public InvalidateCommand buildInvalidateCommand(Object... keys) {
+   public InvalidateCommand buildInvalidateCommand(KeyCollection keys) {
       return new InvalidateCommand(notifier, keys);
    }
 
-   public InvalidateCommand buildInvalidateFromL1Command(boolean forRehash, Object... keys) {
-      return new InvalidateL1Command(forRehash, dataContainer, configuration, distributionManager, notifier, keys);
+   public InvalidateCommand buildInvalidateCommandForSingleKey(Object key) {
+      // TODO: MS: I think we need an InvalidateSingleKeyCommand
+      return new InvalidateCommand(notifier, KeyCollectionImpl.singleton(key));
    }
 
-   public InvalidateCommand buildInvalidateFromL1Command(boolean forRehash, Collection<Object> keys) {
+   public InvalidateCommand buildInvalidateFromL1Command(boolean forRehash, KeyCollection keys) {
       return new InvalidateL1Command(forRehash, dataContainer, configuration, distributionManager, notifier, keys);
    }
 
    @Override
-   public InvalidateCommand buildInvalidateFromL1Command(Address origin, boolean forRehash, Collection<Object> keys) {
+   public InvalidateCommand buildInvalidateFromL1Command(Address origin, boolean forRehash, KeyCollection keys) {
       return new InvalidateL1Command(origin, forRehash, dataContainer, configuration, distributionManager, notifier, keys);
    }
 
@@ -231,12 +236,14 @@ public class CommandsFactoryImpl implements CommandsFactory {
       return new EvictCommand(key, notifier);
    }
 
-   public PrepareCommand buildPrepareCommand(GlobalTransaction gtx, List<WriteCommand> modifications, boolean onePhaseCommit) {
-      return new PrepareCommand(cacheName, gtx, modifications, onePhaseCommit);
+   @Override
+   public PrepareCommand buildPrepareCommand(GlobalTransaction gtx, boolean onePhaseCommit, ModificationCollection modifications) {
+      return new PrepareCommand(cacheName, gtx, onePhaseCommit, modifications);
    }
 
-   public VersionedPrepareCommand buildVersionedPrepareCommand(GlobalTransaction gtx, List<WriteCommand> modifications, boolean onePhase) {
-      return new VersionedPrepareCommand(cacheName, gtx, modifications, onePhase);
+   @Override
+   public VersionedPrepareCommand buildVersionedPrepareCommand(GlobalTransaction gtx, boolean onePhase, ModificationCollection modifications) {
+      return new VersionedPrepareCommand(cacheName, gtx, onePhase, modifications);
    }
 
    public CommitCommand buildCommitCommand(GlobalTransaction gtx) {
@@ -337,6 +344,7 @@ public class CommandsFactoryImpl implements CommandsFactory {
             clusteredGetCommand.initialize(icc, this, entryFactory, interceptorChain, distributionManager, txTable);
             break;
          case LockControlCommand.COMMAND_ID:
+         case MultiKeyLockControlCommand.COMMAND_ID:
             LockControlCommand lcc = (LockControlCommand) c;
             lcc.init(interceptorChain, icc, txTable);
             lcc.markTransactionAsRemote(isRemote);
@@ -345,7 +353,7 @@ public class CommandsFactoryImpl implements CommandsFactory {
                RemoteTransaction transaction = txTable.getRemoteTransaction(gtx);
                if (transaction != null) {
                   if (!configuration.getCacheMode().isDistributed()) {
-                     Set<Object> keys = txTable.getLockedKeysForRemoteTransaction(gtx);
+                     KeyCollection keys = txTable.getLockedKeysForRemoteTransaction(gtx);
                      GlobalTransaction gtx2 = transaction.getGlobalTransaction();
                      ((DldGlobalTransaction) gtx2).setLocksHeldAtOrigin(keys);
                      gtx.setLocksHeldAtOrigin(keys);
@@ -373,7 +381,7 @@ public class CommandsFactoryImpl implements CommandsFactory {
             mrc.init(this, interceptorChain, icc, distributionManager,cache.getAdvancedCache().getRpcManager().getAddress());
             break;
          case DistributedExecuteCommand.COMMAND_ID:
-            DistributedExecuteCommand dec = (DistributedExecuteCommand)c;
+            DistributedExecuteCommand<?> dec = (DistributedExecuteCommand<?>) c;
             dec.init(cache);
             break;
          case GetInDoubtTxInfoCommand.COMMAND_ID:
@@ -396,17 +404,25 @@ public class CommandsFactoryImpl implements CommandsFactory {
       }
    }
 
-   public LockControlCommand buildLockControlCommand(Collection keys, Set<Flag> flags, GlobalTransaction gtx) {
-      return new LockControlCommand(keys, cacheName, flags, gtx);
-   }
-
+   @Override
    public LockControlCommand buildLockControlCommand(Object key, Set<Flag> flags, GlobalTransaction gtx) {
-      return new LockControlCommand(key, cacheName, flags, gtx);
+      return new LockControlCommand(cacheName, flags, gtx, key);
    }
 
    @Override
-   public LockControlCommand buildLockControlCommand(Collection keys, Set<Flag> flags) {
-      return new LockControlCommand(keys,  cacheName, flags, null);
+   public LockControlCommand buildLockControlCommand(Set<Flag> flags, KeyCollection keys) {
+      if (keys != null && keys.size() == 1)
+         return new LockControlCommand(cacheName, flags, null, keys.getFirst());
+      else
+         return new MultiKeyLockControlCommand(cacheName, flags, null, keys);
+   }
+
+   @Override
+   public LockControlCommand buildLockControlCommand(Set<Flag> flags, GlobalTransaction gtx, KeyCollection keys) {
+      if (keys != null && keys.size() == 1)
+         return new LockControlCommand(cacheName, flags, gtx, keys.getFirst());
+      else
+         return new MultiKeyLockControlCommand(cacheName, flags, gtx, keys);
    }
 
    public StateTransferControlCommand buildStateTransferCommand(StateTransferControlCommand.Type type, Address sender,
@@ -439,12 +455,12 @@ public class CommandsFactoryImpl implements CommandsFactory {
    }
 
    @Override
-   public <T> DistributedExecuteCommand<T> buildDistributedExecuteCommand(Callable<T> callable, Address sender, Collection keys) {
-      return new DistributedExecuteCommand(keys, callable);
+   public <T> DistributedExecuteCommand<T> buildDistributedExecuteCommand(Callable<T> callable, Address sender, KeyCollection keys) {
+      return new DistributedExecuteCommand<T>(keys, callable);
    }
 
    @Override
-   public MapReduceCommand buildMapReduceCommand(Mapper m, Reducer r, Address sender, Collection keys) {
+   public MapReduceCommand buildMapReduceCommand(Mapper<Object, Object, Object, Object> m, Reducer<Object, Object> r, KeyCollection keys) {
       return new MapReduceCommand(m, r, cacheName, keys);
    }
 
@@ -459,7 +475,7 @@ public class CommandsFactoryImpl implements CommandsFactory {
    }
 
    @Override
-   public ApplyDeltaCommand buildApplyDeltaCommand(Object deltaAwareValueKey, Delta delta, Collection keys) {
+   public ApplyDeltaCommand buildApplyDeltaCommand(Object deltaAwareValueKey, Delta delta, KeyCollection keys) {
       return new ApplyDeltaCommand(deltaAwareValueKey, delta, keys);
    }
 }

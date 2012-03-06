@@ -32,9 +32,12 @@ import org.infinispan.util.concurrent.AggregatingNotifyingFutureImpl;
 import org.infinispan.util.concurrent.ConcurrentHashSet;
 import org.infinispan.util.concurrent.ConcurrentMapFactory;
 import org.infinispan.util.concurrent.NotifyingNotifiableFuture;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentMap;
@@ -81,7 +84,8 @@ public class L1ManagerImpl implements L1Manager {
       }
    }
 
-   public NotifyingNotifiableFuture<Object> flushCache(Collection<Object> keys, Object retval, Address origin) {
+   @Override
+   public NotifyingNotifiableFuture<Object> flushCache(KeyCollection keys, Object retval, Address origin) {
       if (trace) log.tracef("Invalidating L1 caches for keys %s", keys);
 
       NotifyingNotifiableFuture<Object> future = new AggregatingNotifyingFutureImpl(retval, 2);
@@ -113,7 +117,41 @@ public class L1ManagerImpl implements L1Manager {
       return future;
    }
 
-   private Collection<Address> buildInvalidationAddressList(Collection<Object> keys, Address origin) {
+   @Override
+   public NotifyingNotifiableFuture<Object> flushSingleKeyFromCache(Object key, Object retval, Address origin) {
+      log.tracef("Invalidating L1 caches for key %s", key);
+
+      NotifyingNotifiableFuture<Object> future = new AggregatingNotifyingFutureImpl(retval, 2);
+
+      Collection<Address> invalidationAddresses = buildInvalidationAddressList(key, origin);
+
+      int nodes = invalidationAddresses.size();
+
+      if (nodes > 0) {
+         // No need to invalidate at all if there is no one to invalidate!
+         boolean multicast = isUseMulticast(nodes);
+
+         if (trace)
+            log.tracef("There are %s nodes involved in invalidation. Threshold is: %s; using multicast: %s", nodes, threshold, multicast);
+
+         if (multicast) {
+            if (trace) log.tracef("Invalidating key %s via multicast", key);
+            InvalidateCommand ic = commandsFactory.buildInvalidateFromL1Command(origin, false, KeyCollectionImpl.singleton(key));
+            rpcManager.broadcastRpcCommandInFuture(ic, future);
+         } else {
+            InvalidateCommand ic = commandsFactory.buildInvalidateFromL1Command(origin, false, KeyCollectionImpl.singleton(key));
+
+            // Ask the caches who have requested from us to remove
+            if (trace) log.tracef("Key %s needs invalidation on %s", key, invalidationAddresses);
+            rpcManager.invokeRemotelyInFuture(invalidationAddresses, ic, true, future, rpcTimeout, true);
+            return future;
+         }
+      } else if (trace) log.trace("No L1 caches to invalidate");
+      return future;
+   }
+
+
+   private Collection<Address> buildInvalidationAddressList(KeyCollection keys, Address origin) {
       Collection<Address> addresses = new HashSet<Address>(2);
 
       for (Object key : keys) {
@@ -123,6 +161,20 @@ public class L1ManagerImpl implements L1Manager {
             if (origin != null && as.contains(origin)) addRequestor(key, origin);
          }
       }
+      if (origin != null)
+         addresses.remove(origin);
+      return addresses;
+   }
+
+   private Collection<Address> buildInvalidationAddressList(Object key, Address origin) {
+      Collection<Address> addresses = new HashSet<Address>(2);
+
+      Collection<Address> as = requestors.remove(key);
+      if (as != null) {
+         addresses.addAll(as);
+         if (origin != null && as.contains(origin)) addRequestor(key, origin);
+      }
+
       if (origin != null)
          addresses.remove(origin);
       return addresses;

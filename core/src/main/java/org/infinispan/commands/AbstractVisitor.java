@@ -41,8 +41,10 @@ import org.infinispan.commands.write.PutKeyValueCommand;
 import org.infinispan.commands.write.PutMapCommand;
 import org.infinispan.commands.write.RemoveCommand;
 import org.infinispan.commands.write.ReplaceCommand;
+import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.context.InvocationContext;
 import org.infinispan.context.impl.TxInvocationContext;
+import org.infinispan.util.customcollections.ModificationCollection;
 
 import java.util.Collection;
 
@@ -151,6 +153,12 @@ public abstract class AbstractVisitor implements Visitor {
     */
    public void visitCollection(InvocationContext ctx, Collection<? extends VisitableCommand> toVisit) throws Throwable {
       for (VisitableCommand command : toVisit) {
+         command.acceptVisitor(ctx, this);
+      }
+   }
+
+   public void visitModifications(InvocationContext ctx, ModificationCollection toVisit) throws Throwable {
+      for (WriteCommand command : toVisit) {
          command.acceptVisitor(ctx, this);
       }
    }

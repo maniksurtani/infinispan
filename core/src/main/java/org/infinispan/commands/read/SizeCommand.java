@@ -55,7 +55,7 @@ public class SizeCommand extends AbstractLocalCommand implements VisitableComman
       }
 
       int size = container.size();
-      for (CacheEntry e: ctx.getLookedUpEntries().values()) {
+      for (CacheEntry e: ctx.getLookedUpEntries()) {
          if (e.isCreated()) {
             size ++;
          } else  if (e.isRemoved()) {

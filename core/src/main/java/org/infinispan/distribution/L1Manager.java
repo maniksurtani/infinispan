@@ -28,6 +28,7 @@ import org.infinispan.factories.scopes.Scope;
 import org.infinispan.factories.scopes.Scopes;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.util.concurrent.NotifyingNotifiableFuture;
+import org.infinispan.util.customcollections.KeyCollection;
 
 /**
  * Manages the L1 Cache, in particular recording anyone who is going to cache an
@@ -48,7 +49,12 @@ public interface L1Manager {
 	/**
 	 * Flushes a cache (using unicast or multicast) for a set of keys
 	 */
-	public NotifyingNotifiableFuture<Object> flushCache(Collection<Object> keys,
+	public NotifyingNotifiableFuture<Object> flushCache(KeyCollection keys,
 	      Object retval, Address origin);
+
+   /**
+    * Flushes a cache (using unicast or multicast) for a single key
+    */
+   public NotifyingNotifiableFuture<Object> flushSingleKeyFromCache(Object keys, Object retval, Address origin);
 
 }

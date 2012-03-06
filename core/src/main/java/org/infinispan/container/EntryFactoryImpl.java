@@ -84,10 +84,10 @@ public class EntryFactoryImpl implements EntryFactory {
             MVCCEntry mvccEntry = cacheEntry == null ?
                   createWrappedEntry(key, null, null, false, false, -1) :
                   createWrappedEntry(key, cacheEntry.getValue(), cacheEntry.getVersion(), false, false, cacheEntry.getLifespan());
-            if (mvccEntry != null) ctx.putLookedUpEntry(key, mvccEntry);
+            if (mvccEntry != null) ctx.putLookedUpEntry(mvccEntry);
             return mvccEntry;
          } else if (cacheEntry != null) { // if not in transaction and repeatable read, or simply read committed (regardless of whether in TX or not), do not wrap
-            ctx.putLookedUpEntry(key, cacheEntry);
+            ctx.putLookedUpEntry(cacheEntry);
          }
          return cacheEntry;
       }
@@ -104,7 +104,7 @@ public class EntryFactoryImpl implements EntryFactory {
       MVCCEntry mvccEntry = wrapEntry(ctx, key);
       if (mvccEntry == null) {
          // make sure we record this! Null value since this is a forced lock on the key
-         ctx.putLookedUpEntry(key, null);
+         ctx.putLookedUpEntry(new NullMarkerEntry(key));
       }
       return mvccEntry;
    }
@@ -127,7 +127,7 @@ public class EntryFactoryImpl implements EntryFactory {
       }
       if (mvccEntry == null) {
          // make sure we record this! Null value since this is a forced lock on the key
-         ctx.putLookedUpEntry(key, null);
+         ctx.putLookedUpEntry(new NullMarkerEntryForRemoval(key, null));
       } else {
          mvccEntry.copyForUpdate(container, localModeWriteSkewCheck);
       }
@@ -182,7 +182,7 @@ public class EntryFactoryImpl implements EntryFactory {
       else {
          e = createWrappedDeltaEntry(key, (DeltaAware) cacheEntry.getValue(), null);
       }
-      ctx.putLookedUpEntry(key, e);
+      ctx.putLookedUpEntry(e);
       return e;
 
    }
@@ -205,7 +205,7 @@ public class EntryFactoryImpl implements EntryFactory {
       notifier.notifyCacheEntryCreated(key, true, ctx);
       mvccEntry = createWrappedEntry(key, null, null, true, false, -1);
       mvccEntry.setCreated(true);
-      ctx.putLookedUpEntry(key, mvccEntry);
+      ctx.putLookedUpEntry(mvccEntry);
       notifier.notifyCacheEntryCreated(key, false, ctx);
       return mvccEntry;
    }
@@ -217,13 +217,13 @@ public class EntryFactoryImpl implements EntryFactory {
 
    private MVCCEntry wrapInternalCacheEntryForPut(InvocationContext ctx, Object key, InternalCacheEntry cacheEntry) {
       MVCCEntry mvccEntry = createWrappedEntry(key, cacheEntry.getValue(), cacheEntry.getVersion(), false, false, cacheEntry.getLifespan());
-      ctx.putLookedUpEntry(key, mvccEntry);
+      ctx.putLookedUpEntry(mvccEntry);
       return mvccEntry;
    }
 
    private MVCCEntry wrapMvccEntryForRemove(InvocationContext ctx, Object key, CacheEntry cacheEntry) {
       MVCCEntry mvccEntry = createWrappedEntry(key, cacheEntry.getValue(), cacheEntry.getVersion(), false, true, cacheEntry.getLifespan());
-      ctx.putLookedUpEntry(key, mvccEntry);
+      ctx.putLookedUpEntry(mvccEntry);
       return mvccEntry;
    }
 
@@ -245,7 +245,7 @@ public class EntryFactoryImpl implements EntryFactory {
 
    protected  MVCCEntry createWrappedEntry(Object key, Object value, EntryVersion version, boolean isForInsert, boolean forRemoval, long lifespan) {
       if (value == null && !isForInsert) return useRepeatableRead ?
-            forRemoval ? new NullMarkerEntryForRemoval(key, version) : NullMarkerEntry.getInstance()
+            forRemoval ? new NullMarkerEntryForRemoval(key, version) : new NullMarkerEntry(key)
             : null;
 
       return useRepeatableRead ? new RepeatableReadEntry(key, value, version, lifespan) : new ReadCommittedEntry(key, value, version, lifespan);
@@ -253,7 +253,7 @@ public class EntryFactoryImpl implements EntryFactory {
    
    private DeltaAwareCacheEntry newDeltaAwareCacheEntry(InvocationContext ctx, Object key, DeltaAware deltaAware){
       DeltaAwareCacheEntry deltaEntry = createWrappedDeltaEntry(key, deltaAware, null);
-      ctx.putLookedUpEntry(key, deltaEntry);
+      ctx.putLookedUpEntry(deltaEntry);
       return deltaEntry;
    }
    

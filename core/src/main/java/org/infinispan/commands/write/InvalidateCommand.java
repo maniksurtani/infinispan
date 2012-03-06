@@ -27,11 +27,9 @@ import org.infinispan.context.InvocationContext;
 import org.infinispan.lifecycle.ComponentStatus;
 import org.infinispan.notifications.cachelistener.CacheNotifier;
 import org.infinispan.util.Util;
+import org.infinispan.util.customcollections.KeyCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 
 /**
@@ -44,21 +42,13 @@ public class InvalidateCommand extends RemoveCommand {
    public static final int COMMAND_ID = 6;
    private static final Log log = LogFactory.getLog(InvalidateCommand.class);
    private static final boolean trace = log.isTraceEnabled();
-   protected Object[] keys;
+   protected KeyCollection keys;
 
    public InvalidateCommand() {
    }
 
-   public InvalidateCommand(CacheNotifier notifier, Object... keys) {
+   public InvalidateCommand(CacheNotifier notifier, KeyCollection keys) {
       this.keys = keys;
-      this.notifier = notifier;
-   }
-
-   public InvalidateCommand(CacheNotifier notifier, Collection<Object> keys) {
-      if (keys == null || keys.isEmpty())
-         this.keys = Util.EMPTY_OBJECT_ARRAY;
-      else
-         this.keys = keys.toArray(new Object[keys.size()]);
       this.notifier = notifier;
    }
 
@@ -71,7 +61,7 @@ public class InvalidateCommand extends RemoveCommand {
    @Override
    public Object perform(InvocationContext ctx) throws Throwable {
       if (trace) {
-         log.tracef("Invalidating keys %s", Arrays.toString(keys));
+         log.tracef("Invalidating keys %s", keys);
       }
       for (Object k : keys) {
          invalidate(ctx, k);
@@ -96,35 +86,19 @@ public class InvalidateCommand extends RemoveCommand {
 
    @Override
    public String toString() {
-      return "InvalidateCommand{keys=" +
-            Arrays.toString(keys) +
+      return "InvalidateCommand{keys=" + keys +
             '}';
    }
 
    @Override
    public Object[] getParameters() {
-      if (keys == null || keys.length == 0) {
-         return new Object[]{0};
-      } else if (keys.length == 1) {
-         return new Object[]{1, keys[0]};
-      } else {
-         Object[] retval = new Object[keys.length + 1];
-         retval[0] = keys.length;
-         System.arraycopy(keys, 0, retval, 1, keys.length);
-         return retval;
-      }
+      return new Object[]{keys};
    }
 
    @Override
    public void setParameters(int commandId, Object[] args) {
       if (commandId != COMMAND_ID) throw new IllegalStateException("Invalid method id");
-      int size = (Integer) args[0];
-      keys = new Object[size];
-      if (size == 1) {
-         keys[0] = args[1];
-      } else if (size > 0) {
-         System.arraycopy(args, 1, keys, 0, size);
-      }
+      keys = (KeyCollection) args[0];
    }
 
    @Override
@@ -137,7 +111,7 @@ public class InvalidateCommand extends RemoveCommand {
       throw new UnsupportedOperationException("Not supported.  Use getKeys() instead.");
    }
 
-   public Object[] getKeys() {
+   public KeyCollection getKeys() {
       return keys;
    }
 
@@ -167,16 +141,14 @@ public class InvalidateCommand extends RemoveCommand {
 
       InvalidateCommand that = (InvalidateCommand) o;
 
-      if (!Arrays.equals(keys, that.keys)) {
-         return false;
-      }
+      if (!Util.safeEquals(keys, that.keys)) return false;
       return true;
    }
 
    @Override
    public int hashCode() {
       int result = super.hashCode();
-      result = 31 * result + (keys != null ? Arrays.hashCode(keys) : 0);
+      result = 31 * result + (keys != null ? keys.hashCode() : 0);
       return result;
    }
 }

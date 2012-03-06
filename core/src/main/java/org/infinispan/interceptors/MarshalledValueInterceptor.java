@@ -23,6 +23,7 @@
 package org.infinispan.interceptors;
 
 import org.infinispan.commands.control.LockControlCommand;
+import org.infinispan.commands.control.MultiKeyLockControlCommand;
 import org.infinispan.commands.read.EntrySetCommand;
 import org.infinispan.commands.read.GetKeyValueCommand;
 import org.infinispan.commands.read.KeySetCommand;
@@ -43,6 +44,8 @@ import org.infinispan.interceptors.base.CommandInterceptor;
 import org.infinispan.marshall.MarshalledValue;
 import org.infinispan.marshall.StreamingMarshaller;
 import org.infinispan.util.Immutables;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -101,16 +104,24 @@ public class MarshalledValueInterceptor extends CommandInterceptor {
    public Object visitLockControlCommand(TxInvocationContext ctx, LockControlCommand command) throws Throwable {
       if (wrapKeys) {
          if (command.multipleKeys()) {
-            Collection<Object> rawKeys = command.getKeys();
-            Map<Object, Object> keyToMarshalledKeyMapping = new HashMap<Object, Object>(rawKeys.size());
+            MultiKeyLockControlCommand mkCommand = (MultiKeyLockControlCommand) command;
+            KeyCollection rawKeys = mkCommand.getKeys();
+            Object[] marshalledValueKeys = new Object[rawKeys.size()];
+            int i = 0;
+            boolean someKeysChanged = false;
             for (Object k : rawKeys) {
-               if (!isTypeExcluded(k.getClass())) keyToMarshalledKeyMapping.put(k, createMarshalledValue(k, ctx));
+               if (!isTypeExcluded(k.getClass())) {
+                  marshalledValueKeys[i++] = createMarshalledValue(k, ctx);
+                  someKeysChanged = true;
+               } else {
+                  marshalledValueKeys[i++] = k;
+               }
             }
 
-            if (!keyToMarshalledKeyMapping.isEmpty()) command.replaceKeys(keyToMarshalledKeyMapping);
+            if (someKeysChanged) mkCommand.setKeys(KeyCollectionImpl.fromArray(marshalledValueKeys));
          } else {
-            Object key = command.getSingleKey();
-            if (!isTypeExcluded(key.getClass())) command.replaceKey(key, createMarshalledValue(key, ctx));
+            Object key = command.getKey();
+            if (!isTypeExcluded(key.getClass())) command.setKey(createMarshalledValue(key, ctx));
          }
       }
 
@@ -120,7 +131,7 @@ public class MarshalledValueInterceptor extends CommandInterceptor {
    @Override
    public Object visitPutMapCommand(InvocationContext ctx, PutMapCommand command) throws Throwable {
       Set<MarshalledValue> marshalledValues = new HashSet<MarshalledValue>(command.getMap().size());
-      Map map = wrapMap(command.getMap(), marshalledValues, ctx);
+      Map<Object, Object> map = wrapMap(command.getMap(), marshalledValues, ctx);
       command.setMap(map);
       Object retVal = invokeNextInterceptor(ctx, command);
       return compactAndProcessRetVal(marshalledValues, retVal, ctx);
@@ -329,15 +340,14 @@ public class MarshalledValueInterceptor extends CommandInterceptor {
       return retVal;
    }
 
-   @SuppressWarnings("unchecked")
-   protected Map wrapMap(Map<Object, Object> m, Set<MarshalledValue> marshalledValues, InvocationContext ctx) {
+   protected Map<Object, Object> wrapMap(Map<Object, Object> m, Set<MarshalledValue> marshalledValues, InvocationContext ctx) {
       if (m == null) {
          if (trace) log.trace("Map is nul; returning an empty map.");
          return Collections.emptyMap();
       }
       if (trace) log.tracef("Wrapping map contents of argument %s", m);
-      Map copy = new HashMap(m.size());
-      for (Map.Entry me : m.entrySet()) {
+      Map<Object, Object> copy = new HashMap<Object, Object>(m.size());
+      for (Map.Entry<Object, Object> me : m.entrySet()) {
          Object key = me.getKey();
          Object value = me.getValue();
          Object newKey = (key == null || isTypeExcluded(key.getClass())) || !wrapKeys ? key : createMarshalledValue(key, ctx);

@@ -75,12 +75,14 @@ import org.infinispan.transaction.TransactionCoordinator;
 import org.infinispan.transaction.TransactionTable;
 import org.infinispan.transaction.xa.TransactionXaAdapter;
 import org.infinispan.transaction.xa.recovery.RecoveryManager;
+import org.infinispan.util.customcollections.CustomCollections;
 import org.infinispan.util.Util;
 import org.infinispan.util.concurrent.AbstractInProcessNotifyingFuture;
 import org.infinispan.util.concurrent.DeferredReturnFuture;
 import org.infinispan.util.concurrent.NotifyingFuture;
 import org.infinispan.util.concurrent.NotifyingNotifiableFuture;
 import org.infinispan.util.concurrent.locks.LockManager;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 import org.rhq.helpers.pluginAnnotations.agent.DataType;
@@ -92,7 +94,6 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -465,13 +466,17 @@ public class CacheImpl<K, V> extends CacheSupport<K, V> implements AdvancedCache
 
    public boolean lock(K... keys) {
       assertKeyNotNull(keys);
-      return lock(Arrays.asList(keys), null, null);
+      return lock(null, null, keys);
    }
 
    public boolean lock(Collection<? extends K> keys) {
-      return lock(keys, null, null);
+      if (keys == null || keys.size() == 0) {
+         throw new IllegalArgumentException("Cannot lock empty set of keys");
+      }
+      return lock(null, null, keys.toArray());
    }
 
+<<<<<<< Updated upstream
    boolean lock(Collection<? extends K> keys, EnumSet<Flag> explicitFlags, ClassLoader explicitClassLoader) {
       if (!config.isTransactionalCache())
          throw new UnsupportedOperationException("Calling lock() on non-transactional caches is not allowed");
@@ -479,17 +484,22 @@ public class CacheImpl<K, V> extends CacheSupport<K, V> implements AdvancedCache
       if (keys == null || keys.isEmpty()) {
          throw new IllegalArgumentException("Cannot lock empty list of keys");
       }
+=======
+   boolean lock(EnumSet<Flag> explicitFlags, ClassLoader explicitClassLoader, Object... keys) {
+      if (CustomCollections.isEmpty(keys))
+         throw new IllegalArgumentException("Cannot lock empty set of keys");
+>>>>>>> Stashed changes
       InvocationContext ctx = getInvocationContextForWrite(explicitFlags, explicitClassLoader, UNBOUNDED, false);
-      LockControlCommand command = commandsFactory.buildLockControlCommand(keys, ctx.getFlags());
+      LockControlCommand command = commandsFactory.buildLockControlCommand(ctx.getFlags(), KeyCollectionImpl.fromArray(keys));
       return (Boolean) invoker.invoke(ctx, command);
    }
    
    public void applyDelta(K deltaAwareValueKey, Delta delta, Object... locksToAcquire) {
-      if (locksToAcquire == null || locksToAcquire.length == 0) {
-         throw new IllegalArgumentException("Cannot lock empty list of keys");
-      }
+      if (CustomCollections.isEmpty(locksToAcquire))
+         throw new IllegalArgumentException("Cannot lock empty set of keys");
+
       InvocationContext ctx = getInvocationContextForWrite(null, null, UNBOUNDED, false);
-      ApplyDeltaCommand command = commandsFactory.buildApplyDeltaCommand(deltaAwareValueKey, delta, Arrays.asList(locksToAcquire));
+      ApplyDeltaCommand command = commandsFactory.buildApplyDeltaCommand(deltaAwareValueKey, delta, KeyCollectionImpl.fromArray(locksToAcquire));
       invoker.invoke(ctx, command);
    }
 
@@ -916,7 +926,7 @@ public class CacheImpl<K, V> extends CacheSupport<K, V> implements AdvancedCache
 
    @Override
    public AdvancedCache<K, V> withFlags(final Flag... flags) {
-      if (flags == null || flags.length == 0)
+      if (CustomCollections.isEmpty(flags))
          return this;
       else
          return new DecoratedCache<K, V>(this, flags);

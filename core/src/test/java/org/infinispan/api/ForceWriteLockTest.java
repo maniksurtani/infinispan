@@ -58,7 +58,7 @@ public class ForceWriteLockTest extends SingleCacheManagerTest {
       advancedCache.withFlags(Flag.FORCE_WRITE_LOCK).get("k");
 
       InvocationContext ic = advancedCache.getInvocationContextContainer().getInvocationContext(true);
-      CacheEntry cacheEntry = ic.getLookedUpEntries().get("k");
+      CacheEntry cacheEntry = ic.getLookedUpEntries().findCacheEntry("k");
       assert (cacheEntry instanceof ReadCommittedEntry && cacheEntry.isChanged());
 
       assertLocked(advancedCache,"k");

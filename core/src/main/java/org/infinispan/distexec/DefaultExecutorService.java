@@ -41,6 +41,7 @@ import org.infinispan.util.concurrent.FutureListener;
 import org.infinispan.util.concurrent.NotifyingFuture;
 import org.infinispan.util.concurrent.NotifyingNotifiableFuture;
 import org.infinispan.util.concurrent.WithinThreadExecutor;
+import org.infinispan.util.customcollections.KeyCollectionImpl;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -331,7 +332,7 @@ public class DefaultExecutorService extends AbstractExecutorService implements D
       if(inputKeysSpecified(input)){
          Map<Address, List<K>> nodesKeysMap = mapKeysToNodes(input);
          Address me = rpc.getAddress();
-         DistributedExecuteCommand<T> c = factory.buildDistributedExecuteCommand(task, me, Arrays.asList(input));
+         DistributedExecuteCommand<T> c = factory.buildDistributedExecuteCommand(task, me, KeyCollectionImpl.fromArray(input));
          DistributedRunnableFuture<T> f = new DistributedRunnableFuture<T>(c);
          ArrayList<Address> nodes = new ArrayList<Address>(nodesKeysMap.keySet());
          executeFuture(selectExecutionNode(nodes), f);
@@ -370,11 +371,11 @@ public class DefaultExecutorService extends AbstractExecutorService implements D
          Map<Address, List<K>> nodesKeysMap = mapKeysToNodes(input);
          for (Entry<Address, List<K>> e : nodesKeysMap.entrySet()) {
             Address target = e.getKey();
-            DistributedExecuteCommand<T> c = null;
+            DistributedExecuteCommand<T> c;
             if (target.equals(me)) {
-               c = factory.buildDistributedExecuteCommand(clone(task), me, e.getValue());
+               c = factory.buildDistributedExecuteCommand(clone(task), me, KeyCollectionImpl.fromCollection(e.getValue()));
             } else {
-               c = factory.buildDistributedExecuteCommand(task, me, e.getValue());
+               c = factory.buildDistributedExecuteCommand(task, me, KeyCollectionImpl.fromCollection(e.getValue()));
             }
             DistributedRunnableFuture<T> f = new DistributedRunnableFuture<T>(c);
             futures.add(f);

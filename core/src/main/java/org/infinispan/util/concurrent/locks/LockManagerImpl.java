@@ -31,9 +31,16 @@ import org.infinispan.factories.annotations.Start;
 import org.infinispan.jmx.annotations.MBean;
 import org.infinispan.jmx.annotations.ManagedAttribute;
 import org.infinispan.marshall.MarshalledValue;
+import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.util.Util;
 import org.infinispan.util.concurrent.TimeoutException;
-import org.infinispan.util.concurrent.locks.containers.*;
+import org.infinispan.util.concurrent.locks.containers.LockContainer;
+import org.infinispan.util.concurrent.locks.containers.OwnableReentrantPerEntryLockContainer;
+import org.infinispan.util.concurrent.locks.containers.OwnableReentrantStripedLockContainer;
+import org.infinispan.util.concurrent.locks.containers.ReentrantPerEntryLockContainer;
+import org.infinispan.util.concurrent.locks.containers.ReentrantStripedLockContainer;
+import org.infinispan.util.customcollections.CacheEntryCollection;
+import org.infinispan.util.customcollections.KeyCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 import org.rhq.helpers.pluginAnnotations.agent.DataType;
@@ -41,6 +48,7 @@ import org.rhq.helpers.pluginAnnotations.agent.Metric;
 
 import javax.transaction.TransactionManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +67,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 @MBean(objectName = "LockManager", description = "Manager that handles MVCC locks for entries")
 public class LockManagerImpl implements LockManager {
    protected Configuration configuration;
-   protected volatile LockContainer lockContainer;
+   protected volatile LockContainer<? extends Lock> lockContainer;
    private TransactionManager transactionManager;
    private static final Log log = LogFactory.getLog(LockManagerImpl.class);
    protected static final boolean trace = log.isTraceEnabled();
@@ -83,9 +91,9 @@ public class LockManagerImpl implements LockManager {
       if (log.isDebugEnabled()) {
          log.debugf("Failed to acquire lock %s, owner is %s", key, getOwner(key));
          Object owner = ctx.getLockOwner();
-         Set<Map.Entry<Object, CacheEntry>> entries = ctx.getLookedUpEntries().entrySet();
+         CacheEntryCollection entries = ctx.getLookedUpEntries();
          List<Object> lockedKeys = new ArrayList<Object>(entries.size());
-         for (Map.Entry<Object, CacheEntry> e : entries) {
+         for (CacheEntry e : entries) {
             Object lockedKey = e.getKey();
             if (ownsLock(lockedKey, owner)) {
                lockedKeys.add(lockedKey);
@@ -101,8 +109,8 @@ public class LockManagerImpl implements LockManager {
             0 : configuration.getLockAcquisitionTimeout();
    }
 
-   public void unlock(Collection<Object> lockedKeys, Object lockOwner) {
-      log.tracef("Attempting to unlock keys %s", lockedKeys);
+   public void unlock(GlobalTransaction lockOwner, KeyCollection lockedKeys) {
+      if (trace) log.tracef("Attempting to unlock keys %s", lockedKeys);
       for (Object k : lockedKeys) lockContainer.releaseLock(lockOwner, k);
    }
 

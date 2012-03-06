@@ -33,14 +33,8 @@ import org.infinispan.container.DataContainer;
  */
 public class NullMarkerEntry extends NullMarkerEntryForRemoval {
 
-   private static final NullMarkerEntry INSTANCE = new NullMarkerEntry();
-
-   private NullMarkerEntry() {
-      super(null, null);
-   }
-
-   public static NullMarkerEntry getInstance() {
-      return INSTANCE;
+   public NullMarkerEntry(Object key) {
+      super(key, null);
    }
 
    /**

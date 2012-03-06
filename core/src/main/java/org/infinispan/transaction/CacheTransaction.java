@@ -20,11 +20,14 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.infinispan.transaction.xa;
+package org.infinispan.transaction;
 
 import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.container.versioning.EntryVersionsMap;
+import org.infinispan.context.EntryLookup;
+import org.infinispan.transaction.xa.GlobalTransaction;
+import org.infinispan.util.customcollections.ModificationCollection;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +39,7 @@ import java.util.Set;
  * @author Mircea.Markus@jboss.com
  * @since 4.0
  */
-public interface CacheTransaction {
+public interface CacheTransaction extends EntryLookup {
 
    /**
     * Returns the transaction identifier.
@@ -46,18 +49,7 @@ public interface CacheTransaction {
    /**
     * Returns the modifications visible within the current transaction.
     */
-   List<WriteCommand> getModifications();
-
-
-   CacheEntry lookupEntry(Object key);
-
-   Map<Object, CacheEntry> getLookedUpEntries();
-
-   void putLookedUpEntry(Object key, CacheEntry e);
-
-   void removeLookedUpEntry(Object key);
-
-   void clearLookedUpEntries();
+   ModificationCollection getModifications();
 
    abstract boolean ownsLock(Object key);
    
@@ -79,6 +71,7 @@ public interface CacheTransaction {
     */
    boolean waitForLockRelease(Object key, long lockAcquisitionTimeout) throws InterruptedException;
 
+   // TODO: MS: return an array here?  Assume guarantees that this array will always contain unique entries, like a set.
    EntryVersionsMap getUpdatedEntryVersions();
 
    void setUpdatedEntryVersions(EntryVersionsMap updatedEntryVersions);

@@ -22,12 +22,13 @@
  */
 package org.infinispan.context.impl;
 
-import javax.transaction.Transaction;
-
+import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.transaction.AbstractCacheTransaction;
+import org.infinispan.util.customcollections.InfinispanCollection;
+import org.infinispan.util.customcollections.KeyCollection;
+import org.infinispan.util.customcollections.ModificationCollection;
 
-import java.util.Collection;
-import java.util.Set;
+import javax.transaction.Transaction;
 
 /**
  * Support class for {@link org.infinispan.context.impl.TxInvocationContext}.
@@ -42,18 +43,19 @@ public abstract class AbstractTxInvocationContext extends AbstractInvocationCont
 
    private boolean implicitTransaction;
 
-   public boolean hasModifications() {
-      return getModifications() != null && !getModifications().isEmpty();
+   public final boolean hasModifications() {
+      ModificationCollection mods = getModifications();
+      return mods != null && !mods.isEmpty();
    }
 
-   public Set<Object> getAffectedKeys() {
+   @Override
+   public KeyCollection getAffectedKeys() {
       return getCacheTransaction().getAffectedKeys();
    }
 
-   public void addAllAffectedKeys(Collection<Object> keys) {
-      if (keys != null && !keys.isEmpty()) {
-         getCacheTransaction().addAllAffectedKeys(keys);
-      }
+   @Override
+   public void addAllAffectedKeys(KeyCollection keys) {
+      getCacheTransaction().addAllAffectedKeys(keys);
    }
 
    @Override

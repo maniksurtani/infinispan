@@ -29,6 +29,8 @@ import org.infinispan.distribution.ch.ConsistentHash;
 import org.infinispan.factories.scopes.Scope;
 import org.infinispan.factories.scopes.Scopes;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.customcollections.InfinispanCollection;
+import org.infinispan.util.customcollections.KeyCollection;
 
 import java.util.Collection;
 import java.util.List;
@@ -90,12 +92,7 @@ public interface DistributionManager {
     * @param keys list of keys to test
     * @return a list of addresses where the key may reside
     */
-   Map<Object, List<Address>> locateAll(Collection<Object> keys);
-
-   /**
-    * Same as {@link #locateAll(java.util.Collection)}, but the list of addresses only contains numOwners owners.
-    */
-   Map<Object, List<Address>> locateAll(Collection<Object> keys, int numOwners);
+   Map<Object, List<Address>> locateAll(KeyCollection keys);
 
    /**
     * Transforms a cache entry so it is marked for L1 rather than the primary cache data structure.  This should be done
@@ -158,6 +155,6 @@ public interface DistributionManager {
     * @param affectedKeys keys to locate
     * @return a list of addresses which represent a combined set of all addresses affected by the set of keys.
     */
-   Collection<Address> getAffectedNodes(Collection<Object> affectedKeys);
+   Collection<Address> getAffectedNodes(KeyCollection affectedKeys);
 }
 

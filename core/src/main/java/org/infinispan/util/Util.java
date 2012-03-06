@@ -24,7 +24,9 @@ package org.infinispan.util;
 
 import org.infinispan.CacheConfigurationException;
 import org.infinispan.CacheException;
+import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.commons.hash.Hash;
+import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.marshall.Marshaller;
 
 import javax.naming.Context;
@@ -42,6 +44,7 @@ import java.net.Socket;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -567,5 +570,4 @@ public final class Util {
       // more efficient impl
       return hashFct.hash(key) & Integer.MAX_VALUE; // make sure no negative numbers are involved.
    }
-
 }
