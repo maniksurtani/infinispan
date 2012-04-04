@@ -31,6 +31,7 @@ import org.infinispan.remoting.transport.Address;
 import org.infinispan.remoting.transport.TopologyAwareAddress;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
+import org.infinispan.util.AddressCollection;
 import org.testng.annotations.Test;
 
 import java.util.Set;
@@ -102,7 +103,7 @@ public class TopologyInfoBroadcastTest extends MultipleCacheManagersTest {
       assertEquals(tach0.getCaches(), tach2.getCaches());
    }
 
-   private void assertTopologyInfo3Nodes(Set<Address> caches) {
+   private void assertTopologyInfo3Nodes(AddressCollection caches) {
       assertTopologyInfo2Nodes(caches);
       TopologyAwareAddress address1 = (TopologyAwareAddress) address(1);
       assertEquals(address1.getSiteId(), "s1");
@@ -110,7 +111,7 @@ public class TopologyInfoBroadcastTest extends MultipleCacheManagersTest {
       assertEquals(address1.getMachineId(), "m1");
    }
 
-   private void assertTopologyInfo2Nodes(Set<Address> caches) {
+   private void assertTopologyInfo2Nodes(AddressCollection caches) {
       TopologyAwareAddress address0 = (TopologyAwareAddress) address(0);
       assertEquals(address0.getSiteId(), "s0");
       assertEquals(address0.getRackId(), "r0");

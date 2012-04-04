@@ -32,6 +32,8 @@ import org.infinispan.remoting.transport.jgroups.SuspectException;
 import org.infinispan.test.AbstractInfinispanTest;
 import org.infinispan.test.TestingUtil;
 import org.infinispan.test.fwk.TestCacheManagerFactory;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.testng.annotations.Test;
 
 import java.util.Collection;
@@ -67,7 +69,7 @@ public class MessageSentToLeaverTest extends AbstractInfinispanTest {
          c2.put("k", "v1");
 
          RpcManager rpcManager = TestingUtil.extractComponent(c1, RpcManager.class);
-         Collection<Address>  addresses = cm1.getMembers();
+         AddressCollection addresses = AddressCollectionFactory.fromCollection(cm1.getMembers());
 
          CommandsFactory cf = TestingUtil.extractCommandsFactory(c1);
          PutKeyValueCommand cmd = cf.buildPutKeyValueCommand("k", "v2", -1, -1, null);

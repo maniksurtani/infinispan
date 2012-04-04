@@ -24,6 +24,7 @@ package org.infinispan.distribution.ch;
 
 import org.infinispan.distribution.group.GroupManager;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,8 +48,8 @@ public abstract class AbstractConsistentHash implements ConsistentHash {
    protected GroupManager groupManager;
 
    @Override
-   public Map<Object, List<Address>> locateAll(Collection<Object> keys, int replCount) {
-      Map<Object, List<Address>> locations = new HashMap<Object, List<Address>>(keys.size());
+   public Map<Object, AddressCollection> locateAll(Collection<Object> keys, int replCount) {
+      Map<Object, AddressCollection> locations = new HashMap<Object, AddressCollection>(keys.size());
       for (Object k : keys) locations.put(k, locate(k, replCount));
       return locations;
    }
@@ -62,8 +63,8 @@ public abstract class AbstractConsistentHash implements ConsistentHash {
    @Override
    public Address primaryLocation(Object key) {
       // simple, far from optimal impl
-      List<Address> locate = locate(key, 1);
-      return locate.get(0);
+      AddressCollection locate = locate(key, 1);
+      return locate.getFirst();
    }
 
    public void setGroupManager(GroupManager groupManager) {

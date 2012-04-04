@@ -36,6 +36,8 @@ import org.infinispan.remoting.responses.Response;
 import org.infinispan.remoting.responses.SuccessfulResponse;
 import org.infinispan.remoting.rpc.RpcManager;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.Util;
 import org.infinispan.util.concurrent.FutureListener;
 import org.infinispan.util.concurrent.NotifyingFuture;
@@ -105,6 +107,7 @@ public class DefaultExecutorService extends AbstractExecutorService implements D
    protected final CommandsFactory factory;
    protected final Marshaller marshaller;
    protected final ExecutorService localExecutorService;
+   private static final Random RND = new Random();
 
    /**
     * Creates a new DefaultExecutorService given a master cache node for local task execution. All
@@ -333,7 +336,7 @@ public class DefaultExecutorService extends AbstractExecutorService implements D
          Address me = rpc.getAddress();
          DistributedExecuteCommand<T> c = factory.buildDistributedExecuteCommand(task, me, Arrays.asList(input));
          DistributedRunnableFuture<T> f = new DistributedRunnableFuture<T>(c);
-         ArrayList<Address> nodes = new ArrayList<Address>(nodesKeysMap.keySet());
+         AddressCollection nodes = AddressCollectionFactory.fromCollection(nodesKeysMap.keySet());
          executeFuture(selectExecutionNode(nodes), f);
          return f;
       } else {
@@ -344,11 +347,11 @@ public class DefaultExecutorService extends AbstractExecutorService implements D
    @Override
    public <T> List<Future<T>> submitEverywhere(Callable<T> task) {
       if (task == null) throw new NullPointerException();
-      List<Address> members = rpc.getTransport().getMembers();
+      AddressCollection members = rpc.getTransport().getMembers();
       List<Future<T>> futures = new ArrayList<Future<T>>(members.size() - 1);      
       Address me = rpc.getAddress();
       for (Address target : members) {
-         DistributedExecuteCommand<T> c = null;
+         DistributedExecuteCommand<T> c;
          if (target.equals(me)) {
             c = factory.buildDistributedExecuteCommand(clone(task), me, null);
          } else {
@@ -370,7 +373,7 @@ public class DefaultExecutorService extends AbstractExecutorService implements D
          Map<Address, List<K>> nodesKeysMap = mapKeysToNodes(input);
          for (Entry<Address, List<K>> e : nodesKeysMap.entrySet()) {
             Address target = e.getKey();
-            DistributedExecuteCommand<T> c = null;
+            DistributedExecuteCommand<T> c;
             if (target.equals(me)) {
                c = factory.buildDistributedExecuteCommand(clone(task), me, e.getValue());
             } else {
@@ -396,7 +399,7 @@ public class DefaultExecutorService extends AbstractExecutorService implements D
       } else {
          log.tracef("Sending %s to remote execution at node %s", f, address);
          try {
-            rpc.invokeRemotelyInFuture(Collections.singletonList(address), f.getCommand(),
+            rpc.invokeRemotelyInFuture(AddressCollectionFactory.singleton(address), f.getCommand(),
                      (DistributedRunnableFuture<Object>) f);
          } catch (Throwable e) {
             log.remoteExecutionFailed(address, e);
@@ -415,7 +418,7 @@ public class DefaultExecutorService extends AbstractExecutorService implements D
 
             @Override
             public Object call() throws Exception {
-               Object result = null;
+               Object result;
                future.getCommand().init(cache);
                try {
                   result = future.getCommand().perform(null);
@@ -439,17 +442,16 @@ public class DefaultExecutorService extends AbstractExecutorService implements D
       DistributionManager dm = cache.getDistributionManager();
       Map<Address, List<K>> addressToKey = new HashMap<Address, List<K>>(input.length * 2);
       boolean usingREPLMode = dm == null;      
-      List<Address> members = null;
+      AddressCollection members = null;
       if(usingREPLMode){
-         members = new ArrayList<Address>(cache.getRpcManager().getTransport().getMembers());
+         members = cache.getRpcManager().getTransport().getMembers().clone();
       }
       for (K key : input) {
-         Address ownerOfKey = null;
+         Address ownerOfKey;
          if(usingREPLMode){
             //using REPL mode https://issues.jboss.org/browse/ISPN-1886
             // since keys and values are on all nodes, lets just pick randomly
-            Collections.shuffle(members);
-            ownerOfKey = members.get(0);
+            ownerOfKey = members.get(RND.nextInt(members.size()));
          } else {            
             //DIST mode
             ownerOfKey = dm.getPrimaryLocation(key);
@@ -464,16 +466,16 @@ public class DefaultExecutorService extends AbstractExecutorService implements D
       return addressToKey;
    }
 
-   protected Address selectExecutionNode(List<Address> candidates) {
-      List<Address> list = randomClusterMembers(candidates,1);
-      return list.get(0);
+   protected Address selectExecutionNode(AddressCollection candidates) {
+      AddressCollection list = randomClusterMembers(candidates,1);
+      return list.getFirst();
    }
 
    protected Address selectExecutionNode() {
      return selectExecutionNode(rpc.getTransport().getMembers());
    }
 
-   protected List<Address> randomClusterMembers(final List<Address> members, int numNeeded) {
+   protected AddressCollection randomClusterMembers(final AddressCollection members, int numNeeded) {
       if(members == null || members.isEmpty())
          throw new IllegalArgumentException("Invalid member list " + members);
 
@@ -481,12 +483,11 @@ public class DefaultExecutorService extends AbstractExecutorService implements D
          log.cannotSelectRandomMembers(numNeeded, members);
          numNeeded = members.size();
       }
-      List<Address> membersCopy = new ArrayList<Address>(members);
-      List<Address> chosen = new ArrayList<Address>(numNeeded);
-      Random r = new Random();
+      AddressCollection membersCopy = members.clone();
+      AddressCollection chosen = AddressCollectionFactory.emptyCollection();
       while (!membersCopy.isEmpty() && numNeeded >= chosen.size()) {
          int count = membersCopy.size();
-         Address address = membersCopy.remove(r.nextInt(count));
+         Address address = membersCopy.remove(RND.nextInt(count));
          chosen.add(address);
       }
       return chosen;

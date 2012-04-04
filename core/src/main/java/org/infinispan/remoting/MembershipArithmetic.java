@@ -23,6 +23,7 @@
 package org.infinispan.remoting;
 
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,27 +37,15 @@ import java.util.Set;
  * @since 4.0
  */
 public class MembershipArithmetic {
-   public static List<Address> getMembersJoined(List<Address> oldList, List<Address> newList) {
-      Set<Address> tmp = new HashSet<Address>(newList);
+   public static AddressCollection getMembersJoined(AddressCollection oldList, AddressCollection newList) {
+      AddressCollection tmp = newList.clone();
       tmp.removeAll(oldList);
-      return new ArrayList<Address>(tmp);
+      return tmp;
    }
    
-   public static List<Address> getMembersLeft(List<Address> oldList, List<Address> newList) {
-      Set<Address> tmp = new HashSet<Address>(oldList);
+   public static AddressCollection getMembersLeft(AddressCollection oldList, AddressCollection newList) {
+      AddressCollection tmp = oldList.clone();
       tmp.removeAll(newList);
-      return new ArrayList<Address>(tmp);
-   }
-
-   public static Set<Address> getMembersJoined(Set<Address> oldSet, Set<Address> newSet) {
-      Set<Address> result = new HashSet<Address>(newSet);
-      result.removeAll(oldSet);
-      return result;
-   }
-
-   public static Set<Address> getMembersLeft(Set<Address> oldSet, Set<Address> newSet) {
-      Set<Address> result = new HashSet<Address>(oldSet);
-      result.removeAll(newSet);
-      return result;
+      return tmp;
    }
 }

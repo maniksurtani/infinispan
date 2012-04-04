@@ -26,6 +26,7 @@ import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.transaction.RemoteTransaction;
+import org.infinispan.util.AddressCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -76,7 +77,7 @@ public class RecoveryAwareRemoteTransaction extends RemoteTransaction implements
     * {@link #isOrphan()}.
     * @param leavers the nodes that left the cluster
     */
-   public void computeOrphan(Collection<Address> leavers) {
+   public void computeOrphan(AddressCollection leavers) {
       if (leavers.contains(getGlobalTransaction().getAddress())) {
          if (log.isTraceEnabled()) log.tracef("This transaction's originator has left the cluster: %s", getGlobalTransaction());
          isOrphan = true;

@@ -38,6 +38,7 @@ import org.infinispan.transaction.RemoteTransaction;
 import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.transaction.xa.recovery.RecoveryAwareRemoteTransaction;
 import org.infinispan.transaction.xa.recovery.RecoveryAwareTransaction;
+import org.infinispan.util.AddressCollection;
 import org.infinispan.util.TypedProperties;
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Cause;
@@ -132,7 +133,7 @@ public interface Log extends BasicLogger {
 
    @LogMessage(level = WARN)
    @Message(value = "Can not select %s random members for %s", id = 8)
-   void cannotSelectRandomMembers(int numNeeded, List<Address> members);
+   void cannotSelectRandomMembers(int numNeeded, AddressCollection members);
 
    @LogMessage(level = INFO)
    @Message(value = "Detected a view change. Member list changed from %s to %s", id = 9)
@@ -421,7 +422,7 @@ public interface Log extends BasicLogger {
 
    @LogMessage(level = INFO)
    @Message(value = "Cache local address is %s, physical addresses are %s", id = 79)
-   void localAndPhysicalAddress(Address address, List<Address> physicalAddresses);
+   void localAndPhysicalAddress(Address address, AddressCollection physicalAddresses);
 
    @LogMessage(level = INFO)
    @Message(value = "Disconnecting and closing JGroups Channel", id = 80)

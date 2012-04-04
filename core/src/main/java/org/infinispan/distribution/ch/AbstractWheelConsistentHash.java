@@ -36,8 +36,11 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.infinispan.commons.hash.Hash;
+import org.infinispan.factories.AbstractComponentFactory;
 import org.infinispan.marshall.AbstractExternalizer;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.Util;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
@@ -74,7 +77,7 @@ public abstract class AbstractWheelConsistentHash extends AbstractConsistentHash
    protected Hash hashFunction;
    protected int numVirtualNodes = 1;
 
-   protected Set<Address> caches;
+   protected AddressCollection caches;
    // A map of normalized hashes -> cache addresses, represented as two arrays for performance considerations
    // positionKeys.length == positionValues.length == caches.size() * numVirtualNodes
    // positionKeys is sorted so we can search in it using binary search, see getPositionIndex(int)
@@ -103,7 +106,7 @@ public abstract class AbstractWheelConsistentHash extends AbstractConsistentHash
    }
 
    @Override
-   public void setCaches(Set<Address> newCaches) {
+   public void setCaches(AddressCollection newCaches) {
       if (newCaches.size() == 0 || newCaches.contains(null))
          throw new IllegalArgumentException("Invalid cache list for consistent hash: " + newCaches);
 
@@ -136,7 +139,7 @@ public abstract class AbstractWheelConsistentHash extends AbstractConsistentHash
       }
 
       // then populate caches, positionKeys and positionValues with the correct values (and in the correct order)
-      caches = new LinkedHashSet<Address>(newCaches.size());
+      caches = AddressCollectionFactory.emptyCollection();
       positionKeys = new int[positions.size()];
       positionValues = new Address[positions.size()];
       int i = 0;
@@ -161,7 +164,7 @@ public abstract class AbstractWheelConsistentHash extends AbstractConsistentHash
    }
 
    @Override
-   public final Set<Address> getCaches() {
+   public final AddressCollection getCaches() {
       return caches;
    }
 
@@ -295,7 +298,7 @@ public abstract class AbstractWheelConsistentHash extends AbstractConsistentHash
          instance.numVirtualNodes = unmarshaller.readInt();
          Hash hash = (Hash) unmarshaller.readObject();
          instance.setHashFunction(hash);
-         Set<Address> caches = (Set<Address>) unmarshaller.readObject();
+         AddressCollection caches = (AddressCollection) unmarshaller.readObject();
          instance.setCaches(caches);
          return instance;
       }

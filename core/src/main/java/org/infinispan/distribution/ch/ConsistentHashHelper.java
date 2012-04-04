@@ -25,6 +25,7 @@ package org.infinispan.distribution.ch;
 import org.infinispan.commons.hash.Hash;
 import org.infinispan.config.Configuration;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
 import org.infinispan.util.Util;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,7 +57,7 @@ public class ConsistentHashHelper {
          return removeAddressFromUnionConsistentHash((UnionConsistentHash) ch, toRemove, c);
       else {
          ConsistentHash newCH = constructConsistentHashInstance(c);
-         Set<Address> caches = new HashSet<Address>(ch.getCaches());
+         AddressCollection caches = ch.getCaches().clone();
          caches.remove(toRemove);
          newCH.setCaches(caches);
          return newCH;
@@ -109,9 +110,9 @@ public class ConsistentHashHelper {
     * @param addresses with which to populate the consistent hash
     * @return a new consistent hash instance
     */
-   public static ConsistentHash createConsistentHash(Configuration c, Collection<Address> addresses) {
+   public static ConsistentHash createConsistentHash(Configuration c, AddressCollection addresses) {
       ConsistentHash ch = constructConsistentHashInstance(c);
-      ch.setCaches(toSet(addresses));
+      ch.setCaches(addresses);
       return ch;
    }
 
@@ -123,8 +124,8 @@ public class ConsistentHashHelper {
     * @param addresses     with which to populate the consistent hash
     *@param moreAddresses to add to the list of addresses  @return a new consistent hash instance
     */
-   public static ConsistentHash createConsistentHash(Configuration c, Collection<Address> addresses, Address... moreAddresses) {
-      Set<Address> caches = new HashSet<Address>(addresses);
+   public static ConsistentHash createConsistentHash(Configuration c, AddressCollection addresses, Address... moreAddresses) {
+      AddressCollection caches = addresses.clone();
       caches.addAll(Arrays.asList(moreAddresses));
       return createConsistentHash(c, caches);
    }
@@ -138,8 +139,8 @@ public class ConsistentHashHelper {
     * @param moreAddresses to add to the list of addresses
     * @return a new consistent hash instance
     */
-   public static ConsistentHash createConsistentHash(Configuration c, Collection<Address> addresses, Collection<Address> moreAddresses) {
-      Set<Address> caches = new HashSet<Address>(addresses);
+   public static ConsistentHash createConsistentHash(Configuration c, AddressCollection addresses, AddressCollection moreAddresses) {
+      AddressCollection caches = addresses.clone();
       caches.addAll(moreAddresses);
       return createConsistentHash(c, caches);
    }
@@ -152,7 +153,7 @@ public class ConsistentHashHelper {
     * @param addresses with which to populate the consistent hash
     * @return a new consistent hash instance
     */
-   public static ConsistentHash createConsistentHash(ConsistentHash template, Collection<Address> addresses) {
+   public static ConsistentHash createConsistentHash(ConsistentHash template, AddressCollection addresses) {
       Hash hf = null;
       int numVirtualNodes = 1;
       GroupManager groupManager = null;
@@ -163,7 +164,7 @@ public class ConsistentHashHelper {
          groupManager = wTemplate.groupManager;
       }
       ConsistentHash ch = constructConsistentHashInstance(template.getClass(), hf, numVirtualNodes, groupManager);
-      if (addresses != null && !addresses.isEmpty())  ch.setCaches(toSet(addresses));
+      if (addresses != null && !addresses.isEmpty())  ch.setCaches(addresses);
       return ch;
    }
 
@@ -176,14 +177,9 @@ public class ConsistentHashHelper {
     * @param moreAddresses to add to the list of addresses
     * @return a new consistent hash instance
     */
-   public static ConsistentHash createConsistentHash(ConsistentHash template, Collection<Address> addresses, Address... moreAddresses) {
-      Set<Address> caches = new HashSet<Address>(addresses);
-      caches.addAll(Arrays.asList(moreAddresses));
+   public static ConsistentHash createConsistentHash(ConsistentHash template, AddressCollection addresses, Address... moreAddresses) {
+      AddressCollection caches = addresses.clone();
+      caches.addAll(moreAddresses);
       return createConsistentHash(template, caches);
-   }
-
-   private static Set<Address> toSet(Collection<Address> c) {
-      if (c instanceof Set) return (Set<Address>) c;
-      return new HashSet<Address>(c);
    }
 }

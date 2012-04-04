@@ -44,6 +44,7 @@ import org.infinispan.remoting.rpc.RpcManager;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.transaction.WriteSkewHelper;
 import org.infinispan.transaction.xa.CacheTransaction;
+import org.infinispan.util.AddressCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -70,7 +71,7 @@ public interface ClusteringDependentLogic {
 
    void commitEntry(CacheEntry entry, EntryVersion newVersion, boolean skipOwnershipCheck);
 
-   Collection<Address> getOwners(Collection<Object> keys);
+   AddressCollection getOwners(Collection<Object> keys);
 
    EntryVersionsMap createNewVersionsAndCheckForWriteSkews(VersionGenerator versionGenerator, TxInvocationContext context, VersionedPrepareCommand prepareCommand);
    
@@ -116,7 +117,7 @@ public interface ClusteringDependentLogic {
       }
 
       @Override
-      public Collection<Address> getOwners(Collection<Object> keys) {
+      public AddressCollection getOwners(Collection<Object> keys) {
          return null;
       }
       
@@ -203,7 +204,7 @@ public interface ClusteringDependentLogic {
       }
 
       @Override
-      public Collection<Address> getOwners(Collection<Object> keys) {
+      public AddressCollection getOwners(Collection<Object> keys) {
          return dm.getAffectedNodes(keys);
       }
 

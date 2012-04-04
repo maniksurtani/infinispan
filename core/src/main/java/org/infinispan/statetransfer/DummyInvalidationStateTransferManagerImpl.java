@@ -22,6 +22,7 @@ package org.infinispan.statetransfer;
 import org.infinispan.distribution.ch.ConsistentHash;
 import org.infinispan.loaders.CacheStore;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ import java.util.List;
  */
 public class DummyInvalidationStateTransferManagerImpl extends BaseStateTransferManagerImpl {
    @Override
-   protected ConsistentHash createConsistentHash(List<Address> members) {
+   protected ConsistentHash createConsistentHash(AddressCollection members) {
       return null;
    }
 
@@ -47,7 +48,7 @@ public class DummyInvalidationStateTransferManagerImpl extends BaseStateTransfer
    }
 
    @Override
-   protected BaseStateTransferTask createStateTransferTask(final int viewId, final List<Address> members,
+   protected BaseStateTransferTask createStateTransferTask(final int viewId, final AddressCollection members,
                                                            final boolean initialView) {
       return new BaseStateTransferTask(this, rpcManager, stateTransferLock, cacheNotifier, configuration, dataContainer,
             members, viewId, null, null, initialView) {

@@ -28,6 +28,7 @@ import org.infinispan.remoting.transport.Address;
 import org.infinispan.transaction.AbstractCacheTransaction;
 import org.infinispan.transaction.LocalTransaction;
 import org.infinispan.transaction.xa.GlobalTransaction;
+import org.infinispan.util.AddressCollection;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -114,11 +115,11 @@ public class LocalTxInvocationContext extends AbstractTxInvocationContext {
       return localTransaction != null && localTransaction.ownsLock(key);
    }
 
-   public void remoteLocksAcquired(Collection<Address> nodes) {
+   public void remoteLocksAcquired(AddressCollection nodes) {
       localTransaction.locksAcquired(nodes);
    }
 
-   public Collection<Address> getRemoteLocksAcquired() {
+   public AddressCollection getRemoteLocksAcquired() {
       return localTransaction.getRemoteLocksAcquired();
    }
 

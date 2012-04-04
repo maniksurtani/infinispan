@@ -57,6 +57,8 @@ import org.infinispan.remoting.transport.Transport;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
 import org.infinispan.test.fwk.TestCacheManagerFactory;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.testng.annotations.Test;
 
 /**
@@ -162,13 +164,13 @@ public class RpcManagerMBeanTest extends MultipleCacheManagersTest {
       try {
          Address mockAddress1 = mock(Address.class);
          Address mockAddress2 = mock(Address.class);
-         List<Address> memberList = new ArrayList<Address>(2);
+         AddressCollection memberList = AddressCollectionFactory.emptyCollection();
          memberList.add(mockAddress1);
          memberList.add(mockAddress2);
          Transport transport = mock(Transport.class);
          when(transport.getMembers()).thenReturn(memberList);
          when(transport.getAddress()).thenReturn(null);
-         when(transport.invokeRemotely(any(Collection.class), any(ReplicableCommand.class), any(ResponseMode.class),
+         when(transport.invokeRemotely(any(AddressCollection.class), any(ReplicableCommand.class), any(ResponseMode.class),
                anyLong(), anyBoolean(), any(ResponseFilter.class))).thenThrow(new RuntimeException());
          rpcManager.setTransport(transport);
          cache1.put("a5", "b5");

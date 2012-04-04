@@ -38,11 +38,12 @@ import org.infinispan.remoting.MembershipArithmetic;
 import org.infinispan.remoting.rpc.RpcManager;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.transaction.xa.GlobalTransaction;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -79,8 +80,9 @@ public class StaleTransactionCleanupService {
     */
    @ViewChanged
    public void onViewChange(ViewChangedEvent vce) {
-      final List<Address> leavers = MembershipArithmetic.getMembersLeft(vce.getOldMembers(),
-                                                                        vce.getNewMembers());
+      final AddressCollection leavers = MembershipArithmetic.getMembersLeft(
+            AddressCollectionFactory.fromCollection(vce.getOldMembers()),
+            AddressCollectionFactory.fromCollection(vce.getNewMembers()));
       if (!leavers.isEmpty()) {
          log.tracef("Saw %d leavers - kicking off a lock breaking task", leavers.size());
          cleanTxForWhichTheOwnerLeft(leavers);
@@ -153,7 +155,7 @@ public class StaleTransactionCleanupService {
       log.trace("Finished cleaning locks for keys that are no longer local");
    }
 
-   private void cleanTxForWhichTheOwnerLeft(final Collection<Address> leavers) {
+   private void cleanTxForWhichTheOwnerLeft(final AddressCollection leavers) {
       try {
          lockBreakingService.submit(new Runnable() {
             public void run() {

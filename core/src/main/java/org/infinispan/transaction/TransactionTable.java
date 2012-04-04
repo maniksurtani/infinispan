@@ -48,6 +48,7 @@ import org.infinispan.transaction.synchronization.SynchronizationAdapter;
 import org.infinispan.transaction.xa.CacheTransaction;
 import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.transaction.xa.TransactionFactory;
+import org.infinispan.util.AddressCollection;
 import org.infinispan.util.Util;
 import org.infinispan.util.concurrent.ConcurrentMapFactory;
 import org.infinispan.util.logging.Log;
@@ -217,7 +218,7 @@ public class TransactionTable {
       return minTxViewId;
    }
 
-   protected void updateStateOnNodesLeaving(Collection<Address> leavers) {
+   protected void updateStateOnNodesLeaving(AddressCollection leavers) {
       Set<GlobalTransaction> toKill = new HashSet<GlobalTransaction>();
       for (GlobalTransaction gt : remoteTransactions.keySet()) {
          if (leavers.contains(gt.getAddress())) toKill.add(gt);

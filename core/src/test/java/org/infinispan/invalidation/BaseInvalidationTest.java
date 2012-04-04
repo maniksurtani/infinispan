@@ -53,6 +53,8 @@ import org.infinispan.remoting.transport.Address;
 import org.infinispan.remoting.transport.Transport;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.concurrent.locks.LockManager;
 import org.testng.annotations.Test;
 
@@ -216,13 +218,13 @@ public abstract class BaseInvalidationTest extends MultipleCacheManagersTest {
          rpcManager.setTransport(mockTransport);
          Address addressOne = mock(Address.class);
          Address addressTwo = mock(Address.class);
-         List<Address> members = new ArrayList<Address>(2);
+         AddressCollection members = AddressCollectionFactory.emptyCollection();
          members.add(addressOne);
          members.add(addressTwo);
 
          when(mockTransport.getMembers()).thenReturn(members);
          when(mockTransport.getAddress()).thenReturn(addressOne);
-         when(mockTransport.invokeRemotely((List<Address>) anyObject(), (CacheRpcCommand) anyObject(),
+         when(mockTransport.invokeRemotely((AddressCollection) anyObject(), (CacheRpcCommand) anyObject(),
                                              eq(isSync ? ResponseMode.SYNCHRONOUS : ResponseMode.ASYNCHRONOUS_WITH_SYNC_MARSHALLING),
                                              anyLong(), anyBoolean(), (ResponseFilter) anyObject())).thenReturn(null);
 

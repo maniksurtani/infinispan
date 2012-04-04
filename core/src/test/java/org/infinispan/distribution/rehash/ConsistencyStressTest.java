@@ -33,6 +33,7 @@ import org.infinispan.remoting.transport.Address;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
 import org.infinispan.transaction.lookup.DummyTransactionManagerLookup;
+import org.infinispan.util.AddressCollection;
 import org.infinispan.util.concurrent.IsolationLevel;
 import org.infinispan.util.concurrent.TimeoutException;
 import org.infinispan.util.logging.Log;
@@ -152,7 +153,7 @@ public class ConsistencyStressTest extends MultipleCacheManagersTest {
                if (keysToIgnore.contains(key)) {
                   log.infof("Skipping test on failing key %s", key);
                } else {
-                  List<Address> owners = hash.locate(key, 2);
+                  AddressCollection owners = hash.locate(key, 2);
                   for (Map.Entry<Address, Cache<Object, Object>> e : cacheMap.entrySet()) {
                      try {
                         if (owners.contains(e.getKey())) DistributionTestHelper.assertIsInContainerImmortal(e.getValue(), key);

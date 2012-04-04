@@ -23,6 +23,8 @@ import net.jcip.annotations.Immutable;
 import org.infinispan.marshall.AbstractExternalizer;
 import org.infinispan.marshall.Ids;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.Immutables;
 import org.infinispan.util.Util;
 
@@ -39,23 +41,23 @@ import java.util.Set;
  */
 @Immutable
 public class CacheView {
-   public static final CacheView EMPTY_CACHE_VIEW = new CacheView(-1, Collections.<Address>emptyList());
+   public static final CacheView EMPTY_CACHE_VIEW = new CacheView(-1, AddressCollectionFactory.emptyCollection());
 
    private final int viewId;
-   private final List<Address> members;
+   private final AddressCollection members;
 
-   public CacheView(int viewId, List<Address> members) {
+   public CacheView(int viewId, AddressCollection members) {
       if (members == null)
          throw new IllegalArgumentException("Member list cannot be null");
       this.viewId = viewId;
-      this.members = Immutables.immutableListCopy(members);
+      this.members = members.clone();
    }
 
    public int getViewId() {
       return viewId;
    }
 
-   public List<Address> getMembers() {
+   public AddressCollection getMembers() {
       return members;
    }
 
@@ -67,7 +69,7 @@ public class CacheView {
       return members.contains(node);
    }
 
-   public boolean containsAny(Collection<Address> nodes) {
+   public boolean containsAny(AddressCollection nodes) {
       for (Address node : nodes) {
          if (members.contains(node))
             return true;
@@ -115,7 +117,7 @@ public class CacheView {
       @Override
       public CacheView readObject(ObjectInput unmarshaller) throws IOException, ClassNotFoundException {
          int viewId = unmarshaller.readInt();
-         List<Address> members = (List<Address>) unmarshaller.readObject();
+         AddressCollection members = (AddressCollection) unmarshaller.readObject();
          return new CacheView(viewId, members);
       }
 

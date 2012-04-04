@@ -19,12 +19,14 @@
 
 package org.infinispan.cacheviews;
 
-import java.util.List;
-
 import org.infinispan.remoting.MembershipArithmetic;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
+
+import java.util.List;
 
 /**
  * The cluster-wide state of a cache.
@@ -156,8 +158,10 @@ public class CacheViewInfo {
     * @return The list of members that are no longer present in the {@code newMembers} list.
     * Includes both committed and pending members.
     */
-   public List<Address> computeLeavers(List<Address> newMembers) {
-      List<Address> leavers = MembershipArithmetic.getMembersLeft(getCommittedView().getMembers(), newMembers);
+   public AddressCollection computeLeavers(AddressCollection newMembers) {
+      AddressCollection leavers = MembershipArithmetic.getMembersLeft(
+            getCommittedView().getMembers(),
+            newMembers);
       leavers.addAll(getPendingChanges().computeMissingJoiners(newMembers));
       return leavers;
    }

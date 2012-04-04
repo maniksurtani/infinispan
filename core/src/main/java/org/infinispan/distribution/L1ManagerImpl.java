@@ -34,6 +34,8 @@ import org.infinispan.factories.annotations.Stop;
 import org.infinispan.remoting.rpc.ResponseMode;
 import org.infinispan.remoting.rpc.RpcManager;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.concurrent.AggregatingNotifyingFutureImpl;
 import org.infinispan.util.concurrent.ConcurrentMapFactory;
 import org.infinispan.util.concurrent.NoOpFuture;
@@ -161,7 +163,7 @@ public class L1ManagerImpl implements L1Manager {
    private Future<Object> flushCache(Collection<Object> keys, final Object retval, Address origin, boolean assumeOriginKeptEntryInL1, boolean useNotifyingFuture) {
       if (trace) log.tracef("Invalidating L1 caches for keys %s", keys);
 
-      final Collection<Address> invalidationAddresses = buildInvalidationAddressList(keys, origin, assumeOriginKeptEntryInL1);
+      final AddressCollection invalidationAddresses = buildInvalidationAddressList(keys, origin, assumeOriginKeptEntryInL1);
 
       int nodes = invalidationAddresses.size();
 
@@ -212,8 +214,8 @@ public class L1ManagerImpl implements L1Manager {
       }
    }
 
-   private Collection<Address> buildInvalidationAddressList(Collection<Object> keys, Address origin, boolean assumeOriginKeptEntryInL1) {
-      Collection<Address> addresses = new HashSet<Address>(2);
+   private AddressCollection buildInvalidationAddressList(Collection<Object> keys, Address origin, boolean assumeOriginKeptEntryInL1) {
+      AddressCollection addresses = AddressCollectionFactory.emptyCollection();
       boolean originIsInRequestorsList = false;
       for (Object key : keys) {
          ConcurrentMap<Address, Long> as = requestors.remove(key);

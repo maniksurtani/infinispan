@@ -54,10 +54,11 @@ import org.infinispan.notifications.cachemanagerlistener.CacheManagerNotifier;
 import org.infinispan.remoting.rpc.ResponseMode;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.remoting.transport.Transport;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.FileLookupFactory;
 import org.infinispan.util.Immutables;
 import org.infinispan.util.ReflectionUtil;
-import org.infinispan.util.Util;
 import org.infinispan.util.concurrent.ConcurrentMapFactory;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
@@ -615,7 +616,7 @@ public class DefaultCacheManager implements EmbeddedCacheManager, CacheManager {
     */
    public List<Address> getMembers() {
       Transport t = getTransport();
-      return t == null ? null : t.getMembers();
+      return t == null ? null : AddressCollectionFactory.toList(t.getMembers());
    }
 
    /**
@@ -912,7 +913,7 @@ public class DefaultCacheManager implements EmbeddedCacheManager, CacheManager {
    public String getPhysicalAddresses() {
       Transport t = getTransport();
       if (t == null) return "local";
-      List<Address> address = t.getPhysicalAddresses();
+      AddressCollection address = t.getPhysicalAddresses();
       return address == null ? "local" : address.toString();
    }
 
@@ -921,8 +922,7 @@ public class DefaultCacheManager implements EmbeddedCacheManager, CacheManager {
    public String getClusterMembers() {
       Transport t = getTransport();
       if (t == null) return "local";
-      List<Address> addressList = t.getMembers();
-      return addressList.toString();
+      return t.getMembers().toString();
    }
 
    @ManagedAttribute(description = "Size of the cluster in number of nodes")

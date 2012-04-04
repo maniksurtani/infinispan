@@ -26,6 +26,7 @@ import org.infinispan.Cache;
 import org.infinispan.distribution.ch.ConsistentHash;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -122,9 +123,9 @@ public class KeyAffinityServiceTest extends BaseKeyAffinityServiceTest {
    public void testCollocatedKey() {
       ConsistentHash hash = manager(0).getCache(cacheName).getAdvancedCache().getDistributionManager().getConsistentHash();
       for (int i = 0; i < 1000; i++) {
-         List<Address> addresses = hash.locate(i, numOwners);
+         AddressCollection addresses = hash.locate(i, numOwners);
          Object collocatedKey = keyAffinityService.getCollocatedKey(i);
-         List<Address> addressList = hash.locate(collocatedKey, numOwners);
+         AddressCollection addressList = hash.locate(collocatedKey, numOwners);
          assertEquals(addresses, addressList);
       }
    }
@@ -136,7 +137,7 @@ public class KeyAffinityServiceTest extends BaseKeyAffinityServiceTest {
 
       private final int keysToConsume;
       private CountDownLatch consumersStart;
-      private final List<Address> topology = topology();
+      private final AddressCollection topology = topology();
       private final Random rnd = new Random();
 
       public KeyConsumer(int keysToConsume, CountDownLatch consumersStart) {

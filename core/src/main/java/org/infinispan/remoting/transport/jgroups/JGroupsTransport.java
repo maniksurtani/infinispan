@@ -37,6 +37,8 @@ import org.infinispan.remoting.rpc.ResponseFilter;
 import org.infinispan.remoting.rpc.ResponseMode;
 import org.infinispan.remoting.transport.AbstractTransport;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.FileLookup;
 import org.infinispan.util.FileLookupFactory;
 import org.infinispan.util.TypedProperties;
@@ -123,7 +125,7 @@ public class JGroupsTransport extends AbstractTransport implements MembershipLis
 
    // these members are not valid until we have received the first view on a second thread
    // and channelConnectedLatch is signaled
-   protected volatile List<Address> members = null;
+   protected volatile AddressCollection members = null;
    protected volatile Address coordinator = null;
    protected volatile boolean isCoordinator = false;
    protected CountDownLatch channelConnectedLatch = new CountDownLatch(1);
@@ -245,7 +247,7 @@ public class JGroupsTransport extends AbstractTransport implements MembershipLis
          dispatcher.stop();
       }
 
-      members = Collections.emptyList();
+      members = AddressCollectionFactory.emptyCollection();
       coordinator = null;
       isCoordinator = false;
       dispatcher = null;
@@ -401,8 +403,8 @@ public class JGroupsTransport extends AbstractTransport implements MembershipLis
    }
 
    @Override
-   public List<Address> getMembers() {
-      return members != null ? members : Collections.<Address> emptyList();
+   public AddressCollection getMembers() {
+      return members != null ? members.clone() : AddressCollectionFactory.emptyCollection();
    }
 
    @Override
@@ -419,15 +421,15 @@ public class JGroupsTransport extends AbstractTransport implements MembershipLis
    }
 
    @Override
-   public List<Address> getPhysicalAddresses() {
+   public AddressCollection getPhysicalAddresses() {
       if (physicalAddress == null && channel != null) {
          org.jgroups.Address addr = (org.jgroups.Address) channel.down(new Event(Event.GET_PHYSICAL_ADDRESS, channel.getAddress()));
          if (addr == null) {
-            return Collections.emptyList();
+            return AddressCollectionFactory.emptyCollection();
          }
          physicalAddress = new JGroupsAddress(addr);
       }
-      return Collections.singletonList(physicalAddress);
+      return AddressCollectionFactory.singleton(physicalAddress);
    }
 
    // ------------------------------------------------------------------------------------------------------------------
@@ -435,7 +437,7 @@ public class JGroupsTransport extends AbstractTransport implements MembershipLis
    // ------------------------------------------------------------------------------------------------------------------
 
    @Override
-   public Map<Address, Response> invokeRemotely(Collection<Address> recipients, ReplicableCommand rpcCommand, ResponseMode mode, long timeout, boolean usePriorityQueue, ResponseFilter responseFilter)
+   public Map<Address, Response> invokeRemotely(AddressCollection recipients, ReplicableCommand rpcCommand, ResponseMode mode, long timeout, boolean usePriorityQueue, ResponseFilter responseFilter)
          throws Exception {
 
       if (recipients != null && recipients.isEmpty()) {
@@ -451,7 +453,7 @@ public class JGroupsTransport extends AbstractTransport implements MembershipLis
          if (mode == ResponseMode.SYNCHRONOUS)
             throw new SuspectException("One or more nodes have left the cluster while replicating command " + rpcCommand);
          else { // SYNCHRONOUS_IGNORE_LEAVERS || WAIT_FOR_VALID_RESPONSE
-            recipients = new HashSet<Address>(recipients);
+            recipients = recipients.clone();
             recipients.retainAll(getMembers());
          }
       }
@@ -476,11 +478,11 @@ public class JGroupsTransport extends AbstractTransport implements MembershipLis
             boolean singleRecipient = jgAddressList != null && jgAddressList.size() == 1;
             boolean skipRpc = false;
             if (jgAddressList == null) {
-               ArrayList<Address> others = new ArrayList<Address>(members);
+               AddressCollection others = members.clone();
                others.remove(self);
                skipRpc = others.isEmpty();
                singleRecipient = others.size() == 1;
-               if (singleRecipient) singleJGAddress = toJGroupsAddress(others.get(0));
+               if (singleRecipient) singleJGAddress = toJGroupsAddress(others.getFirst());
             }
             if (!skipRpc) {
                if (singleRecipient) {
@@ -546,12 +548,12 @@ public class JGroupsTransport extends AbstractTransport implements MembershipLis
    // ------------------------------------------------------------------------------------------------------------------
 
    private interface Notify {
-      void emitNotification(List<Address> oldMembers, View newView);
+      void emitNotification(AddressCollection oldMembers, View newView);
    }
 
    private class NotifyViewChange implements Notify {
       @Override
-      public void emitNotification(List<Address> oldMembers, View newView) {
+      public void emitNotification(AddressCollection oldMembers, View newView) {
          notifier.notifyViewChange(members, oldMembers, getAddress(), (int) newView.getVid().getId());
       }
    }
@@ -559,7 +561,7 @@ public class JGroupsTransport extends AbstractTransport implements MembershipLis
    private class NotifyMerge implements Notify {
 
       @Override
-      public void emitNotification(List<Address> oldMembers, View newView) {
+      public void emitNotification(AddressCollection oldMembers, View newView) {
          MergeView mv = (MergeView) newView;
 
          final Address address = getAddress();
@@ -567,8 +569,8 @@ public class JGroupsTransport extends AbstractTransport implements MembershipLis
          notifier.notifyMerge(members, oldMembers, address, viewId, getSubgroups(mv.getSubgroups()));
       }
 
-      private List<List<Address>> getSubgroups(List<View> subviews) {
-         List<List<Address>> l = new ArrayList<List<Address>>(subviews.size());
+      private List<AddressCollection> getSubgroups(List<View> subviews) {
+         List<AddressCollection> l = new ArrayList<AddressCollection>(subviews.size());
          for (View v : subviews)
             l.add(fromJGroupsAddressList(v.getMembers()));
          return l;
@@ -584,7 +586,7 @@ public class JGroupsTransport extends AbstractTransport implements MembershipLis
          return;
       }
 
-      List<Address> oldMembers = members;
+      AddressCollection oldMembers = members;
       // we need a defensive copy anyway
       members = fromJGroupsAddressList(newMembers);
 
@@ -642,7 +644,7 @@ public class JGroupsTransport extends AbstractTransport implements MembershipLis
          return new JGroupsAddress(addr);
    }
 
-   private List<org.jgroups.Address> toJGroupsAddressListExcludingSelf(Collection<Address> list) {
+   private List<org.jgroups.Address> toJGroupsAddressListExcludingSelf(AddressCollection list) {
       if (list == null)
          return null;
       if (list.isEmpty())
@@ -662,14 +664,14 @@ public class JGroupsTransport extends AbstractTransport implements MembershipLis
       return retval;
    }
 
-   private static List<Address> fromJGroupsAddressList(List<org.jgroups.Address> list) {
+   private static AddressCollection fromJGroupsAddressList(List<org.jgroups.Address> list) {
       if (list == null || list.isEmpty())
-         return Collections.emptyList();
+         return AddressCollectionFactory.emptyCollection();
 
-      List<Address> retval = new ArrayList<Address>(list.size());
+      AddressCollection retval = AddressCollectionFactory.emptyCollection();
       for (org.jgroups.Address a : list)
          retval.add(fromJGroupsAddress(a));
-      return Collections.unmodifiableList(retval);
+      return retval;
    }
 
    // mainly for unit testing

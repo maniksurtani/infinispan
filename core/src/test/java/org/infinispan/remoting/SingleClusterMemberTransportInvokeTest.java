@@ -36,6 +36,8 @@ import org.infinispan.remoting.transport.Address;
 import org.infinispan.remoting.transport.Transport;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.testng.annotations.Test;
 
 @Test(groups = "functional", testName = "remoting.SingleClusterMemberTransportInvokeTest")
@@ -56,7 +58,7 @@ public class SingleClusterMemberTransportInvokeTest extends MultipleCacheManager
       Transport originalTransport = TestingUtil.extractComponent(cache1, Transport.class);
       try {
          Address mockAddress1 = mock(Address.class);
-         List<Address> memberList = new ArrayList<Address>(1);
+         AddressCollection memberList = AddressCollectionFactory.emptyCollection();
          memberList.add(mockAddress1);
          when(mockTransport.getMembers()).thenReturn(memberList);
          when(mockTransport.getAddress()).thenReturn(null);

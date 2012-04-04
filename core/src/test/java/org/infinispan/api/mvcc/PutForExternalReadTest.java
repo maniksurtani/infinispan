@@ -58,6 +58,8 @@ import org.infinispan.test.ReplListener;
 import org.infinispan.test.TestingUtil;
 import org.infinispan.test.fwk.CleanupAfterMethod;
 import org.infinispan.transaction.TransactionTable;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.testng.annotations.Test;
 
 @Test(groups = "functional", testName = "api.mvcc.PutForExternalReadTest")
@@ -109,7 +111,7 @@ public class PutForExternalReadTest extends MultipleCacheManagersTest {
       assertEquals("PFER should have been a no-op", value, cache2.get(key));
    }
 
-   private List<Address> anyAddresses() {
+   private AddressCollection anyAddresses() {
       anyObject();
       return null;
    }
@@ -168,7 +170,7 @@ public class PutForExternalReadTest extends MultipleCacheManagersTest {
          Address mockAddress1 = mock(Address.class);
          Address mockAddress2 = mock(Address.class);
 
-         List<Address> memberList = new ArrayList<Address>(2);
+         AddressCollection memberList = AddressCollectionFactory.emptyCollection();
          memberList.add(mockAddress1);
          memberList.add(mockAddress2);
 

@@ -29,6 +29,7 @@ import org.infinispan.commands.write.RemoveCommand;
 import org.infinispan.commands.write.ReplaceCommand;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.test.TestingUtil;
+import org.infinispan.util.AddressCollection;
 import org.infinispan.util.ObjectDuplicator;
 import org.testng.annotations.Test;
 
@@ -68,10 +69,10 @@ public class DistSyncFuncTest extends BaseDistFunctionalTest {
    }
 
    private void assertOwnershipConsensus(String key) {
-      List l1 = getConsistentHash(c1).locate(key, 2);
-      List l2 = getConsistentHash(c2).locate(key, 2);
-      List l3 = getConsistentHash(c3).locate(key, 2);
-      List l4 = getConsistentHash(c4).locate(key, 2);
+      AddressCollection l1 = getConsistentHash(c1).locate(key, 2);
+      AddressCollection l2 = getConsistentHash(c2).locate(key, 2);
+      AddressCollection l3 = getConsistentHash(c3).locate(key, 2);
+      AddressCollection l4 = getConsistentHash(c4).locate(key, 2);
 
       assert l1.equals(l2) : "L1 "+l1+" and L2 "+l2+" don't agree.";
       assert l2.equals(l3): "L2 "+l2+" and L3 "+l3+" don't agree.";

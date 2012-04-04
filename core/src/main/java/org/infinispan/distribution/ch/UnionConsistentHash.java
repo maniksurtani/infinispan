@@ -26,6 +26,8 @@ import org.infinispan.CacheException;
 import org.infinispan.marshall.AbstractExternalizer;
 import org.infinispan.marshall.Ids;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.Immutables;
 import org.infinispan.util.Util;
 
@@ -56,21 +58,21 @@ public class UnionConsistentHash extends AbstractConsistentHash {
    }
 
    @Override
-   public void setCaches(Set<Address> caches) {
+   public void setCaches(AddressCollection caches) {
       // no op
    }
 
    @Override
-   public Set<Address> getCaches() {
-      return Collections.emptySet();
+   public AddressCollection getCaches() {
+      return AddressCollectionFactory.emptyCollection();
    }
 
    @Override
-   public List<Address> locate(Object key, int replCount) {
-      Set<Address> addresses = new LinkedHashSet<Address>();
+   public AddressCollection locate(Object key, int replCount) {
+      AddressCollection addresses = AddressCollectionFactory.emptyCollection();
       addresses.addAll(oldCH.locate(key, replCount));
       addresses.addAll(newCH.locate(key, replCount));
-      return Immutables.immutableListConvert(addresses);
+      return addresses;
    }
 
    @Override

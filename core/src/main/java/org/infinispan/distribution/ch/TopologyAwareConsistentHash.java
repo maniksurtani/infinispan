@@ -30,9 +30,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.infinispan.commons.hash.Hash;
+import org.infinispan.factories.AbstractComponentFactory;
 import org.infinispan.marshall.Ids;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.remoting.transport.TopologyAwareAddress;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.Util;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
@@ -73,7 +76,7 @@ public class TopologyAwareConsistentHash extends AbstractWheelConsistentHash {
    }
 
    @Override
-   public void setCaches(Set<Address> newCaches) {
+   public void setCaches(AddressCollection newCaches) {
       super.setCaches(newCaches);
 
       siteIdChangeIndexes.clear();
@@ -100,7 +103,7 @@ public class TopologyAwareConsistentHash extends AbstractWheelConsistentHash {
    }
 
    @Override
-   public List<Address> locate(Object key, int replCount) {
+   public AddressCollection locate(Object key, int replCount) {
       return locateInternal(key, replCount, null);
    }
 
@@ -113,13 +116,13 @@ public class TopologyAwareConsistentHash extends AbstractWheelConsistentHash {
     * Locate <code>replCount</code> owners for key <code>key</code> and return the list.
     * If one of the owners is identical to <code>target</code>, return after adding <code>target</code> to the list.
     */
-   private List<Address> locateInternal(Object key, int replCount, Address target) {
+   private AddressCollection locateInternal(Object key, int replCount, Address target) {
       int actualReplCount = Math.min(replCount, caches.size());
       int keyNormalizedHash = getNormalizedHash(getGrouping(key));
       int firstOwnerIndex = getPositionIndex(keyNormalizedHash);
       Address firstOwner = positionValues[firstOwnerIndex];
 
-      List<Address> owners = new ArrayList<Address>(actualReplCount);
+      AddressCollection owners = AddressCollectionFactory.emptyCollection();
       owners.add(firstOwner);
       if (owners.size() >= actualReplCount)
          return owners;
@@ -150,7 +153,7 @@ public class TopologyAwareConsistentHash extends AbstractWheelConsistentHash {
     * Return <code>false</code> when the list is exhausted, and <code>true</code> when we have found <code>replCount</code>
     * owners or <code>target</code> is one of the owners.
     */
-   private boolean locateOwnersForLevel(int firstOwnerIndex, int replCount, Level level, SortedSet<Integer> levelIdChangeIndexes, Address target, List<Address> owners) {
+   private boolean locateOwnersForLevel(int firstOwnerIndex, int replCount, Level level, SortedSet<Integer> levelIdChangeIndexes, Address target, AddressCollection owners) {
       // start with the nodes after firstOwnerIndex in the wheel
       for (Integer addrIndex : levelIdChangeIndexes.tailSet(firstOwnerIndex)) {
          TopologyAwareAddress address = (TopologyAwareAddress) positionValues[addrIndex];
@@ -166,7 +169,7 @@ public class TopologyAwareConsistentHash extends AbstractWheelConsistentHash {
       return false;
    }
 
-   private boolean addOwner(List<Address> owners, TopologyAwareAddress address, int replCount, Address target, Level level) {
+   private boolean addOwner(AddressCollection owners, TopologyAwareAddress address, int replCount, Address target, Level level) {
       boolean alreadyAdded = false;
       for (Address owner : owners) {
          switch (level) {

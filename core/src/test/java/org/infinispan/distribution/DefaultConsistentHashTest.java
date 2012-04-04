@@ -27,6 +27,8 @@ import org.infinispan.distribution.ch.ConsistentHashHelper;
 import org.infinispan.distribution.ch.DefaultConsistentHash;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.test.AbstractInfinispanTest;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ import static org.testng.Assert.assertEquals;
 @Test(groups = "unit", testName = "distribution.DefaultConsistentHashTest")
 public class DefaultConsistentHashTest extends AbstractInfinispanTest {
 
-   public DefaultConsistentHash createConsistentHash(List<Address> servers) {
+   public DefaultConsistentHash createConsistentHash(AddressCollection servers) {
       Configuration c = new Configuration().fluent()
             .hash().consistentHashClass(DefaultConsistentHash.class)
             .build();
@@ -48,12 +50,12 @@ public class DefaultConsistentHashTest extends AbstractInfinispanTest {
    }
 
    public void testSimpleHashing() {
-      List<Address> servers = Arrays.<Address>asList(new TestAddress(1), new TestAddress(2), new TestAddress(3), new TestAddress(4));
+      AddressCollection servers = AddressCollectionFactory.allAddresses(new TestAddress(1), new TestAddress(2), new TestAddress(3), new TestAddress(4));
       DefaultConsistentHash ch = createConsistentHash(servers);
 
       Object o = new Object();
-      List<Address> l1 = ch.locate(o, 2);
-      List<Address> l2 = ch.locate(o, 2);
+      AddressCollection l1 = ch.locate(o, 2);
+      AddressCollection l2 = ch.locate(o, 2);
 
       assert l1.size() == 2;
       assert l1.equals(l2);
@@ -79,12 +81,12 @@ public class DefaultConsistentHashTest extends AbstractInfinispanTest {
    }
 
    public void testMultipleKeys() {
-      List<Address> servers = Arrays.<Address>asList(new TestAddress(1), new TestAddress(2), new TestAddress(3), new TestAddress(4));
+      AddressCollection servers = AddressCollectionFactory.allAddresses(new TestAddress(1), new TestAddress(2), new TestAddress(3), new TestAddress(4));
       DefaultConsistentHash ch = createConsistentHash(servers);
 
       Object k1 = "key1", k2 = "key2", k3 = "key3";
       Collection<Object> keys = Arrays.asList(k1, k2, k3);
-      Map<Object, List<Address>> locations = ch.locateAll(keys, 3);
+      Map<Object, AddressCollection> locations = ch.locateAll(keys, 3);
 
       assert locations.size() == 3;
       for (Object k : keys) {
@@ -94,7 +96,7 @@ public class DefaultConsistentHashTest extends AbstractInfinispanTest {
    }
 
    public void testNumHashedNodes() {
-      List<Address> servers = Arrays.<Address>asList(new TestAddress(1), new TestAddress(2), new TestAddress(3), new TestAddress(4));
+      AddressCollection servers = AddressCollectionFactory.allAddresses(new TestAddress(1), new TestAddress(2), new TestAddress(3), new TestAddress(4));
       DefaultConsistentHash ch = createConsistentHash(servers);
 
       String[] keys = new String[10000];
@@ -102,25 +104,25 @@ public class DefaultConsistentHashTest extends AbstractInfinispanTest {
       for (int i=0; i<10000; i++) keys[i] = Integer.toHexString(r.nextInt());
 
       for (String key: keys) {
-         List<Address> l = ch.locate(key, 2);
+         AddressCollection l = ch.locate(key, 2);
          assert l.size() == 2: "Did NOT find 2 owners for key ["+key+"] as expected!  Found " + l;
       }
    }
 
    public void testEveryNumOwners() {
       for (int nodesCount = 1; nodesCount < 10; nodesCount++) {
-         ArrayList servers = new ArrayList(nodesCount);
+         AddressCollection servers = AddressCollectionFactory.emptyCollection();
          for (int i = 0; i < nodesCount; i++) {
             servers.add(new TestAddress(i * 1000));
          }
 
          DefaultConsistentHash ch = createConsistentHash(servers);
-         List<Address> sortedServers = new ArrayList<Address>(ch.getCaches());
+         AddressCollection sortedServers = ch.getCaches().clone();
 
          // check that we get numOwners servers for numOwners in 1..nodesCount
          for (int numOwners = 1; numOwners < nodesCount; numOwners++) {
             for (int i = 0; i < nodesCount; i++) {
-               List<Address> owners = ch.locate(sortedServers.get(i), numOwners);
+               AddressCollection owners = ch.locate(sortedServers.get(i), numOwners);
                assertEquals(owners.size(), numOwners);
                for (int j = 0; j < numOwners; j++) {
                   assertEquals(owners.get(j), sortedServers.get((i + j) % nodesCount));
@@ -130,7 +132,7 @@ public class DefaultConsistentHashTest extends AbstractInfinispanTest {
 
          // check that we get all the servers for numOwners > nodesCount
          for (int i = 0; i < nodesCount; i++) {
-            List<Address> owners = ch.locate(sortedServers.get(i), nodesCount + 1);
+            AddressCollection owners = ch.locate(sortedServers.get(i), nodesCount + 1);
             assertEquals(owners.size(), nodesCount);
             for (int j = 0; j < nodesCount; j++) {
                assertEquals(owners.get(j), sortedServers.get((i + j) % nodesCount));

@@ -23,6 +23,8 @@
 package org.infinispan.affinity;
 
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -37,21 +39,36 @@ import java.util.List;
  */
 @Test (groups = "functional", testName = "affinity.FilteredKeyAffinityServiceTest")
 public class FilteredKeyAffinityServiceTest extends BaseFilterKeyAffinityServiceTest {
-   private List<Address> filter;
+   private AddressCollection filter;
 
    @Override
    protected void createService() {
+<<<<<<< Updated upstream
       filter = new ArrayList<Address>();
+=======
+      ThreadFactory tf = new ThreadFactory() {
+         @Override
+         public Thread newThread(Runnable r) {
+            return new Thread(r, "KeyGeneratorThread");
+         }
+      };
+      filter = AddressCollectionFactory.emptyCollection();
+>>>>>>> Stashed changes
       filter.add(caches.get(0).getAdvancedCache().getRpcManager().getTransport().getAddress());
       filter.add(caches.get(1).getAdvancedCache().getRpcManager().getTransport().getAddress());
       cacheManager = caches.get(0).getCacheManager();
       keyAffinityService = (KeyAffinityServiceImpl<Object>) KeyAffinityServiceFactory.
+<<<<<<< Updated upstream
             newKeyAffinityService(cacheManager.getCache(cacheName), filter, new RndKeyGenerator(),
                   executor, 100);
+=======
+            newKeyAffinityService(cacheManager.getCache(cacheName), AddressCollectionFactory.toList(filter), new RndKeyGenerator(),
+                                       Executors.newSingleThreadExecutor(tf), 100);
+>>>>>>> Stashed changes
    }
 
    @Override
-   protected List<Address> getAddresses() {
+   protected AddressCollection getAddresses() {
       return filter;
    }
 

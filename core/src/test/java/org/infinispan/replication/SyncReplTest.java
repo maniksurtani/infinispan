@@ -57,6 +57,8 @@ import org.infinispan.remoting.transport.Address;
 import org.infinispan.remoting.transport.Transport;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.testng.annotations.Test;
 
 /**
@@ -185,7 +187,7 @@ public class SyncReplTest extends MultipleCacheManagersTest {
          Address mockAddressOne = mock(Address.class);
          Address mockAddressTwo = mock(Address.class);
 
-         List<Address> addresses = new LinkedList<Address>();
+         AddressCollection addresses = AddressCollectionFactory.emptyCollection();
          addresses.add(mockAddressOne);
          addresses.add(mockAddressTwo);
          when(mockTransport.getAddress()).thenReturn(mockAddressOne);
@@ -197,7 +199,7 @@ public class SyncReplTest extends MultipleCacheManagersTest {
          rpcManager.setTransport(mockTransport);
 
          when(
-               mockTransport.invokeRemotely((List<Address>) anyObject(),
+               mockTransport.invokeRemotely((AddressCollection) anyObject(),
                      (CacheRpcCommand) anyObject(), eq(ResponseMode.SYNCHRONOUS), anyLong(),
                      anyBoolean(), (ResponseFilter) anyObject())).thenReturn(emptyResponses);
 
@@ -212,7 +214,7 @@ public class SyncReplTest extends MultipleCacheManagersTest {
          when(mockTransport.getAddress()).thenReturn(mockAddressOne);
          when(mockTransport.getMembers()).thenReturn(addresses);
          when(
-                  mockTransport.invokeRemotely((List<Address>) anyObject(),
+                  mockTransport.invokeRemotely((AddressCollection) anyObject(),
                            (CacheRpcCommand) anyObject(), eq(ResponseMode.ASYNCHRONOUS), anyLong(),
                            anyBoolean(), (ResponseFilter) anyObject())).thenReturn(emptyResponses);
 

@@ -33,6 +33,7 @@ import org.infinispan.remoting.transport.Address;
 import org.infinispan.test.AbstractInfinispanTest;
 import org.infinispan.test.TestingUtil;
 import org.infinispan.test.fwk.TestCacheManagerFactory;
+import org.infinispan.util.AddressCollection;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
@@ -75,8 +76,13 @@ public class CacheManagerNotifierTest extends AbstractInfinispanTest {
          // start a second cache.
          Cache c2 = cm2.getCache("cache");
          TestingUtil.blockUntilViewsReceived(60000, cm1, cm2);
+<<<<<<< Updated upstream
          assert nw.notifyView;
          assertEquals(myAddress, nw.address);
+=======
+         verify(mockNotifier).notifyViewChange(isA(AddressCollection.class), isA(AddressCollection.class), eq(myAddress), anyInt());
+
+>>>>>>> Stashed changes
       } finally {
          TestingUtil.replaceComponent(cm1, CacheManagerNotifier.class, origNotifier, true);
       }

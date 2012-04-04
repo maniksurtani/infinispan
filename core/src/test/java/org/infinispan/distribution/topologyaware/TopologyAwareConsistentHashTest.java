@@ -28,6 +28,8 @@ import org.infinispan.distribution.TestTopologyAwareAddress;
 import org.infinispan.distribution.ch.TopologyAwareConsistentHash;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.test.AbstractInfinispanTest;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 import org.testng.annotations.BeforeMethod;
@@ -51,18 +53,18 @@ public class TopologyAwareConsistentHashTest extends AbstractInfinispanTest {
    private static final Log log = LogFactory.getLog(TopologyAwareConsistentHashTest.class);
 
    protected TopologyAwareConsistentHash ch;
-   protected HashSet<Address> addresses;
+   protected AddressCollection addresses;
    TestTopologyAwareAddress[] testAddresses;
 
    @BeforeMethod
    public void setUp() {
       ch = new TopologyAwareConsistentHash(new MurmurHash3());
-      addresses = new HashSet<Address>();
+      addresses = AddressCollectionFactory.emptyCollection();
       for (int i = 0; i < 10; i++) {
           addresses.add(new TestTopologyAwareAddress(i * 100));
       }
       ch.setCaches(addresses);
-      Set<Address> tmp = ch.getCaches();
+      AddressCollection tmp = ch.getCaches();
       int i = 0;
       testAddresses = new TestTopologyAwareAddress[tmp.size()];
       for (Address a: tmp) testAddresses[i++] = (TestTopologyAwareAddress) a;
@@ -468,20 +470,20 @@ public class TopologyAwareConsistentHashTest extends AbstractInfinispanTest {
       addNode(testAddresses[9], "m0", "r0", "s0");
       setAddresses();
 
-      List<Address> testAddresses0List = ch.locate(testAddresses[0], 3);
-      List<Address> testAddresses1List = ch.locate(testAddresses[1], 3);
-      List<Address> testAddresses2List = ch.locate(testAddresses[2], 3);
-      List<Address> testAddresses3List = ch.locate(testAddresses[3], 3);
-      List<Address> testAddresses4List = ch.locate(testAddresses[4], 3);
-      List<Address> testAddresses5List = ch.locate(testAddresses[5], 3);
-      List<Address> testAddresses6List = ch.locate(testAddresses[6], 3);
-      List<Address> testAddresses7List = ch.locate(testAddresses[7], 3);
-      List<Address> testAddresses8List = ch.locate(testAddresses[8], 3);
-      List<Address> testAddresses9List = ch.locate(testAddresses[9], 3);
+      AddressCollection testAddresses0List = ch.locate(testAddresses[0], 3);
+      AddressCollection testAddresses1List = ch.locate(testAddresses[1], 3);
+      AddressCollection testAddresses2List = ch.locate(testAddresses[2], 3);
+      AddressCollection testAddresses3List = ch.locate(testAddresses[3], 3);
+      AddressCollection testAddresses4List = ch.locate(testAddresses[4], 3);
+      AddressCollection testAddresses5List = ch.locate(testAddresses[5], 3);
+      AddressCollection testAddresses6List = ch.locate(testAddresses[6], 3);
+      AddressCollection testAddresses7List = ch.locate(testAddresses[7], 3);
+      AddressCollection testAddresses8List = ch.locate(testAddresses[8], 3);
+      AddressCollection testAddresses9List = ch.locate(testAddresses[9], 3);
 
       for (Address addr: addresses) {
          System.out.println("addr = " + addr);
-         Set<Address> addressCopy = (Set<Address>) addresses.clone();
+         AddressCollection addressCopy = addresses.clone();
          addressCopy.remove(addr);
          ch.setCaches(addressCopy);
          checkConsistency(testAddresses0List, testAddresses[0], addr, 3);
@@ -497,18 +499,18 @@ public class TopologyAwareConsistentHashTest extends AbstractInfinispanTest {
       }
    }
 
-   private void checkConsistency(List<Address> testAddressesList, Address testAddresses, Address addr, int replCount) {
-      testAddressesList = new ArrayList(testAddressesList);
+   private void checkConsistency(AddressCollection testAddressesList, Address testAddresses, Address addr, int replCount) {
+      testAddressesList = testAddressesList.clone();
       testAddressesList.remove(addr);
       if (testAddresses.equals(addr)) return;
-      List<Address> currentBackupList = ch.locate(testAddresses, replCount);
+      AddressCollection currentBackupList = ch.locate(testAddresses, replCount);
       assertEquals(replCount, currentBackupList.size(), currentBackupList.toString());
       assert currentBackupList.containsAll(testAddressesList) : "Current backups are: " + currentBackupList + "Previous: " + testAddressesList;
    }
 
 
    private void assertLocation(Object key, int numOwners, boolean enforceSequence, Address... expected) {
-      List<Address> received = ch.locate(key, numOwners);
+      AddressCollection received = ch.locate(key, numOwners);
 
       if (expected == null) {
          assert received.isEmpty();
@@ -517,7 +519,7 @@ public class TopologyAwareConsistentHashTest extends AbstractInfinispanTest {
       if (enforceSequence) {
          assert received.equals(Arrays.asList(expected)) : "Received: " + received + " Expected: " + Arrays.toString(expected);
       } else {
-         assert received.containsAll(Arrays.asList(expected)) : "Received: " + received + " Expected: " + Arrays.toString(expected);
+         assert received.containsAll(expected) : "Received: " + received + " Expected: " + Arrays.toString(expected);
       }
 
       for (Address testAddress : testAddresses) {
@@ -537,7 +539,7 @@ public class TopologyAwareConsistentHashTest extends AbstractInfinispanTest {
    private void setAddresses() {
       ch.setCaches(addresses);
       for (int i = 0; i < testAddresses.length; i++) {
-         if (testAddresses[i] != null) ((TestAddress)(testAddresses[i])).setName("a" + i);
+         if (testAddresses[i] != null) testAddresses[i].setName("a" + i);
       }
       log.info("Static addresses: " + Arrays.toString(testAddresses));
    }

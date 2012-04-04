@@ -31,6 +31,7 @@ import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.notifications.cachelistener.event.TopologyChangedEvent;
 import org.infinispan.notifications.cachemanagerlistener.event.CacheStoppedEvent;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
 import org.infinispan.util.concurrent.ConcurrentHashSet;
 import org.infinispan.util.concurrent.ConcurrentMapFactory;
 import org.infinispan.util.concurrent.ReclosableLatch;
@@ -158,7 +159,7 @@ public class KeyAffinityServiceImpl<K> implements KeyAffinityService<K> {
          log.debug("Service already started, ignoring call to start!");
          return;
       }
-      List<Address> existingNodes = getExistingNodes();
+      AddressCollection existingNodes = getExistingNodes();
       maxNumberInvariant.writeLock().lock();
       try {
          addQueuesForAddresses(existingNodes);
@@ -323,7 +324,7 @@ public class KeyAffinityServiceImpl<K> implements KeyAffinityService<K> {
    /**
     * Important: this *MUST* be called with WL on {@link #address2key}.
     */
-   private void addQueuesForAddresses(Collection<Address> addresses) {
+   private void addQueuesForAddresses(AddressCollection addresses) {
       for (Address address : addresses) {
          if (interestedInAddress(address)) {
             address2key.put(address, new ArrayBlockingQueue<K>(bufferSize));
@@ -337,7 +338,7 @@ public class KeyAffinityServiceImpl<K> implements KeyAffinityService<K> {
       return filter == null || filter.contains(address);
    }
 
-   private List<Address> getExistingNodes() {
+   private AddressCollection getExistingNodes() {
       return cache.getAdvancedCache().getRpcManager().getTransport().getMembers();
    }
 

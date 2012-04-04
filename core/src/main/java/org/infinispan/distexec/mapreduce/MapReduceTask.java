@@ -39,6 +39,7 @@ import org.infinispan.remoting.responses.Response;
 import org.infinispan.remoting.responses.SuccessfulResponse;
 import org.infinispan.remoting.rpc.RpcManager;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.Util;
 import org.infinispan.util.concurrent.AbstractInProcessFuture;
 import org.infinispan.util.concurrent.FutureListener;
@@ -258,7 +259,7 @@ public class MapReduceTask<KIn, VIn, KOut, VOut> {
                   log.debugf("Invoking %s on %s", cmd, address);
                   MapReduceFuture future = new MapReduceFuture();
                   futures.add(future);
-                  rpc.invokeRemotelyInFuture(Collections.singleton(address), cmd, future);                  
+                  rpc.invokeRemotelyInFuture(AddressCollectionFactory.singleton(address), cmd, future);
                   log.debugf("Invoked %s on %s ", cmd, address);
                } catch (Exception ex) {
                   throw new CacheException("Could not invoke MapReduceTask on remote node " + address, ex);

@@ -26,6 +26,8 @@ import org.infinispan.distribution.ch.DefaultConsistentHash;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.remoting.transport.jgroups.JGroupsAddress;
 import org.infinispan.test.AbstractInfinispanTest;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.Util;
 import org.testng.annotations.Test;
 
@@ -44,8 +46,8 @@ import static org.testng.Assert.*;
 @Test(testName = "distribution.VNodesCHPerfTest", groups = "manual", enabled = false, description = "Disabled until we can configure Surefire to skip manual tests")
 public class VNodesCHPerfTest extends AbstractInfinispanTest {
 
-   private Set<Address> createAddresses(int numNodes) {
-      Set<Address> addresses = new HashSet<Address>(numNodes);
+   private AddressCollection createAddresses(int numNodes) {
+      AddressCollection addresses = AddressCollectionFactory.emptyCollection();
       for (int i = 0; i < numNodes; i++) {
          addresses.add(new JGroupsAddress(org.jgroups.util.UUID.randomUUID()));
       }
@@ -86,7 +88,7 @@ public class VNodesCHPerfTest extends AbstractInfinispanTest {
       c.fluent().hash()
             .consistentHashClass(DefaultConsistentHash.class)
             .numVirtualNodes(10);
-      Set<Address> addresses = createAddresses(numNodes);
+      AddressCollection addresses = createAddresses(numNodes);
       return ConsistentHashHelper.createConsistentHash(c, addresses);
    }
 

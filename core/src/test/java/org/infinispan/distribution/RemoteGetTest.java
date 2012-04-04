@@ -26,6 +26,7 @@ import org.infinispan.Cache;
 import org.infinispan.config.Configuration;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.test.MultipleCacheManagersTest;
+import org.infinispan.util.AddressCollection;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public class RemoteGetTest extends MultipleCacheManagersTest {
    }
 
    @SuppressWarnings("unchecked")
-   private Cache<MagicKey, String> getNonOwner(List<Address> a) {
+   private Cache<MagicKey, String> getNonOwner(AddressCollection a) {
       for (Cache<?, ?> c: caches())
          if (!a.contains(c.getAdvancedCache().getRpcManager().getAddress())) return (Cache<MagicKey, String>) c;
       return null;
@@ -59,7 +60,7 @@ public class RemoteGetTest extends MultipleCacheManagersTest {
    public void testRemoteGet() {
       MagicKey k = new MagicKey(cache(0)); // this should now map to cache0 and cache1
 
-      List<Address> owners = cache(0).getAdvancedCache().getDistributionManager().locate(k);
+      AddressCollection owners = cache(0).getAdvancedCache().getDistributionManager().locate(k);
 
       assert owners.size() == 2: "Key should have 2 owners";
 

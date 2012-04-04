@@ -26,6 +26,8 @@ import org.infinispan.distribution.ch.ConsistentHash;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.remoting.transport.jgroups.JGroupsAddress;
 import org.infinispan.test.AbstractInfinispanTest;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.Util;
 import org.testng.annotations.Test;
 
@@ -43,9 +45,9 @@ import static java.lang.Math.*;
 @Test(testName = "distribution.ConsistentHashPerfTest", groups = "manual", description = "Disabled until we can configure Surefire to skip manual tests")
 public class ConsistentHashPerfTest extends AbstractInfinispanTest {
 
-   private Set<Address> createAddresses(int numNodes) {
+   private AddressCollection createAddresses(int numNodes) {
       Random r = new Random();
-      Set<Address> addresses = new HashSet<Address>(numNodes);
+      AddressCollection addresses = AddressCollectionFactory.emptyCollection();
       while (addresses.size() < numNodes)
          addresses.add(new JGroupsAddress(new org.jgroups.util.UUID(r.nextLong(), r.nextLong())));
       return addresses;

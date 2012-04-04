@@ -28,6 +28,8 @@ import org.infinispan.commands.write.WriteCommand;
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.transaction.xa.GlobalTransaction;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -52,7 +54,7 @@ public abstract class LocalTransaction extends AbstractCacheTransaction {
    private static final Log log = LogFactory.getLog(LocalTransaction.class);
    private static final boolean trace = log.isTraceEnabled();
 
-   private Set<Address> remoteLockedNodes;
+   private AddressCollection remoteLockedNodes;
    protected Set<Object> readKeys = null;
 
    /** mark as volatile as this might be set from the tx thread code on view change*/
@@ -76,21 +78,21 @@ public abstract class LocalTransaction extends AbstractCacheTransaction {
       modifications.add(mod);
    }
 
-   public void locksAcquired(Collection<Address> nodes) {
+   public void locksAcquired(AddressCollection nodes) {
       log.tracef("Adding remote locks on %s. Remote locks are %s", nodes, remoteLockedNodes);
       if (remoteLockedNodes == null)
-         remoteLockedNodes = new HashSet<Address>(nodes);
+         remoteLockedNodes = nodes.clone();
       else
          remoteLockedNodes.addAll(nodes);
    }
 
-   public Collection<Address> getRemoteLocksAcquired(){
-	   if (remoteLockedNodes == null) return Collections.emptySet();
+   public AddressCollection getRemoteLocksAcquired(){
+	   if (remoteLockedNodes == null) return AddressCollectionFactory.emptyCollection();
 	   return remoteLockedNodes;
    }
 
    public void clearRemoteLocksAcquired() {
-      if (remoteLockedNodes != null) remoteLockedNodes.clear();
+      if (remoteLockedNodes != null) remoteLockedNodes = null;
    }
 
    public void markForRollback(boolean markForRollback) {

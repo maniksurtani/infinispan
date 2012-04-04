@@ -25,6 +25,7 @@ package org.infinispan.cacheviews;
 import org.infinispan.factories.scopes.Scope;
 import org.infinispan.factories.scopes.Scopes;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
 
 import java.util.Map;
 import java.util.Set;
@@ -51,7 +52,7 @@ public interface CacheViewsManager {
    /**
     * @return The members which will (should) handle commands for a given cache.
     */
-   Set<Address> getLeavers(String cacheName);
+   AddressCollection getLeavers(String cacheName);
 
    /**
     * Start the cache.

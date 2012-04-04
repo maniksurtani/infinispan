@@ -36,6 +36,7 @@ import org.infinispan.factories.annotations.Inject;
 import org.infinispan.factories.annotations.Start;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.remoting.transport.Transport;
+import org.infinispan.util.AddressCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -187,7 +188,7 @@ public class DistCacheStoreInterceptor extends CacheStoreInterceptor {
             return true;
          }
       } else {
-         List<Address> addresses = dm.locate(key);
+         AddressCollection addresses = dm.locate(key);
          if (isL1Put(addresses)) {
             log.trace("Skipping cache store since this is an L1 put");
             return true;
@@ -196,7 +197,7 @@ public class DistCacheStoreInterceptor extends CacheStoreInterceptor {
       return false;
    }
 
-   private boolean isL1Put(List<Address> addresses) {
+   private boolean isL1Put(AddressCollection addresses) {
       if (address == null) throw new NullPointerException("Local address cannot be null!");
       return !addresses.contains(address);
    }

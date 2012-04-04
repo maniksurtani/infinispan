@@ -32,6 +32,7 @@ import org.infinispan.remoting.responses.SuccessfulResponse;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.transaction.WriteSkewHelper;
 import org.infinispan.transaction.xa.CacheTransaction;
+import org.infinispan.util.AddressCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -68,7 +69,7 @@ public class VersionedDistributionInterceptor extends DistributionInterceptor {
 
 
    @Override
-   protected void prepareOnAffectedNodes(TxInvocationContext ctx, PrepareCommand command, Collection<Address> recipients, boolean ignored) {
+   protected void prepareOnAffectedNodes(TxInvocationContext ctx, PrepareCommand command, AddressCollection recipients, boolean ignored) {
       setVersionsSeenOnPrepareCommand((VersionedPrepareCommand) command, ctx);
 
       // Perform the RPC

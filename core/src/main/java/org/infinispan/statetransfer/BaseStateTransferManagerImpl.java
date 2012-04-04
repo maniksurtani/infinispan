@@ -44,6 +44,7 @@ import org.infinispan.remoting.transport.Address;
 import org.infinispan.transaction.LockingMode;
 import org.infinispan.transaction.RemoteTransaction;
 import org.infinispan.transaction.TransactionTable;
+import org.infinispan.util.AddressCollection;
 import org.infinispan.util.concurrent.NotifyingNotifiableFuture;
 import org.infinispan.util.concurrent.ReclosableLatch;
 import org.infinispan.util.concurrent.locks.containers.LockContainer;
@@ -146,7 +147,7 @@ public abstract class BaseStateTransferManagerImpl implements StateTransferManag
       cacheViewsManager.join(configuration.getName(), this);
    }
 
-   protected abstract ConsistentHash createConsistentHash(List<Address> members);
+   protected abstract ConsistentHash createConsistentHash(AddressCollection members);
 
    // To avoid blocking other components' start process, wait last, if necessary, for join to complete.
    @Start(priority = 1000)
@@ -279,7 +280,7 @@ public abstract class BaseStateTransferManagerImpl implements StateTransferManag
    /**
     * @return <code>true</code> if the state transfer started successfully, <code>false</code> otherwise
     */
-   public boolean startStateTransfer(int viewId, Collection<Address> members, boolean initialView) throws TimeoutException, InterruptedException, StateTransferCancelledException {
+   public boolean startStateTransfer(int viewId, AddressCollection members, boolean initialView) throws TimeoutException, InterruptedException, StateTransferCancelledException {
       if (newView == null || viewId != newView.getViewId()) {
          log.debugf("Cannot start state transfer for view %d, we should be starting state transfer for view %s", viewId, newView);
          return false;
@@ -290,7 +291,7 @@ public abstract class BaseStateTransferManagerImpl implements StateTransferManag
 
    public abstract CacheStore getCacheStoreForStateTransfer();
 
-   public void pushStateToNode(NotifyingNotifiableFuture<Object> stateTransferFuture, int viewId, Collection<Address> targets,
+   public void pushStateToNode(NotifyingNotifiableFuture<Object> stateTransferFuture, int viewId, AddressCollection targets,
                                Collection<InternalCacheEntry> state, Collection<LockInfo> lockInfo) throws StateTransferCancelledException {
       StateTransferControlCommand.Type type;
       if (state != null) {
@@ -394,7 +395,7 @@ public abstract class BaseStateTransferManagerImpl implements StateTransferManag
       joinCompletedLatch.countDown();
    }
 
-   protected abstract BaseStateTransferTask createStateTransferTask(int viewId, List<Address> members, boolean initialView);
+   protected abstract BaseStateTransferTask createStateTransferTask(int viewId, AddressCollection members, boolean initialView);
 
    private static interface CommandBuilder {
       PutKeyValueCommand buildPut(InvocationContext ctx, CacheEntry e);

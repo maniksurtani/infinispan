@@ -30,6 +30,7 @@ import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
 import org.infinispan.transaction.lookup.DummyTransactionManagerLookup;
 import org.infinispan.transaction.tm.DummyTransaction;
+import org.infinispan.util.AddressCollection;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class ParticipantFailsAfterPrepareTest extends MultipleCacheManagersTest 
 
       int indexToKill = -1;
       //this tx spreads over 3 out of 4 nodes, let's find one that has the tx and kill it
-      final List<Address> locate = advancedCache(0).getDistributionManager().getConsistentHash().locate(key, 3);
+      final AddressCollection locate = advancedCache(0).getDistributionManager().getConsistentHash().locate(key, 3);
       for (int i = 3; i > 0; i--) {
          if (locate.contains(address(i))) {
             indexToKill = i;

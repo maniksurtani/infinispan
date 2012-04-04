@@ -36,6 +36,7 @@ import org.infinispan.remoting.transport.Address;
 import org.infinispan.remoting.transport.Transport;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.transaction.LockingMode;
+import org.infinispan.util.AddressCollection;
 import org.infinispan.util.concurrent.NotifyingNotifiableFuture;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
@@ -47,7 +48,6 @@ import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
-import java.util.Collection;
 import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
@@ -161,31 +161,31 @@ public class SingleRpcOnPessimisticLockingTest extends MultipleCacheManagersTest
          otherCount = 0;
       }
 
-      public Map<Address, Response> invokeRemotely(Collection<Address> recipients, ReplicableCommand rpcCommand, ResponseMode mode, long timeout, boolean usePriorityQueue, ResponseFilter responseFilter) {
+      public Map<Address, Response> invokeRemotely(AddressCollection recipients, ReplicableCommand rpcCommand, ResponseMode mode, long timeout, boolean usePriorityQueue, ResponseFilter responseFilter) {
          log.trace("invokeRemotely1");
          aboutToInvokeRpc(rpcCommand);
          return realOne.invokeRemotely(recipients, rpcCommand, mode, timeout, usePriorityQueue, responseFilter);
       }
 
-      public Map<Address, Response> invokeRemotely(Collection<Address> recipients, ReplicableCommand rpcCommand, ResponseMode mode, long timeout, boolean usePriorityQueue) {
+      public Map<Address, Response> invokeRemotely(AddressCollection recipients, ReplicableCommand rpcCommand, ResponseMode mode, long timeout, boolean usePriorityQueue) {
          log.trace("invokeRemotely2");
          aboutToInvokeRpc(rpcCommand);
          return realOne.invokeRemotely(recipients, rpcCommand, mode, timeout, usePriorityQueue);
       }
 
-      public Map<Address, Response> invokeRemotely(Collection<Address> recipients, ReplicableCommand rpcCommand, ResponseMode mode, long timeout) {
+      public Map<Address, Response> invokeRemotely(AddressCollection recipients, ReplicableCommand rpcCommand, ResponseMode mode, long timeout) {
          log.trace("invokeRemotely3");
          aboutToInvokeRpc(rpcCommand);
          return realOne.invokeRemotely(recipients, rpcCommand, mode, timeout);
       }
 
-      public void invokeRemotely(Collection<Address> recipients, ReplicableCommand rpc, boolean sync) throws RpcException {
+      public void invokeRemotely(AddressCollection recipients, ReplicableCommand rpc, boolean sync) throws RpcException {
          log.trace("invokeRemotely4");
          aboutToInvokeRpc(rpc);
          realOne.invokeRemotely(recipients, rpc, sync);
       }
 
-      public Map<Address, Response> invokeRemotely(Collection<Address> recipients, ReplicableCommand rpc, boolean sync, boolean usePriorityQueue) throws RpcException {
+      public Map<Address, Response> invokeRemotely(AddressCollection recipients, ReplicableCommand rpc, boolean sync, boolean usePriorityQueue) throws RpcException {
          log.trace("invokeRemotely5");
          Map<Address, Response> responses = realOne.invokeRemotely(recipients, rpc, sync, usePriorityQueue);
          return responses;
@@ -217,26 +217,26 @@ public class SingleRpcOnPessimisticLockingTest extends MultipleCacheManagersTest
       }
 
 
-      public void invokeRemotelyInFuture(Collection<Address> recipients, ReplicableCommand rpc, NotifyingNotifiableFuture<Object> future) {
+      public void invokeRemotelyInFuture(AddressCollection recipients, ReplicableCommand rpc, NotifyingNotifiableFuture<Object> future) {
          log.trace("ControlledRpcManager.invokeRemotelyInFuture1");
          aboutToInvokeRpc(rpc);
          realOne.invokeRemotelyInFuture(recipients, rpc, future);
       }
 
-      public void invokeRemotelyInFuture(Collection<Address> recipients, ReplicableCommand rpc, boolean usePriorityQueue, NotifyingNotifiableFuture<Object> future) {
+      public void invokeRemotelyInFuture(AddressCollection recipients, ReplicableCommand rpc, boolean usePriorityQueue, NotifyingNotifiableFuture<Object> future) {
          log.trace("ControlledRpcManager.invokeRemotelyInFuture2");
          aboutToInvokeRpc(rpc);
          realOne.invokeRemotelyInFuture(recipients, rpc, usePriorityQueue, future);
       }
 
-      public void invokeRemotelyInFuture(Collection<Address> recipients, ReplicableCommand rpc, boolean usePriorityQueue, NotifyingNotifiableFuture<Object> future, long timeout) {
+      public void invokeRemotelyInFuture(AddressCollection recipients, ReplicableCommand rpc, boolean usePriorityQueue, NotifyingNotifiableFuture<Object> future, long timeout) {
          log.trace("ControlledRpcManager.invokeRemotelyInFuture3");
          aboutToInvokeRpc(rpc);
          realOne.invokeRemotelyInFuture(recipients, rpc, usePriorityQueue, future, timeout);
       }
 
       @Override
-      public void invokeRemotelyInFuture(Collection<Address> recipients, ReplicableCommand rpc, boolean usePriorityQueue, NotifyingNotifiableFuture<Object> future, long timeout, boolean ignoreLeavers) {
+      public void invokeRemotelyInFuture(AddressCollection recipients, ReplicableCommand rpc, boolean usePriorityQueue, NotifyingNotifiableFuture<Object> future, long timeout, boolean ignoreLeavers) {
          log.trace("ControlledRpcManager.invokeRemotelyInFuture4");
          aboutToInvokeRpc(rpc);
          realOne.invokeRemotelyInFuture(recipients, rpc, usePriorityQueue, future, timeout, ignoreLeavers);

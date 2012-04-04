@@ -28,6 +28,8 @@ import org.infinispan.distribution.ch.ConsistentHashHelper;
 import org.infinispan.distribution.ch.DefaultConsistentHash;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.test.AbstractInfinispanTest;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ import static org.testng.Assert.assertEqualsNoOrder;
 @Test(groups = "unit", testName = "distribution.VNodesDefaultConsistentHashTest", enabled = true)
 public class VNodesDefaultConsistentHashTest extends AbstractInfinispanTest {
 
-   public DefaultConsistentHash createConsistentHash(List<Address> servers, int numVirtualNodes) {
+   public DefaultConsistentHash createConsistentHash(AddressCollection servers, int numVirtualNodes) {
       Configuration c = new Configuration().fluent()
             .hash().consistentHashClass(DefaultConsistentHash.class).numVirtualNodes(numVirtualNodes)
             .build();
@@ -51,28 +53,27 @@ public class VNodesDefaultConsistentHashTest extends AbstractInfinispanTest {
       int[] numVirtualNodesList = {2, 10, 100};
       for (int numVirtualNodes : numVirtualNodesList) {
          for (int nodesCount = 1; nodesCount < 10; nodesCount++) {
-            ArrayList servers = new ArrayList(nodesCount);
+            AddressCollection servers = AddressCollectionFactory.emptyCollection();
             for (int i = 0; i < nodesCount; i++) {
                servers.add(new TestAddress(i * 1000));
             }
 
             DefaultConsistentHash ch = createConsistentHash(servers, numVirtualNodes);
-            List<Address> sortedServers = new ArrayList<Address>(ch.getCaches());
+            AddressCollection sortedServers = ch.getCaches().clone();
 
             // check that we get numOwners servers for numOwners in 1..nodesCount
             for (int numOwners = 1; numOwners < nodesCount; numOwners++) {
                for (int i = 0; i < nodesCount; i++) {
-                  List<Address> owners = ch.locate(sortedServers.get(i), numOwners);
+                  AddressCollection owners = ch.locate(sortedServers.get(i), numOwners);
                   assertEquals(owners.size(), numOwners);
                   assertEquals(owners.get(0), sortedServers.get(i));
-                  assertEquals(new HashSet<Address>(owners).size(), numOwners);
                }
             }
 
             // check that we get all the servers for numOwners > nodesCount
             for (int i = 0; i < nodesCount; i++) {
-               List<Address> owners = ch.locate(sortedServers.get(i), nodesCount + 1);
-               assertEqualsNoOrder(owners.toArray(), servers.toArray());
+               AddressCollection owners = ch.locate(sortedServers.get(i), nodesCount + 1);
+               assertEqualsNoOrder(owners.toArray(new Address[owners.size()]), servers.toArray(new Address[servers.size()]));
             }
          }
       }

@@ -23,6 +23,7 @@ import org.infinispan.distribution.ch.ConsistentHashHelper;
 import org.infinispan.jmx.annotations.MBean;
 import org.infinispan.loaders.CacheStore;
 import org.infinispan.remoting.transport.Address;
+import org.infinispan.util.AddressCollection;
 
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class ReplicatedStateTransferManagerImpl extends BaseStateTransferManager
       super();
    }
 
-   protected ReplicatedStateTransferTask createStateTransferTask(int viewId, List<Address> members, boolean initialView) {
+   protected ReplicatedStateTransferTask createStateTransferTask(int viewId, AddressCollection members, boolean initialView) {
       return new ReplicatedStateTransferTask(rpcManager, configuration, dataContainer,
             this, stateTransferLock, cacheNotifier, viewId, members, chOld, chNew, initialView);
    }
@@ -51,7 +52,7 @@ public class ReplicatedStateTransferManagerImpl extends BaseStateTransferManager
       return configuration.getStateRetrievalTimeout();
    }
 
-   protected ConsistentHash createConsistentHash(List<Address> members) {
+   protected ConsistentHash createConsistentHash(AddressCollection members) {
       // The user will not be able to configure the consistent hash in replicated mode
       // We are always going to use the default consistent hash function.
       return ConsistentHashHelper.createConsistentHash(configuration, members);

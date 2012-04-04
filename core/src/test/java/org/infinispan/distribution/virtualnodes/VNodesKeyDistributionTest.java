@@ -34,6 +34,8 @@ import org.infinispan.distribution.ch.DefaultConsistentHash;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.remoting.transport.jgroups.JGroupsAddress;
 import org.infinispan.test.AbstractInfinispanTest;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.testng.annotations.Test;
 
 import static java.lang.Math.sqrt;
@@ -85,8 +87,8 @@ public class VNodesKeyDistributionTest extends AbstractInfinispanTest {
       return ch;
    }
 
-   private Set<Address> createAddresses(int numNodes) {
-      Set<Address> addresses = new HashSet<Address>(numNodes);
+   private AddressCollection createAddresses(int numNodes) {
+      AddressCollection addresses = AddressCollectionFactory.emptyCollection();
       for (int i = 0; i < numNodes; i++) {
          addresses.add(new IndexedJGroupsAddress(org.jgroups.util.UUID.randomUUID(), i));
       }

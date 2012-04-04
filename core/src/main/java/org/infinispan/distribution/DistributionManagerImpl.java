@@ -46,6 +46,8 @@ import org.infinispan.remoting.rpc.RpcManager;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.statetransfer.StateTransferManager;
 import org.infinispan.transaction.xa.GlobalTransaction;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.Immutables;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
@@ -104,7 +106,7 @@ public class DistributionManagerImpl implements DistributionManager {
    @Start(priority = 20)
    private void start() throws Exception {
       if (trace) log.tracef("starting distribution manager on %s", getAddress());
-      consistentHash = ConsistentHashHelper.createConsistentHash(configuration, Collections.singleton(rpcManager.getAddress()));
+      consistentHash = ConsistentHashHelper.createConsistentHash(configuration, AddressCollectionFactory.singleton(rpcManager.getAddress()));
    }
 
    private int getReplCount() {
@@ -137,7 +139,7 @@ public class DistributionManagerImpl implements DistributionManager {
       }
    }
 
-   public List<Address> locate(Object key) {
+   public AddressCollection locate(Object key) {
       return getConsistentHash().locate(key, getReplCount());
    }
 
@@ -145,11 +147,11 @@ public class DistributionManagerImpl implements DistributionManager {
       return getConsistentHash().primaryLocation(key);
    }
 
-   public Map<Object, List<Address>> locateAll(Collection<Object> keys) {
+   public Map<Object, AddressCollection> locateAll(Collection<Object> keys) {
       return locateAll(keys, getReplCount());
    }
 
-   public Map<Object, List<Address>> locateAll(Collection<Object> keys, int numOwners) {
+   public Map<Object, AddressCollection> locateAll(Collection<Object> keys, int numOwners) {
       return getConsistentHash().locateAll(keys, numOwners);
    }
 
@@ -162,7 +164,7 @@ public class DistributionManagerImpl implements DistributionManager {
       GlobalTransaction gtx = acquireRemoteLock ? ((TxInvocationContext)ctx).getGlobalTransaction() : null;
       ClusteredGetCommand get = cf.buildClusteredGetCommand(key, ctx.getFlags(), acquireRemoteLock, gtx);
 
-      List<Address> targets = locate(key);
+      AddressCollection targets = locate(key);
       // if any of the recipients has left the cluster since the command was issued, just don't wait for its response
       targets.retainAll(rpcManager.getTransport().getMembers());
       ResponseFilter filter = new ClusteredGetResponseValidityFilter(targets, getAddress());
@@ -215,15 +217,15 @@ public class DistributionManagerImpl implements DistributionManager {
       return stateTransferManager.isJoinComplete();
    }
 
-   public Collection<Address> getAffectedNodes(Collection<Object> affectedKeys) {
+   public AddressCollection getAffectedNodes(Collection<Object> affectedKeys) {
       if (affectedKeys == null || affectedKeys.isEmpty()) {
          if (trace) log.trace("affected keys are empty");
-         return Collections.emptyList();
+         return AddressCollectionFactory.emptyCollection();
       }
 
-      Set<Address> an = new HashSet<Address>();
-      for (List<Address> addresses : locateAll(affectedKeys).values()) an.addAll(addresses);
-      return Immutables.immutableListConvert(an);
+      AddressCollection an = AddressCollectionFactory.emptyCollection();
+      for (AddressCollection addresses : locateAll(affectedKeys).values()) an.addAll(addresses);
+      return an;
    }
 
    @ManagedOperation(description = "Tells you whether a given key is local to this instance of the cache.  Only works with String keys.")

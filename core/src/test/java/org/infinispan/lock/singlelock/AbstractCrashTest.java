@@ -40,6 +40,7 @@ import org.infinispan.transaction.TransactionTable;
 import org.infinispan.transaction.lookup.DummyTransactionManagerLookup;
 import org.infinispan.transaction.tm.DummyTransaction;
 import org.infinispan.tx.dld.ControlledRpcManager;
+import org.infinispan.util.AddressCollection;
 
 import java.util.Collection;
 import java.util.Map;
@@ -143,7 +144,7 @@ public abstract class AbstractCrashTest extends MultipleCacheManagersTest {
    protected void prepareCache(final CountDownLatch releaseLocksLatch) {
       RpcManager rpcManager = new ControlledRpcManager(advancedCache(1).getRpcManager()) {
          @Override
-         public Map<Address, Response> invokeRemotely(Collection<Address> recipients, ReplicableCommand rpcCommand, boolean sync, boolean usePriorityQueue) {
+         public Map<Address, Response> invokeRemotely(AddressCollection recipients, ReplicableCommand rpcCommand, boolean sync, boolean usePriorityQueue) {
             if (rpcCommand instanceof TxCompletionNotificationCommand) {
                releaseLocksLatch.countDown();
                return null;

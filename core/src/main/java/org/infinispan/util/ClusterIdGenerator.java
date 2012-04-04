@@ -32,7 +32,6 @@ import org.infinispan.remoting.transport.Transport;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -76,12 +75,12 @@ public class ClusterIdGenerator {
       versionCounter.compareAndSet(versionCounter.get(), 0);
    }
 
-   private int findAddressRank(Address address, List<Address> members, int rank) {
-      if (address.equals(members.get(0))) return rank;
-      else return findAddressRank(address, members.subList(1, members.size()), rank + 1);
+   private int findAddressRank(Address address, AddressCollection members, int rank) {
+      if (address.equals(members.getFirst())) return rank;
+      else return findAddressRank(address, members.subCollection(1, members.size()), rank + 1);
    }
 
-   protected long calculateRank(Address address, List<Address> members, long viewId) {
+   protected long calculateRank(Address address, AddressCollection members, long viewId) {
       long rank = findAddressRank(address, members, 1);
       // Version is composed of: <view id (2 bytes)><rank (2 bytes)><version counter (4 bytes)>
       // View id and rank form the prefix which is updated on a view change.
@@ -97,7 +96,7 @@ public class ClusterIdGenerator {
       @ViewChanged
       public void calculateRank(ViewChangedEvent e) {
          long rank = ClusterIdGenerator.this
-            .calculateRank(e.getLocalAddress(), e.getNewMembers(), e.getViewId());
+            .calculateRank(e.getLocalAddress(), AddressCollectionFactory.fromCollection(e.getNewMembers()), e.getViewId());
          if (log.isTraceEnabled())
             log.tracef("Calculated rank based on view %s and result was %d", e, rank);
       }

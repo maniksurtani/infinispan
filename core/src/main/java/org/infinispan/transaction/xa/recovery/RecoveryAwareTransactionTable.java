@@ -30,6 +30,7 @@ import org.infinispan.transaction.RemoteTransaction;
 import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.transaction.xa.LocalXaTransaction;
 import org.infinispan.transaction.xa.XaTransactionTable;
+import org.infinispan.util.AddressCollection;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -88,7 +89,7 @@ public class RecoveryAwareTransactionTable extends XaTransactionTable {
     * transactions that are not yet prepared.
     */
    @Override
-   protected void updateStateOnNodesLeaving(Collection<Address> leavers) {
+   protected void updateStateOnNodesLeaving(AddressCollection leavers) {
       Iterator<RemoteTransaction> it = getRemoteTransactions().iterator();
       while (it.hasNext()) {
          RecoveryAwareRemoteTransaction recTx = (RecoveryAwareRemoteTransaction) it.next();

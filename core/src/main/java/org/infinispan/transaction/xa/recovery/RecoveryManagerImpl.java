@@ -39,6 +39,8 @@ import org.infinispan.transaction.TransactionTable;
 import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.transaction.xa.LocalXaTransaction;
 import org.infinispan.transaction.xa.TransactionFactory;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
@@ -143,7 +145,7 @@ public class RecoveryManagerImpl implements RecoveryManager {
    }
 
    @Override
-   public void removeRecoveryInformationFromCluster(Collection<Address> lockOwners, Xid xid, boolean sync, GlobalTransaction gtx) {
+   public void removeRecoveryInformationFromCluster(AddressCollection lockOwners, Xid xid, boolean sync, GlobalTransaction gtx) {
       log.tracef("Forgetting tx information for %s", gtx);
       //todo make sure this gets broad casted or at least flushed
       if (rpcManager != null) {
@@ -154,7 +156,7 @@ public class RecoveryManagerImpl implements RecoveryManager {
    }
 
    @Override
-   public void removeRecoveryInformationFromCluster(Collection<Address> where, long internalId, boolean sync) {
+   public void removeRecoveryInformationFromCluster(AddressCollection where, long internalId, boolean sync) {
       if (rpcManager != null) {
          TxCompletionNotificationCommand ftc = commandFactory.buildTxCompletionNotificationCommand(internalId);
          rpcManager.invokeRemotely(where, ftc, sync, true);
@@ -327,7 +329,7 @@ public class RecoveryManagerImpl implements RecoveryManager {
    @Override
    public String forceTransactionCompletionFromCluster(Xid xid, Address where, boolean commit) {
       CompleteTransactionCommand ctc = commandFactory.buildCompleteTransactionCommand(xid, commit);
-      Map<Address, Response> responseMap = rpcManager.invokeRemotely(Collections.singleton(where), ctc, true, false);
+      Map<Address, Response> responseMap = rpcManager.invokeRemotely(AddressCollectionFactory.singleton(where), ctc, true, false);
       if (responseMap.size() != 1 || responseMap.get(where) == null) {
          log.expectedJustOneResponse(responseMap);
          throw new CacheException("Expected response size is 1, received " + responseMap);

@@ -42,6 +42,8 @@ import org.infinispan.remoting.responses.Response;
 import org.infinispan.remoting.responses.SuccessfulResponse;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.statetransfer.StateTransferLock;
+import org.infinispan.util.AddressCollection;
+import org.infinispan.util.AddressCollectionFactory;
 import org.infinispan.util.concurrent.NotifyingFutureImpl;
 import org.infinispan.util.concurrent.NotifyingNotifiableFuture;
 import org.infinispan.util.logging.Log;
@@ -100,7 +102,7 @@ public class ReplicationInterceptor extends BaseRpcInterceptor {
       // TODO keep the list of prepared nodes or the view id when the prepare command was sent to know whether we need to resend the prepare info
       Map<Address, Response> responses = rpcManager.invokeRemotely(null, command, configuration.isSyncCommitPhase(), true);
       if (!responses.isEmpty()) {
-         List<Address> resendTo = new LinkedList<Address>();
+         AddressCollection resendTo = AddressCollectionFactory.emptyCollection();
          for (Map.Entry<Address, Response> r : responses.entrySet()) {
             if (needToResendPrepare(r.getValue()))
                resendTo.add(r.getKey());
