@@ -79,6 +79,7 @@ public class OptimisticLockingInterceptor extends AbstractTxLockingInterceptor {
    EntryFactory entryFactory;
 
    private static final Log log = LogFactory.getLog(OptimisticLockingInterceptor.class);
+   private static final boolean trace = log.isTraceEnabled();
 
    @Override
    protected Log getLog() {
@@ -118,6 +119,8 @@ public class OptimisticLockingInterceptor extends AbstractTxLockingInterceptor {
          log.trace("Not using lock reordering as we have a single key.");
          acquireLocksVisitingCommands(ctx, command);
       } else {
+         if (trace) log.tracef("Reordering locks since hasModifications = %s and writesToASingleKey = %s. Modifications are %s",
+                    command.hasModifications(), command.writesToASingleKey(), Arrays.toString(command.getModifications()));
          Object[] orderedKeys = sort(command.getModifications());
          boolean hasClear = orderedKeys == null;
          if (hasClear) {
