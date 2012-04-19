@@ -228,8 +228,12 @@ public class RpcManagerImpl implements RpcManager {
    }
 
    private Map<Address, Response> invokeRemotely(Collection<Address> recipients, ReplicableCommand rpc, boolean sync, boolean usePriorityQueue, long timeout, ResponseMode responseMode) {
-      if (trace) log.tracef("%s broadcasting call %s to recipient list %s", t.getAddress(), rpc, recipients);
-
+      if (sync) {
+         if (trace) log.tracef("%s broadcasting sync call %s to recipient list %s", t.getAddress(), rpc, recipients);
+         if (trace) log.trace("Since we are sync, analysing stack trace.", new Throwable());
+      } else {
+         if (trace) log.tracef("%s broadcasting async call %s to recipient list %s", t.getAddress(), rpc, recipients);
+      }
       if (useReplicationQueue(sync)) {
          replicationQueue.add(rpc);
          return null;
