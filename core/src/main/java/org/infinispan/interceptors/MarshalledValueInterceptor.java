@@ -27,6 +27,7 @@ import org.infinispan.commands.read.EntrySetCommand;
 import org.infinispan.commands.read.GetKeyValueCommand;
 import org.infinispan.commands.read.KeySetCommand;
 import org.infinispan.commands.read.ValuesCommand;
+import org.infinispan.commands.write.EvictCommand;
 import org.infinispan.commands.write.InvalidateCommand;
 import org.infinispan.commands.write.PutKeyValueCommand;
 import org.infinispan.commands.write.PutMapCommand;
@@ -177,7 +178,7 @@ public class MarshalledValueInterceptor extends CommandInterceptor {
    }
 
    @Override
-   public Object visitEvictCommand(InvocationContext ctx, org.infinispan.commands.write.EvictCommand command) throws Throwable {
+   public Object visitEvictCommand(InvocationContext ctx, EvictCommand command) throws Throwable {
       MarshalledValue value = null;
       if (wrapKeys) {
          if (!isTypeExcluded(command.getKey().getClass())) {
@@ -316,7 +317,7 @@ public class MarshalledValueInterceptor extends CommandInterceptor {
 
    private void compact(MarshalledValue mv) {
       if (mv == null) return;
-      mv.compact(false, false);
+      mv.compact(true, false);
    }
 
    private Object processRetVal(Object retVal, InvocationContext ctx) {
