@@ -106,10 +106,10 @@ public class JBossASSessionReplTest extends MultipleCacheManagersTest {
          } catch (InterruptedException e) {
             e.printStackTrace();
          }
-         System.out.println("Processing session " + sessionId);
+//         System.out.println("Processing session " + sessionId);
          int processed = 0;
          while (SAMPLE_SIZE.getAndDecrement() > 0) {
-            if (processed % 1000 == 0) System.out.printf("%s processed %s sessions%n", getName(), processed);
+//            if (processed % 10000 == 0) System.out.printf("%s processed %s sessions%n", getName(), processed);
             processSession();
             processed++;
          }
