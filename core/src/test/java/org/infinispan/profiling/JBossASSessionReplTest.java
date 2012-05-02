@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Manik Surtani
  */
-@Test(testName = "profiling.JBossASSessionReplTest", groups = "functional")
+@Test(testName = "profiling.JBossASSessionReplTest", groups = "manual")
 public class JBossASSessionReplTest extends MultipleCacheManagersTest {
 
    private static final AtomicInteger SESSION_GENERATOR = new AtomicInteger();
