@@ -136,14 +136,14 @@
       <version.jbossjta>4.16.3.Final</version.jbossjta>
       <version.osgi>4.3.0</version.osgi>
       <version.jboss.logging>3.1.0.GA</version.jboss.logging>
-      <version.jboss.logging.processor>1.0.1.Final</version.jboss.logging.processor>
+      <version.jboss.logging.processor>1.0.3.Final</version.jboss.logging.processor>
       <version.jboss.logmanager>1.2.0.GA</version.jboss.logmanager>
       <version.jboss.spec>1.0.0.Final</version.jboss.spec>
       <version.jcipannotations>1.0</version.jcipannotations>
       <version.jclouds>1.1.0</version.jclouds>
       <version.jetty>6.1.25</version.jetty>
       <version.jgoodies.forms>1.0.5</version.jgoodies.forms>
-      <version.jgroups>3.0.9.Final</version.jgroups>
+      <version.jgroups>3.0.10.Final</version.jgroups>
       <version.jsap>2.1</version.jsap>
       <version.json>20090211</version.json>
       <version.jstl>1.2</version.jstl>
@@ -155,7 +155,7 @@
       <version.milyn.smooks>1.2.2</version.milyn.smooks>
       <version.mockito>1.8.5</version.mockito>
       <version.mysql.driver>5.1.19</version.mysql.driver>
-      <version.netty>3.2.6.Final</version.netty>
+      <version.netty>3.4.5.Final</version.netty>
       <version.org.jboss.naming>5.0.6.CR1</version.org.jboss.naming>
       <version.resteasy>2.3.2.Final</version.resteasy>
       <version.rhq.helpers>3.0.4</version.rhq.helpers>
@@ -488,7 +488,7 @@
             </exclusions>
          </dependency>
          <dependency>
-            <groupId>org.jboss.netty</groupId>
+            <groupId>io.netty</groupId>
             <artifactId>netty</artifactId>
             <version>${version.netty}</version>
          </dependency>

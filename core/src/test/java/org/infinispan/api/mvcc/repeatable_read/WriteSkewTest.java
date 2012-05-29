@@ -25,6 +25,8 @@ package org.infinispan.api.mvcc.repeatable_read;
 import org.infinispan.Cache;
 import org.infinispan.CacheException;
 import org.infinispan.api.mvcc.LockAssert;
+import org.infinispan.atomic.AtomicMapLookup;
+import org.infinispan.atomic.FineGrainedAtomicMap;
 import org.infinispan.config.Configuration;
 import org.infinispan.context.InvocationContextContainer;
 import org.infinispan.manager.EmbeddedCacheManager;
@@ -40,6 +42,7 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import javax.transaction.NotSupportedException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
@@ -57,6 +60,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
+import junit.framework.Assert;
+
 @Test(groups = "functional", testName = "api.mvcc.repeatable_read.WriteSkewTest")
 public class WriteSkewTest extends AbstractInfinispanTest {
    private static final Log log = LogFactory.getLog(WriteSkewTest.class);
@@ -70,7 +75,7 @@ public class WriteSkewTest extends AbstractInfinispanTest {
    public void setUp() {
       Configuration c = new Configuration();
       c.fluent().transaction().transactionMode(TransactionMode.TRANSACTIONAL);
-      c.setLockAcquisitionTimeout(200);
+      c.setLockAcquisitionTimeout(3000);
       c.setIsolationLevel(IsolationLevel.REPEATABLE_READ);
       cacheManager = TestCacheManagerFactory.createCacheManager(c);
    }
@@ -111,6 +116,50 @@ public class WriteSkewTest extends AbstractInfinispanTest {
       cache = cacheManager.getCache("writeSkewCheck");
       postStart();
       doTest(false);
+   }
+
+   /**
+    * Verifies we can insert and then remove a value in the same transaction.
+    * See also ISPN-2075.
+    */
+   public void testDontFailOnImmediateRemoval() throws Exception {
+      Configuration writeSkewCheck = new Configuration();
+      writeSkewCheck.setWriteSkewCheck(true);
+      cacheManager.defineConfiguration("writeSkewCheck", writeSkewCheck);
+      cache = cacheManager.getCache("writeSkewCheck");
+      postStart();
+      tm.begin();
+      cache.put("testDontOnImmediateRemoval-Key", "testDontOnImmediateRemoval-Value");
+      Assert.assertEquals( cache.get("testDontOnImmediateRemoval-Key"), "testDontOnImmediateRemoval-Value");
+      cache.put("testDontOnImmediateRemoval-Key", "testDontOnImmediateRemoval-Value-Second");
+      cache.remove("testDontOnImmediateRemoval-Key");
+      tm.commit();
+   }
+
+   /**
+    * Verifies we can create a new AtomicMap, use it and then remove it while in the same transaction
+    * See also ISPN-2075.
+    */
+   public void testDontFailOnImmediateRemovalOfAtomicMaps() throws Exception {
+      Configuration writeSkewCheck = new Configuration();
+      writeSkewCheck.setWriteSkewCheck(true);
+      cacheManager.defineConfiguration("writeSkewCheck", writeSkewCheck);
+      cache = cacheManager.getCache("writeSkewCheck");
+      postStart();
+      final String key = "key1";
+      final String subKey = "subK";
+      tm.begin();
+      FineGrainedAtomicMap fineGrainedAtomicMap = AtomicMapLookup.getFineGrainedAtomicMap(cache, key);
+      fineGrainedAtomicMap.put(subKey, "some value");
+      fineGrainedAtomicMap = AtomicMapLookup.getFineGrainedAtomicMap(cache, key);
+      fineGrainedAtomicMap.get(subKey);
+      fineGrainedAtomicMap.put(subKey, "v");
+      fineGrainedAtomicMap.put(subKey + 2, "v2");
+      fineGrainedAtomicMap = AtomicMapLookup.getFineGrainedAtomicMap(cache, key);
+      Object object = fineGrainedAtomicMap.get(subKey);
+      Assert.assertEquals( "v", object);
+      AtomicMapLookup.removeAtomicMap(cache, key);
+      tm.commit();
    }
 
    public void testWriteSkewWithOnlyPut() throws Exception {

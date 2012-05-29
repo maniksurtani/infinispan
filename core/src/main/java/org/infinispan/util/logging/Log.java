@@ -67,8 +67,8 @@ import static org.jboss.logging.Logger.Level.*;
  * Infinispan's log abstraction layer on top of JBoss Logging.
  * <p/>
  * It contains explicit methods for all INFO or above levels so that they can
- * be internationalized. For the core module, message ids ranging from 00001
- * to 2000 inclusively have been reserved.
+ * be internationalized. For the core module, message ids ranging from 0001
+ * to 1000 inclusively have been reserved.
  * <p/>
  * <code> Log log = LogFactory.getLog( getClass() ); </code> The above will get
  * you an instance of <tt>Log</tt>, which can be used to generate log messages
@@ -857,4 +857,9 @@ public interface Log extends BasicLogger {
    @LogMessage(level = ERROR)
    @Message(value = "Error while processing a commit in a two-phase transaction", id = 188)
    void errorProcessing2pcCommitCommand(@Cause Throwable e);
+
+   @LogMessage(level = WARN)
+   @Message(value = "While stopping a cache or cache manager, one of its components failed to stop", id = 189)
+   void componentFailedToStop(@Cause Throwable e);
+
 }
