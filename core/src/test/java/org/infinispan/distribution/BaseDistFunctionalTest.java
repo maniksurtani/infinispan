@@ -26,21 +26,21 @@ import org.infinispan.Cache;
 import org.infinispan.commands.VisitableCommand;
 import org.infinispan.commands.write.PutKeyValueCommand;
 import org.infinispan.commons.hash.MurmurHash3;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.container.DataContainer;
 import org.infinispan.container.entries.ImmortalCacheEntry;
 import org.infinispan.container.entries.InternalCacheEntry;
 import org.infinispan.container.entries.MortalCacheEntry;
-import org.infinispan.distribution.group.Grouper;
 import org.infinispan.distribution.ch.ConsistentHash;
 import org.infinispan.distribution.ch.DefaultConsistentHashFactory;
+import org.infinispan.distribution.group.Grouper;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
-import org.infinispan.transaction.LockingMode;
 import org.infinispan.test.fwk.TransportFlags;
+import org.infinispan.transaction.LockingMode;
 import org.infinispan.util.Util;
 import org.infinispan.util.concurrent.IsolationLevel;
 
@@ -54,7 +54,7 @@ public abstract class BaseDistFunctionalTest extends MultipleCacheManagersTest {
    protected String cacheName;
    protected int INIT_CLUSTER_SIZE = 4;
    protected Cache<Object, String> c1 = null, c2 = null, c3 = null, c4 = null;
-   protected Configuration configuration;
+   protected ConfigurationBuilder configuration;
    protected List<Cache<Object, String>> caches;
    protected List<Address> cacheAddresses;
    protected boolean sync = true;
@@ -72,6 +72,7 @@ public abstract class BaseDistFunctionalTest extends MultipleCacheManagersTest {
    protected List<Grouper<?>> groupers;
    protected LockingMode lockingMode;
 
+   @Override
    protected void createCacheManagers() throws Throwable {
       cacheName = "dist";
       configuration = buildConfiguration();
@@ -91,30 +92,26 @@ public abstract class BaseDistFunctionalTest extends MultipleCacheManagersTest {
       }
    }
 
-   protected Configuration buildConfiguration() {
-      Configuration configuration = getDefaultClusteredConfig(sync ? Configuration.CacheMode.DIST_SYNC : Configuration.CacheMode.DIST_ASYNC, tx);
-      configuration.setRehashEnabled(performRehashing);
+   protected ConfigurationBuilder buildConfiguration() {
+      ConfigurationBuilder configuration = getDefaultClusteredConfig(sync ? CacheMode.DIST_SYNC : CacheMode.DIST_ASYNC, tx);
+      configuration.clustering().hash().rehashEnabled(performRehashing).numOwners(numOwners).numVirtualNodes(numVirtualNodes).l1().enabled(l1CacheEnabled)
+            .sync().replTimeout(60, TimeUnit.SECONDS)
+            .locking().lockAcquisitionTimeout(lockTimeout, TimeUnit.SECONDS)
+            .invocationBatching().enable(batchingEnabled);
       if (lockingMode != null) {
-         configuration.fluent().transaction().lockingMode(lockingMode);
+         configuration.transaction().lockingMode(lockingMode);
       }
-      configuration.setNumOwners(numOwners);
       if (!testRetVals) {
-         configuration.setUnsafeUnreliableReturnValues(true);
+         configuration.unsafe().unreliableReturnValues(true);
          // we also need to use repeatable read for tests to work when we dont have reliable return values, since the
          // tests repeatedly queries changes
-         configuration.setIsolationLevel(IsolationLevel.REPEATABLE_READ);
+         configuration.locking().isolationLevel(IsolationLevel.REPEATABLE_READ);
       }
-      configuration.setInvocationBatchingEnabled(batchingEnabled);
-      configuration.setSyncReplTimeout(60, TimeUnit.SECONDS);
-      configuration.setLockAcquisitionTimeout(lockTimeout, TimeUnit.SECONDS);
-      configuration.setL1CacheEnabled(l1CacheEnabled);
-      configuration.fluent().clustering().hash().numVirtualNodes(numVirtualNodes);
+
       if (groupsEnabled) {
-          configuration.fluent().hash().groups().enabled(true);
-          configuration.fluent().hash().groups().groupers(groupers);
+          configuration.clustering().hash().groups().enabled(true).withGroupers(groupers);
       }
-      if (l1CacheEnabled) configuration.setL1OnRehash(l1OnRehash);
-      if (l1CacheEnabled) configuration.setL1InvalidationThreshold(l1Threshold);
+      if (l1CacheEnabled) configuration.clustering().hash().l1().l1OnRehash(l1OnRehash).invalidationThreshold(l1Threshold);
       return configuration;
    }
 

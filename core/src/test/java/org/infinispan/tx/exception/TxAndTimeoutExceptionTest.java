@@ -22,7 +22,7 @@
  */
 package org.infinispan.tx.exception;
 
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.SingleCacheManagerTest;
 import org.infinispan.test.TestingUtil;
@@ -52,10 +52,10 @@ public class TxAndTimeoutExceptionTest extends SingleCacheManagerTest {
 
    @Override
    protected EmbeddedCacheManager createCacheManager() throws Exception {
-      Configuration config = getDefaultStandaloneConfig(true);
-      config.fluent().transaction().lockingMode(LockingMode.PESSIMISTIC);
-      config.setUseLockStriping(false);
-      config.setLockAcquisitionTimeout(1000);
+      ConfigurationBuilder config = getDefaultStandaloneConfig(true);
+      config.transaction().lockingMode(LockingMode.PESSIMISTIC)
+         .locking().useLockStriping(false)
+            .lockAcquisitionTimeout(1000);
       EmbeddedCacheManager cm = TestCacheManagerFactory.createCacheManager(config);
       cache = cm.getCache();
       return cm;

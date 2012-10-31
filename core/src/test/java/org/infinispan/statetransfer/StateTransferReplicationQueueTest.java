@@ -23,8 +23,9 @@
 package org.infinispan.statetransfer;
 
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration;
 import org.infinispan.config.GlobalConfiguration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
@@ -62,17 +63,19 @@ public class StateTransferReplicationQueueTest extends MultipleCacheManagersTest
    
    private final String cacheName = "nbst-replqueue";
 
-   Configuration config;
+   ConfigurationBuilder config;
 
+   @Override
    protected void createCacheManagers() throws Throwable {
       // This impl only really sets up a configuration for use later.
-      config = getDefaultClusteredConfig(Configuration.CacheMode.REPL_ASYNC, true);
-      config.setUseReplQueue(true);
-      config.setReplQueueInterval(100, TimeUnit.MILLISECONDS);
-      config.setReplQueueMaxElements(100);
-      config.setUseAsyncMarshalling(false);
-      config.setFetchInMemoryState(true);
-      config.setUseLockStriping(false); // reduces the odd chance of a key collision and deadlock
+      config = getDefaultClusteredConfig(CacheMode.REPL_ASYNC, true);
+      config.clustering().async()
+            .useReplQueue(true)
+            .replQueueInterval(100, TimeUnit.MILLISECONDS)
+            .replQueueMaxElements(100)
+            .asyncMarshalling(false)
+            .stateTransfer().fetchInMemoryState(true)
+            .locking().useLockStriping(false);
    }
 
    protected EmbeddedCacheManager createCacheManager() {
@@ -81,7 +84,7 @@ public class StateTransferReplicationQueueTest extends MultipleCacheManagersTest
       Properties p = new Properties();
       p.setProperty("maxThreads", "25");
       gc.setAsyncTransportExecutorProperties(p);
-      cm.defineConfiguration(cacheName, config.clone());
+      cm.defineConfiguration(cacheName, config.build());
       return cm;
    }
 

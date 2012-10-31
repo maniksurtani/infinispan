@@ -23,10 +23,9 @@
 package org.infinispan.statetransfer;
 
 import org.infinispan.Cache;
-import org.infinispan.config.CacheLoaderManagerConfig;
-import org.infinispan.config.Configuration;
-import org.infinispan.loaders.CacheStoreConfig;
-import org.infinispan.loaders.dummy.DummyInMemoryCacheStore;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.loaders.dummy.DummyInMemoryCacheStoreConfigurationBuilder;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.testng.annotations.Test;
@@ -44,20 +43,18 @@ public class StateTransferFetchOnlyPersistentStateTest extends MultipleCacheMana
 
    @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration cfg = createConfiguration(1);
+      ConfigurationBuilder cfg = createConfiguration(1);
       EmbeddedCacheManager cm = addClusterEnabledCacheManager();
-      cm.defineConfiguration("onlyFetchPersistent", cfg);
+      cm.defineConfiguration("onlyFetchPersistent", cfg.build());
    }
 
-   private Configuration createConfiguration(int id) {
-      Configuration cfg = getDefaultClusteredConfig(Configuration.CacheMode.REPL_SYNC, true);
-      cfg.fluent().clustering().stateRetrieval().fetchInMemoryState(false);
-      CacheLoaderManagerConfig clmc = new CacheLoaderManagerConfig();
-      CacheStoreConfig clc = new DummyInMemoryCacheStore.Cfg("store id: " + id);
-      clmc.addCacheLoaderConfig(clc);
-      clc.setFetchPersistentState(true);
-      clmc.setShared(false);
-      cfg.setCacheLoaderManagerConfig(clmc);
+   private ConfigurationBuilder createConfiguration(int id) {
+      ConfigurationBuilder cfg = getDefaultClusteredConfig(CacheMode.REPL_SYNC, true);
+      cfg.clustering().stateTransfer().fetchInMemoryState(false);
+      DummyInMemoryCacheStoreConfigurationBuilder cs = new DummyInMemoryCacheStoreConfigurationBuilder(cfg.loaders());
+      cs.loaders().shared(false);
+      cs.storeName("store id: " + id).fetchPersistentState(true);
+      cfg.loaders().addStore(cs);
       return cfg;
    }
 
@@ -66,9 +63,9 @@ public class StateTransferFetchOnlyPersistentStateTest extends MultipleCacheMana
       assert !cache1.getConfiguration().isFetchInMemoryState();
       cache1.put("k-" + m.getName(), "v-" + m.getName());
 
-      Configuration cfg2 = createConfiguration(2);
+      ConfigurationBuilder cfg2 = createConfiguration(2);
       EmbeddedCacheManager cm2 = addClusterEnabledCacheManager();
-      cm2.defineConfiguration("onlyFetchPersistent", cfg2);
+      cm2.defineConfiguration("onlyFetchPersistent", cfg2.build());
 
       Cache cache2 = cache(1, "onlyFetchPersistent");
       assert !cache2.getConfiguration().isFetchInMemoryState();

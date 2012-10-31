@@ -23,7 +23,8 @@
 package org.infinispan.tx;
 
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.CacheContainer;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.remoting.rpc.RpcManagerImpl;
@@ -48,7 +49,7 @@ public class TransactionsSpanningReplicatedCachesTest extends MultipleCacheManag
    }
 
    protected void createCacheManagers() throws Exception {
-      Configuration c = getConfiguration();
+      ConfigurationBuilder c = getConfiguration();
       cm1 = addClusterEnabledCacheManager(c);
       cm2 = addClusterEnabledCacheManager(c);
 
@@ -72,9 +73,9 @@ public class TransactionsSpanningReplicatedCachesTest extends MultipleCacheManag
       waitForClusterToForm(c1);
    }
 
-   protected Configuration getConfiguration() {
-      Configuration c = getDefaultClusteredConfig(Configuration.CacheMode.REPL_SYNC, true);
-      c.setExposeJmxStatistics(true);
+   protected ConfigurationBuilder getConfiguration() {
+      ConfigurationBuilder c = getDefaultClusteredConfig(CacheMode.REPL_SYNC, true);
+      c.jmxStatistics().enable();
       return c;
    }
 

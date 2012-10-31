@@ -22,7 +22,8 @@
  */
 package org.infinispan.tx.dld;
 
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.context.Flag;
 import org.infinispan.test.PerCacheExecutorThread;
 import org.infinispan.test.TestingUtil;
@@ -38,16 +39,15 @@ public class DldPessimisticLockingReplicationTest extends BaseDldPessimisticLock
 
    @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration configuration = getConfiguration();
-      createClusteredCaches(2, configuration);
+      createClusteredCaches(2, getConfiguration());
       TestingUtil.blockUntilViewsReceived(1000, cache(0), cache(1));
    }
 
-   protected Configuration getConfiguration() throws Exception {
-      Configuration configuration = getDefaultClusteredConfig(Configuration.CacheMode.REPL_SYNC, true);
-      configuration.setUseEagerLocking(true);
-      configuration.setEnableDeadlockDetection(true);
-      configuration.setUseLockStriping(false);
+   protected ConfigurationBuilder getConfiguration() throws Exception {
+      ConfigurationBuilder configuration = getDefaultClusteredConfig(CacheMode.REPL_SYNC, true);
+      configuration.locking().useLockStriping(false)
+      .transaction().useEagerLocking(true)
+      .deadlockDetection().enable();
       return configuration;
    }
 

@@ -23,7 +23,6 @@
 package org.infinispan.test;
 
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration;
 import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.EmbeddedCacheManager;
@@ -49,15 +48,15 @@ public class AbstractCacheTest extends AbstractInfinispanTest {
 
    protected boolean cleanupAfterTest() {
       return getClass().getAnnotation(CleanupAfterTest.class) != null || (
-              getClass().getAnnotation(CleanupAfterMethod.class) == null &&
-                      cleanup == CleanupPhase.AFTER_TEST
+            getClass().getAnnotation(CleanupAfterMethod.class) == null &&
+                  cleanup == CleanupPhase.AFTER_TEST
       );
    }
 
    protected boolean cleanupAfterMethod() {
       return getClass().getAnnotation(CleanupAfterMethod.class) != null || (
-              getClass().getAnnotation(CleanupAfterTest.class) == null &&
-                      cleanup == CleanupPhase.AFTER_METHOD
+            getClass().getAnnotation(CleanupAfterTest.class) == null &&
+                  cleanup == CleanupPhase.AFTER_METHOD
       );
    }
 
@@ -83,29 +82,27 @@ public class AbstractCacheTest extends AbstractInfinispanTest {
     * make sure that an commit message will be dispatched in the same test method it was triggered and it will not
     * interfere with further log messages.  This is a non-transactional configuration.
     */
-   public static Configuration getDefaultClusteredConfig(Configuration.CacheMode mode) {
+   public static ConfigurationBuilder getDefaultClusteredConfig(CacheMode mode) {
       return getDefaultClusteredConfig(mode, false);
    }
 
-   public static Configuration getDefaultClusteredConfig(Configuration.CacheMode mode, boolean transactional) {
+   public static ConfigurationBuilder getDefaultClusteredConfig(CacheMode mode, boolean transactional) {
       if (mode.isSynchronous()) {
-         return TestCacheManagerFactory.getDefaultConfiguration(transactional).fluent()
-            .mode(mode)
-            .clustering()
+         ConfigurationBuilder cb = TestCacheManagerFactory.getDefaultConfiguration(transactional);
+         cb.clustering().cacheMode(mode)
                .sync()
-                  .stateRetrieval().fetchInMemoryState(false)
+               .stateTransfer().fetchInMemoryState(false)
                .transaction().syncCommitPhase(true).syncRollbackPhase(true)
-               .cacheStopTimeout(0)
-            .build();
+               .cacheStopTimeout(0);
+         return cb;
       } else {
-         return TestCacheManagerFactory.getDefaultConfiguration(transactional).fluent()
-            .mode(mode)
-            .clustering()
+         ConfigurationBuilder cb = TestCacheManagerFactory.getDefaultConfiguration(transactional);
+         cb.clustering().cacheMode(mode)
                .async()
-                  .stateRetrieval().fetchInMemoryState(false)
+               .stateTransfer().fetchInMemoryState(false)
                .transaction().syncCommitPhase(true).syncRollbackPhase(true)
-               .cacheStopTimeout(0)
-            .build();
+               .cacheStopTimeout(0);
+         return cb;
       }
    }
 
@@ -116,11 +113,11 @@ public class AbstractCacheTest extends AbstractInfinispanTest {
    public static ConfigurationBuilder getDefaultClusteredCacheConfig(CacheMode mode, boolean transactional, boolean useCustomTxLookup) {
       ConfigurationBuilder builder = TestCacheManagerFactory.getDefaultCacheConfiguration(transactional, useCustomTxLookup);
       builder.
-         clustering()
+            clustering()
             .cacheMode(mode)
             .stateTransfer().fetchInMemoryState(false)
-         .transaction().syncCommitPhase(true).syncRollbackPhase(true)
-         .cacheStopTimeout(0L);
+            .transaction().syncCommitPhase(true).syncRollbackPhase(true)
+            .cacheStopTimeout(0L);
 
       if (mode.isSynchronous())
          builder.clustering().sync();

@@ -25,8 +25,9 @@ package org.infinispan.tx.exception;
 import org.infinispan.atomic.AtomicHashMap;
 import org.infinispan.atomic.Delta;
 import org.infinispan.atomic.DeltaAware;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.test.MultipleCacheManagersTest;
+import org.infinispan.test.fwk.TestCacheManagerFactory;
 import org.testng.annotations.Test;
 
 import javax.transaction.RollbackException;
@@ -42,7 +43,7 @@ public class ExceptionInCommandTest extends MultipleCacheManagersTest {
 
    @Override
    protected void createCacheManagers() throws Throwable {
-      createCluster(Configuration.CacheMode.REPL_SYNC, 2);
+      createCluster(TestCacheManagerFactory.getDefaultConfiguration(false, CacheMode.REPL_SYNC), 2);
       waitForClusterToForm();
    }                                                                        
 

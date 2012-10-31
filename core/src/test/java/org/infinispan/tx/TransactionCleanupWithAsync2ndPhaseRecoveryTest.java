@@ -1,6 +1,7 @@
 package org.infinispan.tx;
 
 import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.testng.annotations.Test;
 
 /**
@@ -10,9 +11,10 @@ import org.testng.annotations.Test;
 @Test(groups = "functional", testName = "TransactionReleaseWithAsync2ndPhaseRecoveryTest")
 public class TransactionCleanupWithAsync2ndPhaseRecoveryTest extends TransactionCleanupWithAsync2ndPhaseTest {
 
-   protected Configuration getConfiguration() {
-      final Configuration dcc = super.getConfiguration();
-      dcc.fluent().transaction().recovery();
+   @Override
+   protected ConfigurationBuilder getConfiguration() {
+      final ConfigurationBuilder dcc = super.getConfiguration();
+      dcc.transaction().recovery();
       return dcc;
    }
 

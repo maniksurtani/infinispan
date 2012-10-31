@@ -1,7 +1,8 @@
 package org.infinispan.tx;
 
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.context.Flag;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
@@ -19,16 +20,15 @@ public class TransactionCleanupWithRecoveryTest extends MultipleCacheManagersTes
 
    @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration cfg = new Configuration().fluent()
-            .clustering().mode(Configuration.CacheMode.REPL_SYNC)
+      ConfigurationBuilder cfg = TestCacheManagerFactory.getDefaultCacheConfiguration(true);
+            cfg.clustering().cacheMode(CacheMode.REPL_SYNC)
             .locking()
             .concurrencyLevel(10000).isolationLevel(IsolationLevel.REPEATABLE_READ)
             .lockAcquisitionTimeout(100L).useLockStriping(false).writeSkewCheck(false)
             .transaction()
             .lockingMode(LockingMode.PESSIMISTIC)
             .recovery()
-            .transactionManagerLookup(new RecoveryDummyTransactionManagerLookup())
-            .build();
+            .transaction().transactionManagerLookup(new RecoveryDummyTransactionManagerLookup());
 
       registerCacheManager(TestCacheManagerFactory.createClusteredCacheManager(cfg),
                            TestCacheManagerFactory.createClusteredCacheManager(cfg));

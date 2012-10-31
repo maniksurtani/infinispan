@@ -23,13 +23,10 @@
 package org.infinispan.replication;
 
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
-
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertNull;
-
 import org.infinispan.transaction.LockingMode;
 import org.infinispan.transaction.lookup.DummyTransactionManagerLookup;
 import org.infinispan.transaction.tm.DummyTransactionManager;
@@ -38,6 +35,9 @@ import org.testng.annotations.Test;
 import javax.transaction.TransactionManager;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNull;
 
 /**
  * Tests for lock API
@@ -55,14 +55,15 @@ public class SyncReplLockingTest extends MultipleCacheManagersTest {
       cleanup = CleanupPhase.AFTER_METHOD;
    }
 
-   protected Configuration.CacheMode getCacheMode() {
-      return Configuration.CacheMode.REPL_SYNC;
+   protected CacheMode getCacheMode() {
+      return CacheMode.REPL_SYNC;
    }
 
+   @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration cfg = getDefaultClusteredConfig(getCacheMode(), true);
-      cfg.fluent().transactionManagerLookup(new DummyTransactionManagerLookup()).lockingMode(LockingMode.PESSIMISTIC);
-      cfg.setLockAcquisitionTimeout(500);
+      ConfigurationBuilder cfg = getDefaultClusteredConfig(getCacheMode(), true);
+      cfg.transaction().transactionManagerLookup(new DummyTransactionManagerLookup()).lockingMode(LockingMode.PESSIMISTIC)
+            .locking().lockAcquisitionTimeout(500);
       createClusteredCaches(2, "testcache", cfg);
       waitForClusterToForm("testcache");
    }

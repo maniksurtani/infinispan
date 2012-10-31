@@ -23,7 +23,6 @@
 package org.infinispan.test;
 
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.fwk.TestCacheManagerFactory;
@@ -83,8 +82,8 @@ public abstract class SingleCacheManagerTest extends AbstractCacheTest {
          throw e;
       }
    }
-   
-   @AfterClass(alwaysRun=true)
+
+   @AfterClass(alwaysRun = true)
    protected void destroyAfterClass() {
       try {
          if (cleanupAfterTest()) teardown();
@@ -93,17 +92,17 @@ public abstract class SingleCacheManagerTest extends AbstractCacheTest {
       }
    }
 
-   @AfterMethod(alwaysRun=true)
+   @AfterMethod(alwaysRun = true)
    protected void destroyAfterMethod() {
       if (cleanupAfterMethod()) teardown();
    }
 
-   @AfterMethod(alwaysRun=true)
+   @AfterMethod(alwaysRun = true)
    protected void clearContent() {
       if (cleanupAfterTest()) TestingUtil.clearContent(cacheManager);
    }
 
-   protected Configuration getDefaultStandaloneConfig(boolean transactional) {
+   protected ConfigurationBuilder getDefaultStandaloneConfig(boolean transactional) {
       return TestCacheManagerFactory.getDefaultConfiguration(transactional);
    }
 

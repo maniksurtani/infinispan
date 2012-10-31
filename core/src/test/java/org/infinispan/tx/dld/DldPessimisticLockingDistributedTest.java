@@ -22,19 +22,14 @@
  */
 package org.infinispan.tx.dld;
 
-import org.infinispan.affinity.KeyAffinityService;
-import org.infinispan.affinity.KeyAffinityServiceFactory;
-import org.infinispan.affinity.RndKeyGenerator;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.distribution.MagicKey;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.fwk.TestCacheManagerFactory;
 import org.testng.annotations.Test;
 
 import javax.transaction.SystemException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author Mircea.Markus@jboss.com
@@ -48,7 +43,7 @@ public class DldPessimisticLockingDistributedTest extends BaseDldPessimisticLock
 
    @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration config = createConfiguration();
+      ConfigurationBuilder config = createConfiguration();
 
       EmbeddedCacheManager cm1 = TestCacheManagerFactory.createCacheManager(config);
       EmbeddedCacheManager cm2 = TestCacheManagerFactory.createCacheManager(config);
@@ -60,12 +55,11 @@ public class DldPessimisticLockingDistributedTest extends BaseDldPessimisticLock
       k1 = new MagicKey(cache(1));
    }
 
-   protected Configuration createConfiguration() {
-      Configuration config = getDefaultClusteredConfig(Configuration.CacheMode.DIST_SYNC, true);
-      config.setUnsafeUnreliableReturnValues(true);
-      config.setNumOwners(1);
-      config.setEnableDeadlockDetection(true);
-      config.setUseEagerLocking(true);
+   protected ConfigurationBuilder createConfiguration() {
+      ConfigurationBuilder config = getDefaultClusteredConfig(CacheMode.DIST_SYNC, true);
+      config.unsafe().unreliableReturnValues(true)
+         .clustering().hash().numOwners(1)
+         .transaction().useEagerLocking(true).deadlockDetection().enable();
       return config;
    }
 

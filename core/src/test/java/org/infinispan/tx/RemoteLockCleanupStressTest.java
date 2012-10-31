@@ -23,7 +23,8 @@
 package org.infinispan.tx;
 
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.test.MultipleCacheManagersTest;
@@ -52,9 +53,8 @@ public class RemoteLockCleanupStressTest extends MultipleCacheManagersTest {
 
    @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration c = TestCacheManagerFactory.getDefaultConfiguration(true,Configuration.CacheMode.REPL_SYNC);
-      c.setFetchInMemoryState(true);
-      c.setLockAcquisitionTimeout(1500);
+      ConfigurationBuilder c = TestCacheManagerFactory.getDefaultConfiguration(true, CacheMode.REPL_SYNC);
+      c.clustering().stateTransfer().fetchInMemoryState(true).locking().lockAcquisitionTimeout(1500);
 
       cm1 = addClusterEnabledCacheManager(c);
       cm2 = addClusterEnabledCacheManager(c);

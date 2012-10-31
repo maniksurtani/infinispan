@@ -24,6 +24,8 @@ package org.infinispan.tx;
 
 import org.infinispan.Cache;
 import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.CacheContainer;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.MultipleCacheManagersTest;
@@ -47,15 +49,12 @@ public class LargeTransactionTest extends MultipleCacheManagersTest {
 
    protected void createCacheManagers() throws Throwable {
 
-      Configuration c = new Configuration();
-      c.setInvocationBatchingEnabled(true);
-      c.setCacheMode(Configuration.CacheMode.REPL_SYNC);
-      c.setSyncReplTimeout(30000);
-      c.setLockAcquisitionTimeout(60000);
-      c.setSyncCommitPhase(true);
-      c.setSyncRollbackPhase(true);
-      c.setUseLockStriping(false);
-      c.fluent().transaction().transactionMode(TransactionMode.TRANSACTIONAL);
+      ConfigurationBuilder c = TestCacheManagerFactory.getDefaultCacheConfiguration(true);
+      c
+            .invocationBatching().enable()
+            .clustering().cacheMode(CacheMode.REPL_SYNC).sync().replTimeout(30000)
+            .locking().lockAcquisitionTimeout(60000).useLockStriping(false)
+            .transaction().syncCommitPhase(true).syncRollbackPhase(true).transactionMode(TransactionMode.TRANSACTIONAL);
 
       EmbeddedCacheManager container = TestCacheManagerFactory.createClusteredCacheManager(c);
       container.start();

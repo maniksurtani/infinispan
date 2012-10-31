@@ -24,7 +24,8 @@
 package org.infinispan.tx;
 
 import org.infinispan.commands.tx.PrepareCommand;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.context.impl.TxInvocationContext;
 import org.infinispan.distribution.rehash.XAResourceAdapter;
 import org.infinispan.interceptors.base.CommandInterceptor;
@@ -48,8 +49,8 @@ public class FailureDuringPrepareTest extends MultipleCacheManagersTest {
 
    @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration c = getDefaultClusteredConfig(Configuration.CacheMode.DIST_SYNC, true);
-      c.fluent().hash().numOwners(3);
+      ConfigurationBuilder c = getDefaultClusteredConfig(CacheMode.DIST_SYNC, true);
+      c.clustering().hash().numOwners(3);
       createCluster(c, 3);
       waitForClusterToForm();
    }
@@ -73,11 +74,11 @@ public class FailureDuringPrepareTest extends MultipleCacheManagersTest {
                throw new RuntimeException("Induced fault!");
             }
          }
-      },2);
+      }, 2);
 
       tm(0).begin();
 
-      cache(0).put("k","v");
+      cache(0).put("k", "v");
 
       if (multipleResources) {
          tm(0).getTransaction().enlistResource(new XAResourceAdapter());

@@ -24,7 +24,8 @@
 package org.infinispan.tx;
 
 import org.infinispan.commands.tx.PrepareCommand;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.context.impl.TxInvocationContext;
 import org.infinispan.interceptors.base.CommandInterceptor;
 import org.infinispan.test.MultipleCacheManagersTest;
@@ -35,17 +36,18 @@ import static org.testng.Assert.assertNull;
 
 /**
  * Test for https://issues.jboss.org/browse/ISPN-1093.
+ *
  * @author Mircea Markus
  */
-@Test (groups = "functional", testName = "tx.FailureWith1PCTest")
+@Test(groups = "functional", testName = "tx.FailureWith1PCTest")
 public class FailureWith1PCTest extends MultipleCacheManagersTest {
 
    boolean fail = true;
 
    @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration c = getDefaultClusteredConfig(Configuration.CacheMode.DIST_SYNC, true);
-      c.fluent().hash().numOwners(3);
+      ConfigurationBuilder c = getDefaultClusteredConfig(CacheMode.DIST_SYNC, true);
+      c.clustering().hash().numOwners(3);
       createCluster(c, 3);
       waitForClusterToForm();
    }

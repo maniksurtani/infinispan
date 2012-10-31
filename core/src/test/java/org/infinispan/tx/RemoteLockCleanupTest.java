@@ -24,7 +24,8 @@ package org.infinispan.tx;
 
 import org.infinispan.commands.control.LockControlCommand;
 import org.infinispan.commands.tx.RollbackCommand;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.context.impl.TxInvocationContext;
 import org.infinispan.interceptors.base.CommandInterceptor;
 import org.infinispan.test.MultipleCacheManagersTest;
@@ -43,8 +44,8 @@ public class RemoteLockCleanupTest extends MultipleCacheManagersTest {
 
    @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration config = getDefaultClusteredConfig(Configuration.CacheMode.DIST_SYNC, true);
-      config.fluent().transaction().lockingMode(LockingMode.PESSIMISTIC);
+      ConfigurationBuilder config = getDefaultClusteredConfig(CacheMode.DIST_SYNC, true);
+      config.transaction().lockingMode(LockingMode.PESSIMISTIC);
       super.createClusteredCaches(2, config);
    }
 

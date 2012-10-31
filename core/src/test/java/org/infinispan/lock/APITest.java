@@ -24,7 +24,8 @@ package org.infinispan.lock;
 
 import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.context.Flag;
 import org.infinispan.interceptors.locking.AbstractLockingInterceptor;
@@ -35,8 +36,6 @@ import org.infinispan.test.TestingUtil;
 import org.infinispan.test.fwk.CleanupAfterMethod;
 import org.infinispan.test.fwk.TestCacheManagerFactory;
 import org.infinispan.transaction.LockingMode;
-import org.infinispan.transaction.lookup.DummyTransactionManagerLookup;
-import org.infinispan.transaction.tm.DummyTransaction;
 import org.infinispan.util.concurrent.IsolationLevel;
 import org.infinispan.util.concurrent.TimeoutException;
 import org.testng.annotations.Test;
@@ -55,7 +54,6 @@ import java.util.concurrent.Future;
 
 import static org.infinispan.context.Flag.FAIL_SILENTLY;
 import static org.infinispan.test.TestingUtil.withCacheManager;
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 
 
@@ -66,10 +64,10 @@ public class APITest extends MultipleCacheManagersTest {
 
    @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration cfg = getDefaultClusteredConfig(Configuration.CacheMode.REPL_SYNC, true);
-      cfg.fluent().transaction().lockingMode(LockingMode.PESSIMISTIC).cacheStopTimeout(0);
-
-      cfg.setLockAcquisitionTimeout(100);
+      ConfigurationBuilder cfg = getDefaultClusteredConfig(CacheMode.REPL_SYNC, true);
+      cfg
+         .transaction().lockingMode(LockingMode.PESSIMISTIC).cacheStopTimeout(0)
+         .locking().lockAcquisitionTimeout(100);
       cm1 = TestCacheManagerFactory.createClusteredCacheManager(cfg);
       cm2 = TestCacheManagerFactory.createClusteredCacheManager(cfg);
       registerCacheManager(cm1, cm2);

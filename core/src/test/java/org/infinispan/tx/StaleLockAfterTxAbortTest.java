@@ -24,6 +24,7 @@ package org.infinispan.tx;
 
 import org.infinispan.Cache;
 import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.SingleCacheManagerTest;
 import org.infinispan.test.fwk.TestCacheManagerFactory;
@@ -51,8 +52,8 @@ public class StaleLockAfterTxAbortTest extends SingleCacheManagerTest {
 
    @Override
    protected EmbeddedCacheManager createCacheManager() throws Exception {
-      Configuration c = getDefaultStandaloneConfig(true);
-      c.fluent().transaction().transactionManagerLookup(new DummyTransactionManagerLookup());
+      ConfigurationBuilder c = getDefaultStandaloneConfig(true);
+      c.transaction().transactionManagerLookup(new DummyTransactionManagerLookup());
       return TestCacheManagerFactory.createCacheManager(c);
    }
 

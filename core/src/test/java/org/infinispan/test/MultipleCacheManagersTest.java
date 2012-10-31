@@ -60,13 +60,13 @@ import java.util.List;
  * class</i>, you could set the <tt>cleanup</tt> field to {@link MultipleCacheManagersTest.CleanupPhase#AFTER_METHOD} in
  * your test's constructor.  E.g.:
  * <pre>
- * <p/>
+ *
  * public void MyTest extends MultipleCacheManagersTest {
  *    public MyTest() {
  *       cleanup =  CleanupPhase.AFTER_METHOD;
  *    }
  * }
- * <p/>
+ *
  * </pre>
  * <p/>
  * Note that this will cuse {@link #createCacheManagers()}  to be called befpre each method.
@@ -106,7 +106,7 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
       listeners.clear();
    }
 
-   @AfterMethod(alwaysRun=true)
+   @AfterMethod(alwaysRun = true)
    protected void clearContent() throws Throwable {
       if (cleanupAfterTest()) {
 //         assertSupportedConfig();
@@ -122,9 +122,9 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
 
    /**
     * Reason: after a tm.commit is run, multiple tests assert that the new value (as within the committing transaction)
-    * is present on a remote cache (i.e. not on the cache on which tx originated). If we don't use sync commit,
-    * than this (i.e. actual commit of the tx on the remote cache) might happen after the tm.commit() returns,
-    * and result in an intermittent failure for the assertion
+    * is present on a remote cache (i.e. not on the cache on which tx originated). If we don't use sync commit, than
+    * this (i.e. actual commit of the tx on the remote cache) might happen after the tm.commit() returns, and result in
+    * an intermittent failure for the assertion
     */
    protected void assertSupportedConfig() {
       for (EmbeddedCacheManager cm : cacheManagers) {
@@ -132,7 +132,7 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
             Configuration config = cache.getConfiguration();
             try {
                assert config.isSyncCommitPhase() : "Must use a sync commit phase!";
-               assert config.isSyncRollbackPhase(): "Must use a sync rollback phase!";
+               assert config.isSyncRollbackPhase() : "Must use a sync rollback phase!";
             } catch (AssertionError e) {
                log.error("Invalid config for cache in test: " + getClass().getName());
                throw e;
@@ -158,9 +158,8 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
    }
 
    /**
-    * Creates a new cache manager, starts it, and adds it to the list of known
-    * cache managers on the current thread. Uses a default clustered cache
-    * manager global config.
+    * Creates a new cache manager, starts it, and adds it to the list of known cache managers on the current thread.
+    * Uses a default clustered cache manager global config.
     *
     * @param flags properties that allow transport stack to be tweaked
     * @return the new CacheManager
@@ -177,14 +176,7 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
     *
     * @param defaultConfig default cfg to use
     * @return the new CacheManager
-    * @deprecated Use {@link #addClusterEnabledCacheManager(
-    *    org.infinispan.configuration.cache.ConfigurationBuilder)} instead
     */
-   @Deprecated
-   protected EmbeddedCacheManager addClusterEnabledCacheManager(Configuration defaultConfig) {
-      return addClusterEnabledCacheManager(defaultConfig, new TransportFlags());
-   }
-
    protected EmbeddedCacheManager addClusterEnabledCacheManager(ConfigurationBuilder defaultConfig) {
       return addClusterEnabledCacheManager(defaultConfig, new TransportFlags());
    }
@@ -194,21 +186,12 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
    }
 
    /**
-    * Creates a new optionally transactional cache manager, starts it, and adds it to the list of known cache managers on
-    * the current thread.  Uses a default clustered cache manager global config.
+    * Creates a new optionally transactional cache manager, starts it, and adds it to the list of known cache managers
+    * on the current thread.  Uses a default clustered cache manager global config.
     *
     * @param defaultConfig default cfg to use
     * @return the new CacheManager
-    * @deprecated Use {@link #addClusterEnabledCacheManager(
-    *    org.infinispan.configuration.cache.ConfigurationBuilder, org.infinispan.test.fwk.TransportFlags)} instead
     */
-   @Deprecated
-   protected EmbeddedCacheManager addClusterEnabledCacheManager(Configuration defaultConfig, TransportFlags flags) {
-      EmbeddedCacheManager cm = TestCacheManagerFactory.createClusteredCacheManager(defaultConfig, flags);
-      cacheManagers.add(cm);
-      return cm;
-   }
-
    protected EmbeddedCacheManager addClusterEnabledCacheManager(ConfigurationBuilder builder, TransportFlags flags) {
       EmbeddedCacheManager cm = TestCacheManagerFactory.createClusteredCacheManager(builder, flags);
       cacheManagers.add(cm);
@@ -221,44 +204,12 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
       return cm;
    }
 
-   /**
-    * Creates a new cache manager, starts it, and adds it to the list of known cache managers on the current thread.
-    * @param mode cache mode to use
-    * @param transactional if true, the configuration will be decorated with necessary transactional settings
-    * @return an embedded cache manager
-    */
-   @Deprecated
-   protected EmbeddedCacheManager addClusterEnabledCacheManager(Configuration.CacheMode mode, boolean transactional) {
-      return addClusterEnabledCacheManager(mode, transactional, new TransportFlags());
-   }
-
-   @Deprecated
-   protected EmbeddedCacheManager addClusterEnabledCacheManager(Configuration.CacheMode mode, boolean transactional, TransportFlags flags) {
-      Configuration configuration = getDefaultClusteredConfig(mode, transactional);
-      return addClusterEnabledCacheManager(configuration, flags);
-   }
-
-   @Deprecated
-   protected void createCluster(Configuration.CacheMode mode, boolean transactional, int count) {
-      for (int i = 0; i < count; i++) addClusterEnabledCacheManager(mode, transactional);
-   }
-
    protected void createCluster(ConfigurationBuilder builder, int count) {
       for (int i = 0; i < count; i++) addClusterEnabledCacheManager(builder);
    }
 
    protected void createCluster(GlobalConfigurationBuilder globalBuilder, ConfigurationBuilder builder, int count) {
       for (int i = 0; i < count; i++) addClusterEnabledCacheManager(globalBuilder, builder);
-   }
-
-   @Deprecated
-   protected void createCluster(Configuration config, int count) {
-      for (int i = 0; i < count; i++) addClusterEnabledCacheManager(config);
-   }
-
-   @Deprecated
-   protected void createCluster(Configuration.CacheMode mode, int count) {
-      for (int i = 0; i < count; i++) addClusterEnabledCacheManager(mode, true);
    }
 
    protected void defineConfigurationOnAllManagers(String cacheName, Configuration c) {
@@ -310,7 +261,7 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
    }
 
    protected TransactionManager tm(int i, String cacheName) {
-      return cache(i, cacheName ).getAdvancedCache().getTransactionManager();
+      return cache(i, cacheName).getAdvancedCache().getTransactionManager();
    }
 
    protected TransactionManager tm(int i) {
@@ -326,8 +277,8 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
    }
 
    /**
-    * @deprecated Use {@link #createClusteredCaches(
-    *    int, String, org.infinispan.configuration.cache.ConfigurationBuilder)} instead
+    * @deprecated Use {@link #createClusteredCaches(int, String, org.infinispan.configuration.cache.ConfigurationBuilder)}
+    *             instead
     */
    @Deprecated
    protected <K, V> List<Cache<K, V>> createClusteredCaches(
@@ -341,8 +292,8 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
    }
 
    /**
-    * @deprecated Use {@link #createClusteredCaches(
-    *    int, String, org.infinispan.configuration.cache.ConfigurationBuilder, org.infinispan.test.fwk.TransportFlags)} instead
+    * @deprecated Use {@link #createClusteredCaches(int, String, org.infinispan.configuration.cache.ConfigurationBuilder,
+    *             org.infinispan.test.fwk.TransportFlags)} instead
     */
    @Deprecated
    protected <K, V> List<Cache<K, V>> createClusteredCaches(
@@ -368,19 +319,6 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
          caches.add(cache);
       }
       waitForClusterToForm(cacheName);
-      return caches;
-   }
-
-   @Deprecated
-   protected <K, V> List<Cache<K, V>> createClusteredCaches(int numMembersInCluster, Configuration defaultConfig) {
-      List<Cache<K, V>> caches = new ArrayList<Cache<K, V>>(numMembersInCluster);
-      for (int i = 0; i < numMembersInCluster; i++) {
-         EmbeddedCacheManager cm = addClusterEnabledCacheManager(defaultConfig);
-         Cache<K, V> cache = cm.getCache();
-         caches.add(cache);
-
-      }
-      waitForClusterToForm();
       return caches;
    }
 
@@ -486,7 +424,9 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
    }
 
    /**
-    * Creates a {@link org.infinispan.affinity.KeyAffinityService} and uses it for generating a key that maps to the given address.
+    * Creates a {@link org.infinispan.affinity.KeyAffinityService} and uses it for generating a key that maps to the
+    * given address.
+    *
     * @param nodeIndex the index of tha cache where to be the main data owner of the returned key
     */
    protected Object getKeyForCache(int nodeIndex) {
@@ -510,7 +450,8 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
             boolean aNodeIsLocked = false;
             for (int i = 0; i < caches(cacheName).size(); i++) {
                final boolean isLocked = lockManager(i, cacheName).isLocked(key);
-               if (isLocked) log.trace(key + " is locked on cache index " + i + " by " + lockManager(i, cacheName).getOwner(key));
+               if (isLocked)
+                  log.trace(key + " is locked on cache index " + i + " by " + lockManager(i, cacheName).getOwner(key));
                aNodeIsLocked = aNodeIsLocked || isLocked;
             }
             return !aNodeIsLocked;
@@ -519,7 +460,7 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
    }
 
    protected void assertNotLocked(final Object key) {
-      assertNotLocked((String)null, key);
+      assertNotLocked((String) null, key);
    }
 
    protected boolean checkTxCount(int cacheIndex, int localTx, int remoteTx) {
@@ -549,7 +490,7 @@ public abstract class MultipleCacheManagersTest extends AbstractCacheTest {
       Configuration c = getCache(0, cacheName).getConfiguration();
       if (c.getCacheMode().isReplicated() || c.getCacheMode().isInvalidation()) {
          return getCache(0, cacheName); //for replicated caches only the coordinator acquires lock
-      }  else {
+      } else {
          if (!c.getCacheMode().isDistributed()) throw new IllegalStateException("This is not a clustered cache!");
          final Address address = getCache(0, cacheName).getAdvancedCache().getDistributionManager().locate(key).get(0);
          for (Cache cache : caches(cacheName)) {

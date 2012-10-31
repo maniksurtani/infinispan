@@ -23,8 +23,8 @@
 package org.infinispan.tx;
 
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration;
-import org.infinispan.config.GlobalConfiguration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.AbstractInfinispanTest;
 import org.infinispan.test.TestingUtil;
@@ -77,16 +77,9 @@ public class OnePhaseXATest extends AbstractInfinispanTest {
    }
 
    private Cache getCache() {
-      GlobalConfiguration gc = GlobalConfiguration.getClusteredDefault();
-
-      Configuration c = new Configuration();
-      c.setInvocationBatchingEnabled(true);
-      c.setCacheMode(Configuration.CacheMode.REPL_SYNC);
-      c.setSyncReplTimeout(30000);
-      c.setLockAcquisitionTimeout(60000);
-      c.setUseLockStriping(false);
-      c.setSyncCommitPhase(true);
-      EmbeddedCacheManager container = TestCacheManagerFactory.createCacheManager(gc, c);
+      ConfigurationBuilder c = TestCacheManagerFactory.getDefaultCacheConfiguration(true);
+      c.invocationBatching().enable().clustering().cacheMode(CacheMode.REPL_SYNC).sync().replTimeout(30000).locking().lockAcquisitionTimeout(60000).useLockStriping(false).transaction().syncCommitPhase(true);
+      EmbeddedCacheManager container = TestCacheManagerFactory.createCacheManager(c);
       cacheContainers.add(container);
       return container.getCache("TestCache");
    }

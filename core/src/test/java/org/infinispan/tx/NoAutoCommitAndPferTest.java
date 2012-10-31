@@ -20,6 +20,7 @@
 package org.infinispan.tx;
 
 import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.SingleCacheManagerTest;
 import org.infinispan.test.fwk.TestCacheManagerFactory;
@@ -30,8 +31,8 @@ public class NoAutoCommitAndPferTest extends SingleCacheManagerTest {
 
    @Override
    protected EmbeddedCacheManager createCacheManager() throws Exception {
-      Configuration dsc = getDefaultStandaloneConfig(true);
-      dsc.fluent().transaction().autoCommit(false);
+      ConfigurationBuilder dsc = getDefaultStandaloneConfig(true);
+      dsc.transaction().autoCommit(false);
       return TestCacheManagerFactory.createCacheManager(dsc);
    }
 

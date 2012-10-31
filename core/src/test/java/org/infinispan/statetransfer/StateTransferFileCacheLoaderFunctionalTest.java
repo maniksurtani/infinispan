@@ -22,17 +22,12 @@
  */
 package org.infinispan.statetransfer;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
-
 import org.infinispan.Cache;
 import org.infinispan.config.CacheLoaderManagerConfig;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.configuration.cache.FileCacheStoreConfigurationBuilder;
+import org.infinispan.configuration.cache.StoreConfigurationBuilder;
 import org.infinispan.loaders.file.FileCacheStoreConfig;
 import org.infinispan.manager.CacheContainer;
 import org.infinispan.manager.EmbeddedCacheManager;
@@ -42,9 +37,12 @@ import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Optional;
-import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import static org.infinispan.statetransfer.StateTransferTestingUtil.*;
 
@@ -69,7 +67,7 @@ public class StateTransferFileCacheLoaderFunctionalTest extends MultipleCacheMan
    String tmpDirectory3;
    String tmpDirectory4;
 
-   Configuration config;
+   ConfigurationBuilder config;
 
    @BeforeTest
    protected void setUpTempDir() {
@@ -95,26 +93,20 @@ public class StateTransferFileCacheLoaderFunctionalTest extends MultipleCacheMan
    @Override
    protected void createCacheManagers() throws Throwable {
       // This impl only really sets up a configuration for use later.
-      config = getDefaultClusteredConfig(Configuration.CacheMode.REPL_SYNC, true);
-      config.setSyncReplTimeout(30000);
-      config.setFetchInMemoryState(true);
-      config.setUseLockStriping(false); // reduces the odd chance of a key collision and deadlock
+      config = getDefaultClusteredConfig(CacheMode.REPL_SYNC, true);
+      config.clustering().sync().replTimeout(30000)
+            .stateTransfer().fetchInMemoryState(true)
+            .locking().useLockStriping(false);
    }
 
    protected CacheContainer createCacheManager(String tmpDirectory) {
-      // increment the DIMCS store id
-      FileCacheStoreConfig cfg = new FileCacheStoreConfig();
-      cfg.setLocation(tmpDirectory);
-      cfg.setPurgeSynchronously(true); // for more accurate unit testing
-      cfg.setFetchPersistentState(true);
-
-      CacheLoaderManagerConfig clmc = new CacheLoaderManagerConfig();
-      clmc.addCacheLoaderConfig(cfg);
-      clmc.setShared(sharedCacheLoader.get());
-      config.setCacheLoaderManagerConfig(clmc);
-
+      StoreConfigurationBuilder fcs = new FileCacheStoreConfigurationBuilder(config.loaders());
+      fcs.loaders().shared(sharedCacheLoader.get()).addFileCacheStore().location(tmpDirectory)
+            .purgeSynchronously(true)
+            .fetchPersistentState(true);
+      config.loaders().addStore(fcs);
       EmbeddedCacheManager cm = addClusterEnabledCacheManager();
-      cm.defineConfiguration(cacheName, config.clone());
+      cm.defineConfiguration(cacheName, config.build());
       return cm;
    }
 

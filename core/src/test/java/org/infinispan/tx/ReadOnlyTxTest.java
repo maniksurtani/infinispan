@@ -22,7 +22,8 @@
  */
 package org.infinispan.tx;
 
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.context.Flag;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.SingleCacheManagerTest;
@@ -39,13 +40,13 @@ import javax.transaction.Transaction;
  * @author Mircea.Markus@jboss.com
  * @since 4.2
  */
-@Test (groups = "functional", testName = "tx.ReadOnlyTxTest")
+@Test(groups = "functional", testName = "tx.ReadOnlyTxTest")
 @CleanupAfterMethod
 public class ReadOnlyTxTest extends SingleCacheManagerTest {
 
    @Override
    protected EmbeddedCacheManager createCacheManager() throws Exception {
-      Configuration configuration = getDefaultClusteredConfig(Configuration.CacheMode.LOCAL, true);
+      ConfigurationBuilder configuration = getDefaultClusteredConfig(CacheMode.LOCAL, true);
       return TestCacheManagerFactory.createCacheManager(configuration);
    }
 

@@ -23,7 +23,6 @@
 package org.infinispan.tx;
 
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.SingleCacheManagerTest;
 import org.infinispan.test.TestingUtil;
@@ -44,8 +43,7 @@ import javax.transaction.TransactionManager;
 public class ReadOnlyTxCleanupTest extends SingleCacheManagerTest {
    @Override
    protected EmbeddedCacheManager createCacheManager() throws Exception {
-      Configuration c = TestCacheManagerFactory.getDefaultConfiguration(true);
-      return TestCacheManagerFactory.createCacheManager(c);
+      return TestCacheManagerFactory.createCacheManager(TestCacheManagerFactory.getDefaultConfiguration(true));
    }
 
    public void testReadOnlyTx() throws SystemException, RollbackException, HeuristicRollbackException, HeuristicMixedException, NotSupportedException {

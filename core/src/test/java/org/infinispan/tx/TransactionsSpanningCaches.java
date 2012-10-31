@@ -23,7 +23,7 @@
 package org.infinispan.tx;
 
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.SingleCacheManagerTest;
 import org.infinispan.test.TestingUtil;
@@ -36,8 +36,9 @@ import javax.transaction.TransactionManager;
 @Test(groups = "functional", sequential = true, testName = "tx.TransactionsSpanningCaches")
 public class TransactionsSpanningCaches extends SingleCacheManagerTest {
 
+   @Override
    protected EmbeddedCacheManager createCacheManager() throws Exception {
-      Configuration defaultCacheConfig = getDefaultStandaloneConfig(true);
+      ConfigurationBuilder defaultCacheConfig = getDefaultStandaloneConfig(true);
       amendConfig(defaultCacheConfig);
       EmbeddedCacheManager cm = TestCacheManagerFactory.createCacheManager(defaultCacheConfig);
       cm.defineConfiguration("c1", cm.getCache().getConfiguration());
@@ -45,7 +46,7 @@ public class TransactionsSpanningCaches extends SingleCacheManagerTest {
       return cm;
    }
 
-   protected void amendConfig(Configuration defaultCacheConfig) {
+   protected void amendConfig(ConfigurationBuilder defaultCacheConfig) {
       //ignore
    }
 

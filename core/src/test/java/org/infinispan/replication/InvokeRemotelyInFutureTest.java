@@ -22,24 +22,26 @@
  */
 package org.infinispan.replication;
 
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.infinispan.Cache;
 import org.infinispan.commands.CommandsFactory;
 import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
 import org.infinispan.util.concurrent.FutureListener;
 import org.infinispan.util.concurrent.NotifyingFutureImpl;
 import org.testng.annotations.Test;
 
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 @Test(groups = "functional", testName = "replication.InvokeRemotelyInFutureTest")
 public class InvokeRemotelyInFutureTest extends MultipleCacheManagersTest {
 
-
+   @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration c = getDefaultClusteredConfig(Configuration.CacheMode.REPL_SYNC, true);
+      ConfigurationBuilder c = getDefaultClusteredConfig(CacheMode.REPL_SYNC, true);
       createClusteredCaches(2, "futureRepl", c);   
    }
 

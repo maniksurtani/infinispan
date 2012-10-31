@@ -29,23 +29,12 @@
  */
 package org.infinispan.replication;
 
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertNull;
-
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.infinispan.Cache;
 import org.infinispan.CacheException;
 import org.infinispan.commands.remote.CacheRpcCommand;
 import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.remoting.responses.Response;
 import org.infinispan.remoting.rpc.ResponseFilter;
 import org.infinispan.remoting.rpc.ResponseMode;
@@ -57,6 +46,19 @@ import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNull;
+
 /**
  * @author <a href="mailto:manik@jboss.org">Manik Surtani (manik@jboss.org)</a>
  */
@@ -67,8 +69,7 @@ public class SyncReplTest extends MultipleCacheManagersTest {
 
    @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration replSync = getDefaultClusteredConfig(Configuration.CacheMode.REPL_SYNC);
-      createClusteredCaches(2, "replSync", replSync);
+      createClusteredCaches(2, "replSync", getDefaultClusteredConfig(CacheMode.REPL_SYNC));
    }
 
    public void testBasicOperation() {
@@ -98,7 +99,7 @@ public class SyncReplTest extends MultipleCacheManagersTest {
       assert cache1.isEmpty();
       assert cache2.isEmpty();
 
-      Configuration newConf = getDefaultClusteredConfig(Configuration.CacheMode.REPL_SYNC);
+      ConfigurationBuilder newConf = getDefaultClusteredConfig(CacheMode.REPL_SYNC);
       defineConfigurationOnAllManagers("newCache", newConf);
       Cache altCache1 = manager(0).getCache("newCache");
       Cache altCache2 = manager(1).getCache("newCache");
@@ -133,9 +134,7 @@ public class SyncReplTest extends MultipleCacheManagersTest {
       assert cache1.isEmpty();
       assert cache2.isEmpty();
 
-      Configuration newConf = getDefaultClusteredConfig(Configuration.CacheMode.REPL_SYNC);
-
-      defineConfigurationOnAllManagers("newCache2", newConf);
+      defineConfigurationOnAllManagers("newCache2", getDefaultClusteredConfig(CacheMode.REPL_SYNC));
       Cache altCache1 = manager(0).getCache("newCache2");
 
       try {
@@ -171,8 +170,8 @@ public class SyncReplTest extends MultipleCacheManagersTest {
       RpcManagerImpl asyncRpcManager = null;
       Map<Address, Response> emptyResponses = Collections.emptyMap();
       try {
-         Configuration asyncCache = getDefaultClusteredConfig(Configuration.CacheMode.REPL_ASYNC);
-         asyncCache.setUseAsyncMarshalling(true);
+         ConfigurationBuilder asyncCache = getDefaultClusteredConfig(CacheMode.REPL_ASYNC);
+         asyncCache.clustering().async().asyncMarshalling(true);
          defineConfigurationOnAllManagers("asyncCache", asyncCache);
          Cache asyncCache1 = manager(0).getCache("asyncCache");
          Cache asyncCache2 = manager(1).getCache("asyncCache");

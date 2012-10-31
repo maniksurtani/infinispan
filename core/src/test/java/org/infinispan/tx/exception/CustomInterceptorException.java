@@ -23,8 +23,8 @@
 package org.infinispan.tx.exception;
 
 import org.infinispan.commands.write.PutKeyValueCommand;
-import org.infinispan.config.Configuration;
 import org.infinispan.config.CustomInterceptorConfigTest;
+import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.context.InvocationContext;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.SingleCacheManagerTest;
@@ -46,7 +46,7 @@ public class CustomInterceptorException extends SingleCacheManagerTest {
    @Override
    protected EmbeddedCacheManager createCacheManager() throws Exception {
       EmbeddedCacheManager eCm =
-            TestCacheManagerFactory.createCacheManager(getDefaultClusteredConfig(Configuration.CacheMode.LOCAL, true));
+            TestCacheManagerFactory.createCacheManager(getDefaultClusteredConfig(CacheMode.LOCAL, true));
       eCm.getCache().getAdvancedCache().addInterceptor(new CustomInterceptorConfigTest.DummyInterceptor() {
          @Override
          public Object visitPutKeyValueCommand(InvocationContext ctx, PutKeyValueCommand command) throws Throwable {

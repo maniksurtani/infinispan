@@ -23,7 +23,8 @@
 package org.infinispan.replication;
 
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
 import org.infinispan.transaction.lookup.DummyTransactionManagerLookup;
@@ -52,15 +53,16 @@ public class SyncReplPessimisticLockingTest extends MultipleCacheManagersTest {
       cleanup = CleanupPhase.AFTER_METHOD;
    }
 
-   protected Configuration.CacheMode getCacheMode() {
-      return Configuration.CacheMode.REPL_SYNC;
+   protected CacheMode getCacheMode() {
+      return CacheMode.REPL_SYNC;
    }
 
+   @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration cfg = getDefaultClusteredConfig(getCacheMode(), true);
-      cfg.fluent().transaction().transactionManagerLookup(new DummyTransactionManagerLookup());
-      cfg.setLockAcquisitionTimeout(500);
-      cfg.setUseEagerLocking(true);
+      ConfigurationBuilder cfg = getDefaultClusteredConfig(getCacheMode(), true);
+      cfg.transaction().transactionManagerLookup(new DummyTransactionManagerLookup())
+            .useEagerLocking(true)
+            .locking().lockAcquisitionTimeout(500);
       createClusteredCaches(2, "testcache", cfg);
    }
 

@@ -22,7 +22,8 @@
  */
 package org.infinispan.tx.exception;
 
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
 import org.infinispan.transaction.TransactionTable;
@@ -41,7 +42,6 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,10 +66,9 @@ public class TxAndRemoteTimeoutExceptionTest extends MultipleCacheManagersTest {
 
    @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration defaultConfig = getDefaultConfig();
-      defaultConfig.setLockAcquisitionTimeout(500);
-      defaultConfig.fluent().transaction().transactionManagerLookup(new DummyTransactionManagerLookup());
-      defaultConfig.setUseLockStriping(false);
+      ConfigurationBuilder defaultConfig = getDefaultConfig();
+      defaultConfig.locking().lockAcquisitionTimeout(500).useLockStriping(false)
+         .transaction().transactionManagerLookup(new DummyTransactionManagerLookup());
       addClusterEnabledCacheManager(defaultConfig);
       addClusterEnabledCacheManager(defaultConfig);
       lm0 = TestingUtil.extractLockManager(cache(0));
@@ -80,8 +79,8 @@ public class TxAndRemoteTimeoutExceptionTest extends MultipleCacheManagersTest {
       TestingUtil.blockUntilViewReceived(cache(0), 2);
    }
 
-   protected Configuration getDefaultConfig() {
-      return getDefaultClusteredConfig(Configuration.CacheMode.REPL_SYNC, true);
+   protected ConfigurationBuilder getDefaultConfig() {
+      return getDefaultClusteredConfig(CacheMode.REPL_SYNC, true);
    }
 
    public void testClearTimeoutsInTx() throws Exception {
