@@ -2,12 +2,14 @@
 
 source "`dirname "$0"`/functions.sh"
 
+add_classpath ${ISPN_HOME}/etc
 add_classpath ${ISPN_HOME}/modules/demos/gui/*.jar
 add_classpath ${ISPN_HOME}/modules/demos/gui/runtime-classpath.txt
 
 add_jvm_args $JVM_PARAMS
 add_jvm_args '-Djgroups.bind_addr=127.0.0.1'
 add_jvm_args '-Djava.net.preferIPv4Stack=true'
+add_jvm_args '-Dinfinispan.configuration=config-samples/gui-demo-cache-config.xml'
 
 # RHQ monitoring options
 add_jvm_args '-Dcom.sun.management.jmxremote.ssl=false'
