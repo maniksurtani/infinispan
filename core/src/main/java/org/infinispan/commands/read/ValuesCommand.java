@@ -28,6 +28,8 @@ import org.infinispan.container.DataContainer;
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.container.entries.InternalCacheEntry;
 import org.infinispan.context.InvocationContext;
+import org.infinispan.util.time.Clock;
+import org.infinispan.util.time.Clocks;
 
 import java.util.AbstractCollection;
 import java.util.Collection;
@@ -46,6 +48,7 @@ import java.util.Set;
  */
 public class ValuesCommand extends AbstractLocalCommand implements VisitableCommand {
    private final DataContainer container;
+   private static final Clock clock = Clocks.getCachingClock();
 
    public ValuesCommand(DataContainer container) {
       this.container = container;
@@ -91,7 +94,7 @@ public class ValuesCommand extends AbstractLocalCommand implements VisitableComm
          for (InternalCacheEntry e: entrySet) {
             if (e.canExpire()) {
                if (currentTimeMillis == 0)
-                  currentTimeMillis = System.currentTimeMillis();
+                  currentTimeMillis = clock.currentTimeMillis();
                if (e.isExpired(currentTimeMillis))
                   size--;
             }
@@ -190,7 +193,7 @@ public class ValuesCommand extends AbstractLocalCommand implements VisitableComm
                   CacheEntry e = lookedUpEntries.get(key);
                   if (ice.canExpire()) {
                      if (currentTimeMillis == 0)
-                        currentTimeMillis = System.currentTimeMillis();
+                        currentTimeMillis = clock.currentTimeMillis();
                      if (ice.isExpired(currentTimeMillis))
                         continue;
                   }
@@ -293,7 +296,7 @@ public class ValuesCommand extends AbstractLocalCommand implements VisitableComm
          for (InternalCacheEntry e: entrySet) {
             if (e.canExpire()) {
                if (currentTimeMillis==0)
-                  currentTimeMillis = System.currentTimeMillis();
+                  currentTimeMillis = clock.currentTimeMillis();
                if (e.isExpired(currentTimeMillis))
                   s--;
             }
@@ -316,7 +319,7 @@ public class ValuesCommand extends AbstractLocalCommand implements VisitableComm
                InternalCacheEntry e = it.next();
                final boolean canExpire = e.canExpire();
                if (canExpire && currentTimeMillis == 0) {
-                  currentTimeMillis = System.currentTimeMillis();
+                  currentTimeMillis = clock.currentTimeMillis();
                }
                if (!canExpire) {
                   next = e.getValue();

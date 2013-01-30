@@ -29,6 +29,8 @@ import org.infinispan.container.InternalEntryFactory;
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.container.entries.InternalCacheEntry;
 import org.infinispan.context.InvocationContext;
+import org.infinispan.util.time.Clock;
+import org.infinispan.util.time.Clocks;
 
 import java.util.AbstractSet;
 import java.util.Collection;
@@ -49,6 +51,7 @@ import static org.infinispan.util.Immutables.immutableInternalCacheEntry;
 public class EntrySetCommand extends AbstractLocalCommand implements VisitableCommand {
    private final DataContainer container;
    private final InternalEntryFactory entryFactory;
+   private static final Clock clock = Clocks.getCachingClock();
 
    public EntrySetCommand(DataContainer container, InternalEntryFactory internalEntryFactory) {
       this.container = container;
@@ -94,7 +97,7 @@ public class EntrySetCommand extends AbstractLocalCommand implements VisitableCo
          for (InternalCacheEntry e: entrySet) {
             if (e.canExpire()) {
                if (currentTimeMillis == 0)
-                  currentTimeMillis = System.currentTimeMillis();
+                  currentTimeMillis = clock.currentTimeMillis();
                if (e.isExpired(currentTimeMillis))
                   size--;
             }
@@ -273,7 +276,7 @@ public class EntrySetCommand extends AbstractLocalCommand implements VisitableCo
          for (InternalCacheEntry e: entrySet) {
             if (e.canExpire()) {
                if (currentTimeMillis == 0)
-                  currentTimeMillis = System.currentTimeMillis();
+                  currentTimeMillis = clock.currentTimeMillis();
                if (e.isExpired(currentTimeMillis))
                   s--;
             }
@@ -325,7 +328,7 @@ public class EntrySetCommand extends AbstractLocalCommand implements VisitableCo
             while (it.hasNext()) {
                InternalCacheEntry e = it.next();
                if (e.canExpire()) {
-                  if (currentTimeMillis == -1) currentTimeMillis = System.currentTimeMillis();
+                  if (currentTimeMillis == -1) currentTimeMillis = clock.currentTimeMillis();
                   if (! e.isExpired(currentTimeMillis)) {
                      next = e;
                      return;

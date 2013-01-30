@@ -40,6 +40,8 @@ import org.infinispan.util.concurrent.BoundedConcurrentHashMap;
 import org.infinispan.util.concurrent.BoundedConcurrentHashMap.Eviction;
 import org.infinispan.util.concurrent.BoundedConcurrentHashMap.EvictionListener;
 import org.infinispan.util.concurrent.ConcurrentMapFactory;
+import org.infinispan.util.time.Clock;
+import org.infinispan.util.time.SystemClock;
 
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
@@ -71,6 +73,7 @@ public class DefaultDataContainer implements DataContainer {
    private PassivationManager passivator;
    private ActivationManager activator;
    private CacheLoaderManager clm;
+   private static final Clock clock = new SystemClock();
 
 
    public DefaultDataContainer(int concurrencyLevel) {
@@ -133,7 +136,7 @@ public class DefaultDataContainer implements DataContainer {
    public InternalCacheEntry get(Object k) {
       InternalCacheEntry e = peek(k);
       if (e != null && e.canExpire()) {
-         long currentTimeMillis = System.currentTimeMillis();
+         long currentTimeMillis = clock.currentTimeMillis();
          if (e.isExpired(currentTimeMillis)) {
             entries.remove(k);
             e = null;
@@ -166,7 +169,7 @@ public class DefaultDataContainer implements DataContainer {
    @Override
    public boolean containsKey(Object k) {
       InternalCacheEntry ice = peek(k);
-      if (ice != null && ice.canExpire() && ice.isExpired(System.currentTimeMillis())) {
+      if (ice != null && ice.canExpire() && ice.isExpired(clock.currentTimeMillis())) {
          entries.remove(k);
          ice = null;
       }
@@ -176,7 +179,7 @@ public class DefaultDataContainer implements DataContainer {
    @Override
    public InternalCacheEntry remove(Object k) {
       InternalCacheEntry e = entries.remove(k);
-      return e == null || (e.canExpire() && e.isExpired(System.currentTimeMillis())) ? null : e;
+      return e == null || (e.canExpire() && e.isExpired(clock.currentTimeMillis())) ? null : e;
    }
 
    @Override
@@ -206,7 +209,7 @@ public class DefaultDataContainer implements DataContainer {
 
    @Override
    public void purgeExpired() {
-      long currentTimeMillis = System.currentTimeMillis();
+      long currentTimeMillis = clock.currentTimeMillis();
       for (Iterator<InternalCacheEntry> purgeCandidates = entries.values().iterator(); purgeCandidates.hasNext();) {
          InternalCacheEntry e = purgeCandidates.next();
          if (e.isExpired(currentTimeMillis)) {

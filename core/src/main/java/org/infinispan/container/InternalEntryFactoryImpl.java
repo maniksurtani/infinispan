@@ -31,6 +31,8 @@ import org.infinispan.container.entries.TransientCacheValue;
 import org.infinispan.container.entries.TransientMortalCacheEntry;
 import org.infinispan.container.entries.TransientMortalCacheValue;
 import org.infinispan.container.versioning.EntryVersion;
+import org.infinispan.util.time.Clock;
+import org.infinispan.util.time.SystemClock;
 
 /**
  * An implementation that generates non-versioned entries
@@ -39,6 +41,8 @@ import org.infinispan.container.versioning.EntryVersion;
  * @since 5.1
  */
 public class InternalEntryFactoryImpl implements InternalEntryFactory {
+
+   private static final Clock clock = new SystemClock();
 
    @Override
    public InternalCacheEntry create(Object key, Object value, EntryVersion ignored) {
@@ -96,7 +100,7 @@ public class InternalEntryFactoryImpl implements InternalEntryFactory {
             if (maxIdle < 0) {
                return new MortalCacheEntry(ice.getKey(), ice.getValue(), lifespan);
             } else {
-               long ctm = System.currentTimeMillis();
+               long ctm = clock.currentTimeMillis();
                return new TransientMortalCacheEntry(ice.getKey(), ice.getValue(), maxIdle, lifespan, ctm, ctm);
             }
          }
@@ -112,7 +116,7 @@ public class InternalEntryFactoryImpl implements InternalEntryFactory {
                ice.setLifespan(lifespan);
                return ice;
             } else {
-               long ctm = System.currentTimeMillis();
+               long ctm = clock.currentTimeMillis();
                return new TransientMortalCacheEntry(ice.getKey(), ice.getValue(), maxIdle, lifespan, ctm, ctm);
             }
          }
@@ -128,7 +132,7 @@ public class InternalEntryFactoryImpl implements InternalEntryFactory {
             if (maxIdle < 0) {
                return new MortalCacheEntry(ice.getKey(), ice.getValue(), lifespan);
             } else {
-               long ctm = System.currentTimeMillis();
+               long ctm = clock.currentTimeMillis();
                return new TransientMortalCacheEntry(ice.getKey(), ice.getValue(), maxIdle, lifespan, ctm, ctm);
             }
          }

@@ -35,6 +35,8 @@ import org.infinispan.container.entries.versioned.VersionedTransientCacheValue;
 import org.infinispan.container.entries.versioned.VersionedTransientMortalCacheEntry;
 import org.infinispan.container.entries.versioned.VersionedTransientMortalCacheValue;
 import org.infinispan.container.versioning.EntryVersion;
+import org.infinispan.util.time.Clock;
+import org.infinispan.util.time.SystemClock;
 
 /**
  * An implementation that generates versioned entries
@@ -43,6 +45,8 @@ import org.infinispan.container.versioning.EntryVersion;
  * @since 5.1
  */
 public class VersionedInternalEntryFactoryImpl extends InternalEntryFactoryImpl {
+
+   private static final Clock clock = new SystemClock();
 
    @Override
    public InternalCacheEntry create(Object key, Object value, EntryVersion version) {
@@ -90,7 +94,7 @@ public class VersionedInternalEntryFactoryImpl extends InternalEntryFactoryImpl 
             if (maxIdle < 0) {
                return new VersionedMortalCacheEntry(ice.getKey(), ice.getValue(), version, lifespan);
             } else {
-               long ctm = System.currentTimeMillis();
+               long ctm = clock.currentTimeMillis();
                return new VersionedTransientMortalCacheEntry(ice.getKey(), ice.getValue(), version, maxIdle, lifespan, ctm, ctm);
             }
          }
@@ -106,7 +110,7 @@ public class VersionedInternalEntryFactoryImpl extends InternalEntryFactoryImpl 
                ice.setLifespan(lifespan);
                return ice;
             } else {
-               long ctm = System.currentTimeMillis();
+               long ctm = clock.currentTimeMillis();
                return new VersionedTransientMortalCacheEntry(ice.getKey(), ice.getValue(), version, maxIdle, lifespan, ctm, ctm);
             }
          }
@@ -122,7 +126,7 @@ public class VersionedInternalEntryFactoryImpl extends InternalEntryFactoryImpl 
             if (maxIdle < 0) {
                return new VersionedMortalCacheEntry(ice.getKey(), ice.getValue(), version, lifespan);
             } else {
-               long ctm = System.currentTimeMillis();
+               long ctm = clock.currentTimeMillis();
                return new VersionedTransientMortalCacheEntry(ice.getKey(), ice.getValue(), version, maxIdle, lifespan, ctm, ctm);
             }
          }

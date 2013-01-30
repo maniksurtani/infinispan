@@ -26,6 +26,9 @@ import org.infinispan.io.UnsignedNumeric;
 import org.infinispan.marshall.AbstractExternalizer;
 import org.infinispan.marshall.Ids;
 import org.infinispan.util.Util;
+import org.infinispan.util.time.Clock;
+import org.infinispan.util.time.Clocks;
+import org.infinispan.util.time.SystemClock;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -57,7 +60,7 @@ public class MortalCacheEntry extends AbstractInternalCacheEntry {
    }
 
    public MortalCacheEntry(Object key, Object value, long lifespan) {
-      this(key, value, lifespan, System.currentTimeMillis());
+      this(key, value, lifespan, Clocks.getCachingClock().currentTimeMillis());
    }
 
    public MortalCacheEntry(Object key, Object value, long lifespan, long created) {
@@ -122,7 +125,7 @@ public class MortalCacheEntry extends AbstractInternalCacheEntry {
 
    @Override
    public final void reincarnate() {
-      cacheValue.created = System.currentTimeMillis();
+      cacheValue.created = Clocks.getCachingClock().currentTimeMillis();
    }
 
    @Override

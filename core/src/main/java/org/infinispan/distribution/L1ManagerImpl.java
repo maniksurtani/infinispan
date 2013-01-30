@@ -26,10 +26,10 @@ import org.infinispan.commands.CommandsFactory;
 import org.infinispan.commands.remote.CacheRpcCommand;
 import org.infinispan.commands.remote.SingleRpcCommand;
 import org.infinispan.commands.write.InvalidateCommand;
+import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.context.Flag;
 import org.infinispan.factories.KnownComponentNames;
 import org.infinispan.factories.annotations.ComponentName;
-import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.factories.annotations.Inject;
 import org.infinispan.factories.annotations.Start;
 import org.infinispan.factories.annotations.Stop;
@@ -44,6 +44,7 @@ import org.infinispan.util.concurrent.NotifyingFutureImpl;
 import org.infinispan.util.concurrent.NotifyingNotifiableFuture;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
+import org.infinispan.util.time.Clocks;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -117,7 +118,7 @@ public class L1ManagerImpl implements L1Manager {
    }
 
    private void cleanUpRequestors() {
-      long expiryTime = System.currentTimeMillis() - l1Lifespan;
+      long expiryTime = Clocks.getCachingClock().currentTimeMillis() - l1Lifespan;
       for (Map.Entry<Object, ConcurrentMap<Address, Long>> entry: requestors.entrySet()) {
          Object key = entry.getKey();
          ConcurrentMap<Address, Long> reqs = entry.getValue();
@@ -137,7 +138,7 @@ public class L1ManagerImpl implements L1Manager {
       //we do a plain get first as that's likely to be enough
       ConcurrentMap<Address, Long> as = requestors.get(key);
       log.tracef("Registering requestor %s for key '%s'", origin, key);
-      long now = System.currentTimeMillis();
+      long now = Clocks.getCachingClock().currentTimeMillis();
       if (as == null) {
          // only if needed we create a new HashSet, but make sure we don't replace another one being created
          as = ConcurrentMapFactory.makeConcurrentMap();

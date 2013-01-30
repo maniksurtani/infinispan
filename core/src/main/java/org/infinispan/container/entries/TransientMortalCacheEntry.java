@@ -26,6 +26,9 @@ import org.infinispan.io.UnsignedNumeric;
 import org.infinispan.marshall.AbstractExternalizer;
 import org.infinispan.marshall.Ids;
 import org.infinispan.util.Util;
+import org.infinispan.util.time.Clock;
+import org.infinispan.util.time.Clocks;
+import org.infinispan.util.time.SystemClock;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -41,19 +44,18 @@ import static java.lang.Math.min;
  * @since 4.0
  */
 public class TransientMortalCacheEntry extends AbstractInternalCacheEntry {
-
    protected TransientMortalCacheValue cacheValue;
 
    public TransientMortalCacheEntry(Object key, Object value, long maxIdle, long lifespan) {
       super(key);
-      final long currentTimeMillis = System.currentTimeMillis();
+      final long currentTimeMillis = Clocks.getCachingClock().currentTimeMillis();
       cacheValue = new TransientMortalCacheValue(value, currentTimeMillis, lifespan, maxIdle);
       touch(currentTimeMillis);
    }
 
    protected TransientMortalCacheEntry(Object key, Object value) {
       super(key);
-      final long currentTimeMillis = System.currentTimeMillis();
+      final long currentTimeMillis = Clocks.getCachingClock().currentTimeMillis();
       cacheValue = new TransientMortalCacheValue(value, currentTimeMillis);
       touch(currentTimeMillis);
    }
@@ -129,7 +131,7 @@ public class TransientMortalCacheEntry extends AbstractInternalCacheEntry {
 
    @Override
    public final void touch() {
-      cacheValue.lastUsed = System.currentTimeMillis();
+      cacheValue.lastUsed = Clocks.getCachingClock().currentTimeMillis();
    }
 
    @Override
@@ -139,7 +141,7 @@ public class TransientMortalCacheEntry extends AbstractInternalCacheEntry {
 
    @Override
    public final void reincarnate() {
-      cacheValue.created = System.currentTimeMillis();
+      cacheValue.created = Clocks.getCachingClock().currentTimeMillis();
    }
 
    @Override

@@ -22,6 +22,9 @@
  */
 package org.infinispan.container.entries;
 
+import org.infinispan.util.time.Clock;
+import org.infinispan.util.time.SystemClock;
+
 /**
  * Provide utility methods for dealing with expiration of cache entries.
  *
@@ -30,6 +33,7 @@ package org.infinispan.container.entries;
  * @since 4.0
  */
 class ExpiryHelper {
+   private static final Clock clock = new SystemClock();
 
    static boolean isExpiredMortal(long lifespan, long created, long now) {
       return lifespan > -1 && created > -1 && now > created + lifespan;
@@ -49,7 +53,7 @@ class ExpiryHelper {
     */
    @Deprecated
    static boolean isExpiredMortal(long lifespan, long created) {
-      return lifespan > -1 && created > -1 && System.currentTimeMillis() > created + lifespan;
+      return lifespan > -1 && created > -1 && clock.currentTimeMillis() > created + lifespan;
    }
 
    /**
@@ -58,7 +62,7 @@ class ExpiryHelper {
     */
    @Deprecated
    static boolean isExpiredTransient(long maxIdle, long lastUsed) {
-      return maxIdle > -1 && lastUsed > -1 && System.currentTimeMillis() > maxIdle + lastUsed;
+      return maxIdle > -1 && lastUsed > -1 && clock.currentTimeMillis() > maxIdle + lastUsed;
    }
 
    /**

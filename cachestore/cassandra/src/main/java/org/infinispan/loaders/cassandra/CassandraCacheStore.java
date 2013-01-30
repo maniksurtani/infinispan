@@ -22,22 +22,7 @@
  */
 package org.infinispan.loaders.cassandra;
 
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import net.dataforte.cassandra.pool.DataSource;
-
 import org.apache.cassandra.thrift.Cassandra;
 import org.apache.cassandra.thrift.CfDef;
 import org.apache.cassandra.thrift.Column;
@@ -68,6 +53,22 @@ import org.infinispan.loaders.keymappers.UnsupportedKeyTypeException;
 import org.infinispan.marshall.StreamingMarshaller;
 import org.infinispan.util.Util;
 import org.infinispan.util.logging.LogFactory;
+import org.infinispan.util.time.Clock;
+import org.infinispan.util.time.Clocks;
+
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A persistent <code>CacheLoader</code> based on Apache Cassandra project. See
@@ -99,8 +100,10 @@ public class CassandraCacheStore extends AbstractCacheStore {
    private String entryKeyPrefix;
    private ByteBuffer expirationKey;
    private TwoWayKey2StringMapper keyMapper;
+   private static Clock clock = Clocks.getCachingClock();
 
    static private Charset UTF8Charset = Charset.forName("UTF-8");
+
 
    @Override
    public Class<? extends CacheLoaderConfig> getConfigurationClass() {
@@ -203,7 +206,7 @@ public class CassandraCacheStore extends AbstractCacheStore {
          ColumnOrSuperColumn column = cassandraClient.get(ByteBufferUtil.bytes(hashKey),
                   entryColumnPath, readConsistencyLevel);
          InternalCacheEntry ice = unmarshall(column.getColumn().getValue(), key);
-         if (ice != null && ice.isExpired(System.currentTimeMillis())) {
+         if (ice != null && ice.isExpired(clock.currentTimeMillis())) {
             remove(key);
             return null;
          }
@@ -523,7 +526,7 @@ public class CassandraCacheStore extends AbstractCacheStore {
          // now, in SLICE_SIZE chunks
          SlicePredicate predicate = new SlicePredicate();
          predicate.setSlice_range(new SliceRange(ByteBufferUtil.EMPTY_BYTE_BUFFER, ByteBufferUtil
-                  .bytes(System.currentTimeMillis()), false, SLICE_SIZE));
+                  .bytes(clock.currentTimeMillis()), false, SLICE_SIZE));
 
          for (boolean complete = false; !complete;) {
             Map<ByteBuffer, Map<String, List<Mutation>>> mutationMap = new HashMap<ByteBuffer, Map<String, List<Mutation>>>(SLICE_SIZE);
@@ -627,6 +630,6 @@ public class CassandraCacheStore extends AbstractCacheStore {
    }
 
    private static long microTimestamp() {
-      return System.currentTimeMillis() * 1000l;
+      return clock.currentTimeMillis() * 1000l;
    }
 }

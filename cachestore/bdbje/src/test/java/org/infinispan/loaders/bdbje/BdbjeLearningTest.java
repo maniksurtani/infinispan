@@ -38,7 +38,6 @@ import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.OperationStatus;
 import org.infinispan.container.entries.InternalCacheEntry;
-import org.infinispan.test.fwk.TestInternalCacheEntryFactory;
 import org.infinispan.loaders.CacheLoaderException;
 import org.infinispan.loaders.modifications.Clear;
 import org.infinispan.loaders.modifications.Modification;
@@ -47,14 +46,14 @@ import org.infinispan.loaders.modifications.Store;
 import org.infinispan.marshall.TestObjectStreamMarshaller;
 import org.infinispan.test.AbstractInfinispanTest;
 import org.infinispan.test.TestingUtil;
+import org.infinispan.test.fwk.TestInternalCacheEntryFactory;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
+import org.infinispan.util.time.Clocks;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Optional;
-import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import javax.transaction.Transaction;
@@ -76,7 +75,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Learning tests for SleepyCat JE.  Behaviour here is used in BdbjeCacheLoader.  When there are upgrades to bdbje, this
@@ -590,7 +589,7 @@ public class BdbjeLearningTest extends AbstractInfinispanTest {
    }
 
    public void testPurgeExpired() throws Exception {
-      long now = System.currentTimeMillis();
+      long now = Clocks.getCachingClock().currentTimeMillis();
       long lifespan = 1000;
       store(TestInternalCacheEntryFactory.create("k1", "v1", lifespan));
       store(TestInternalCacheEntryFactory.create("k2", "v2", lifespan));

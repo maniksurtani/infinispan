@@ -26,6 +26,9 @@ import org.infinispan.io.UnsignedNumeric;
 import org.infinispan.marshall.AbstractExternalizer;
 import org.infinispan.marshall.Ids;
 import org.infinispan.util.Util;
+import org.infinispan.util.time.Clock;
+import org.infinispan.util.time.Clocks;
+import org.infinispan.util.time.SystemClock;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -47,7 +50,7 @@ public class TransientCacheEntry extends AbstractInternalCacheEntry {
    }
 
    public TransientCacheEntry(Object key, Object value, long maxIdle) {
-      this(key, value, maxIdle, System.currentTimeMillis());
+      this(key, value, maxIdle, Clocks.getCachingClock().currentTimeMillis());
    }
 
    public TransientCacheEntry(Object key, Object value, long maxIdle, long lastUsed) {
@@ -67,7 +70,7 @@ public class TransientCacheEntry extends AbstractInternalCacheEntry {
 
    @Override
    public final void touch() {
-      cacheValue.lastUsed = System.currentTimeMillis();
+      cacheValue.lastUsed = Clocks.getCachingClock().currentTimeMillis();
    }
 
    @Override

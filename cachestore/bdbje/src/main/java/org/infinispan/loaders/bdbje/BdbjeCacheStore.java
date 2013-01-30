@@ -49,6 +49,8 @@ import org.infinispan.transaction.xa.GlobalTransaction;
 import org.infinispan.util.ReflectionUtil;
 import org.infinispan.util.concurrent.ConcurrentMapFactory;
 import org.infinispan.util.logging.LogFactory;
+import org.infinispan.util.time.Clock;
+import org.infinispan.util.time.Clocks;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,6 +107,7 @@ public class BdbjeCacheStore extends AbstractCacheStore {
    private Map<GlobalTransaction, Transaction> txnMap;
    private CurrentTransaction currentTransaction;
    private BdbjeResourceFactory factory;
+   private Clock clock = Clocks.getCachingClock();
 
    /**
     * {@inheritDoc} This implementation expects config to be an instance of {@link BdbjeCacheStoreConfig} <p /> note
@@ -411,7 +414,7 @@ public class BdbjeCacheStore extends AbstractCacheStore {
    public InternalCacheEntry load(Object key) throws CacheLoaderException {
       try {
          InternalCacheEntry s = cacheMap.get(key);
-         if (s != null && s.isExpired(System.currentTimeMillis())) {
+         if (s != null && s.isExpired(clock.currentTimeMillis())) {
             s = null;
          }
          return s;
@@ -440,7 +443,7 @@ public class BdbjeCacheStore extends AbstractCacheStore {
       if (entry.getMaxIdle() > 0) {
          // Coding getExpiryTime() for transient entries has the risk of being a moving target
          // which could lead to unexpected results, hence, InternalCacheEntry calls are required
-         expiry = entry.getMaxIdle() + System.currentTimeMillis();
+         expiry = entry.getMaxIdle() + clock.currentTimeMillis();
       }
       Long at = expiry;
       Object key = entry.getKey();
@@ -596,7 +599,7 @@ public class BdbjeCacheStore extends AbstractCacheStore {
    @Override
    protected void purgeInternal() throws CacheLoaderException {
       try {
-         Map<Long, Object> expired = expiryMap.headMap(System.currentTimeMillis(), true);
+         Map<Long, Object> expired = expiryMap.headMap(clock.currentTimeMillis(), true);
          for (Map.Entry<Long, Object> entry : expired.entrySet()) {
             expiryMap.remove(entry.getKey());
             cacheMap.remove(entry.getValue());
