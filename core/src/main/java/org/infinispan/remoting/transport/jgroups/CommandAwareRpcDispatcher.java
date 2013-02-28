@@ -26,18 +26,17 @@ import net.jcip.annotations.GuardedBy;
 import org.infinispan.CacheException;
 import org.infinispan.commands.FlagAffectedCommand;
 import org.infinispan.commands.ReplicableCommand;
-import org.infinispan.commands.read.GetKeyValueCommand;
 import org.infinispan.commands.remote.CacheRpcCommand;
 import org.infinispan.commands.remote.ClusteredGetCommand;
 import org.infinispan.commands.remote.SingleRpcCommand;
 import org.infinispan.context.Flag;
 import org.infinispan.factories.GlobalComponentRegistry;
-import org.infinispan.statetransfer.StateRequestCommand;
-import org.infinispan.statetransfer.StateResponseCommand;
 import org.infinispan.remoting.InboundInvocationHandler;
 import org.infinispan.remoting.RpcException;
 import org.infinispan.remoting.responses.ExceptionResponse;
 import org.infinispan.remoting.responses.Response;
+import org.infinispan.statetransfer.StateRequestCommand;
+import org.infinispan.statetransfer.StateResponseCommand;
 import org.infinispan.topology.CacheTopologyControlCommand;
 import org.infinispan.util.Util;
 import org.infinispan.util.concurrent.TimeoutException;
@@ -74,7 +73,9 @@ import java.util.concurrent.Future;
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.infinispan.remoting.transport.jgroups.JGroupsTransport.fromJGroupsAddress;
-import static org.infinispan.util.Util.*;
+import static org.infinispan.util.Util.formatString;
+import static org.infinispan.util.Util.prettyPrintTime;
+import static org.infinispan.util.Util.rewrapAsCacheException;
 
 /**
  * A JGroups RPC dispatcher that knows how to deal with {@link ReplicableCommand}s.
@@ -345,7 +346,7 @@ public class CommandAwareRpcDispatcher extends RpcDispatcher {
             // This is possibly a remote GET.
             // These UNICASTs happen in parallel using sendMessageWithFuture.  Each future has a listener attached
             // (see FutureCollator) and the first successful response is used.
-            FutureCollator futureCollator = new FutureCollator(filter, dests.size(), timeout);
+            FutureCollator futureCollator = new FutureCollator(filter, timeout);
 
             // TODO: Make this a configuration option.
             final int staggeringTimeout = 100;
@@ -439,16 +440,20 @@ public class CommandAwareRpcDispatcher extends RpcDispatcher {
       @GuardedBy("this")
       private Exception exception;
       @GuardedBy("this")
-      private int expectedResponses;
+      private int expectedResponses = 0;
 
-      FutureCollator(RspFilter filter, int expectedResponses, long timeout) {
+      FutureCollator(RspFilter filter, long timeout) {
          this.filter = filter;
-         this.expectedResponses = expectedResponses;
          this.timeout = timeout;
          this.futures = new HashMap<Future<Object>, SenderContainer>(expectedResponses);
       }
 
-      public void watchFuture(NotifyingFuture<Object> f, Address address) {
+      public synchronized void watchFuture(NotifyingFuture<Object> f, Address address) {
+         if (expectedResponses >= 0) {
+            expectedResponses++;
+         } else {
+            throw new IllegalStateException();
+         }
          futures.put(f, new SenderContainer(address));
          f.setListener(this);
       }
