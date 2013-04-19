@@ -53,7 +53,7 @@ public abstract class AbstractClusteredWriteSkewTest extends MultipleCacheManage
             .cacheMode(getCacheMode())
             .versioning()
             .enable()
-            .scheme(VersioningScheme.SIMPLE)
+            .scheme(VersioningScheme.PARTITION_AWARE)
             .locking()
             .isolationLevel(IsolationLevel.REPEATABLE_READ)
             .writeSkewCheck(true)

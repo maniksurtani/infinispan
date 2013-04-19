@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2013 Red Hat, Inc. and/or its affiliates.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -17,14 +17,15 @@
  * 02110-1301 USA
  */
 
-package org.infinispan.configuration.cache;
+package org.infinispan.remoting;
+
+import org.infinispan.CacheException;
 
 /**
- * The various versioning schemes supported
+ * An exception that is thrown when a thread attempts to modify an entry when  cache is in an invalid state due to a network partition.
  *
  * @author Manik Surtani
- * @since 5.1
+ * @since 5.3
  */
-public enum VersioningScheme {
-   PARTITION_AWARE, SIMPLE, NONE
+public class NetworkPartitionException extends CacheException {
 }

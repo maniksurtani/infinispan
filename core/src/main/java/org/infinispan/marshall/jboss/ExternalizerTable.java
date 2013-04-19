@@ -52,6 +52,7 @@ import org.infinispan.container.entries.versioned.VersionedTransientCacheValue;
 import org.infinispan.container.entries.versioned.VersionedTransientMortalCacheEntry;
 import org.infinispan.container.entries.versioned.VersionedTransientMortalCacheValue;
 import org.infinispan.container.versioning.SimpleClusteredVersion;
+import org.infinispan.container.versioning.VectorClock;
 import org.infinispan.context.Flag;
 import org.infinispan.distribution.ch.DefaultConsistentHash;
 import org.infinispan.distribution.ch.DefaultConsistentHashFactory;
@@ -268,6 +269,7 @@ public class ExternalizerTable implements ObjectTable {
       addInternalExternalizer(new TransientMortalCacheValue.Externalizer());
 
       addInternalExternalizer(new SimpleClusteredVersion.Externalizer());
+      addInternalExternalizer(new VectorClock.Externalizer());
       addInternalExternalizer(new VersionedImmortalCacheEntry.Externalizer());
       addInternalExternalizer(new VersionedMortalCacheEntry.Externalizer());
       addInternalExternalizer(new VersionedTransientCacheEntry.Externalizer());

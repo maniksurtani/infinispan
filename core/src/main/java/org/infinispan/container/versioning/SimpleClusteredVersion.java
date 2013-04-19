@@ -20,7 +20,7 @@
 package org.infinispan.container.versioning;
 
 import net.jcip.annotations.Immutable;
-import org.infinispan.marshall.AbstractExternalizer;
+import org.infinispan.marshall.AdvancedExternalizer;
 import org.infinispan.marshall.Ids;
 
 import java.io.IOException;
@@ -79,7 +79,7 @@ public class SimpleClusteredVersion implements IncrementableEntryVersion {
             '}';
    }
 
-   public static class Externalizer extends AbstractExternalizer<SimpleClusteredVersion> {
+   public static class Externalizer implements AdvancedExternalizer<SimpleClusteredVersion> {
 
       @Override
       public void writeObject(ObjectOutput output, SimpleClusteredVersion ch) throws IOException {

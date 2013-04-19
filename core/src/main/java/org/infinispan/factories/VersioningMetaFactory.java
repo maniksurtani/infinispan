@@ -20,6 +20,7 @@
 package org.infinispan.factories;
 
 import org.infinispan.container.versioning.SimpleClusteredVersionGenerator;
+import org.infinispan.container.versioning.VectorClockGenerator;
 import org.infinispan.container.versioning.VersionGenerator;
 import org.infinispan.factories.annotations.DefaultFactoryFor;
 
@@ -28,16 +29,15 @@ public class VersioningMetaFactory extends AbstractNamedCacheComponentFactory im
    @SuppressWarnings("unchecked")
    @Override
    public <T> T construct(Class<T> componentType) {
-      if (!configuration.versioning().enabled())
+      if (!configuration.versioning().enabled() ||
+            !configuration.clustering().cacheMode().isClustered())
          return null;
 
       switch (configuration.versioning().scheme()) {
-         case SIMPLE: {
-            if (configuration.clustering().cacheMode().isClustered())
-               return (T) new SimpleClusteredVersionGenerator();
-            else
-               return null;
-         }
+         case SIMPLE:
+            return (T) new SimpleClusteredVersionGenerator();
+         case PARTITION_AWARE:
+            return (T) new VectorClockGenerator();
          default:
             return null;
       }
