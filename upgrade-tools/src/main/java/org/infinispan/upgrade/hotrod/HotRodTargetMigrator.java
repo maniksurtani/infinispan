@@ -98,6 +98,6 @@ public class HotRodTargetMigrator implements TargetMigrator {
    public void disconnectSource(Cache<Object, Object> cache) throws CacheException {
       ComponentRegistry cr = cache.getAdvancedCache().getComponentRegistry();
       CacheLoaderManager loaderManager = cr.getComponent(CacheLoaderManager.class);
-      loaderManager.disableCacheStore(RemoteCacheStore.class.getName());
+      loaderManager.disableCacheLoader(RemoteCacheStore.class.getName());
    }
 }

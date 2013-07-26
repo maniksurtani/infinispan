@@ -64,6 +64,11 @@ public class InternalEntryFactoryImpl implements InternalEntryFactory {
    }
 
    @Override
+   public InternalCacheEntry create(Object key) {
+      return null;  // TODO: Customise this generated block
+   }
+
+   @Override
    public InternalCacheEntry create(Object key, Object value, InternalCacheEntry cacheEntry) {
       return create(key, value, cacheEntry.getMetadata(), cacheEntry.getCreated(),
             cacheEntry.getLifespan(), cacheEntry.getLastUsed(), cacheEntry.getMaxIdle());

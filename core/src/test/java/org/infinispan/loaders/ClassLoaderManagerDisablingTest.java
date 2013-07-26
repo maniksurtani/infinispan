@@ -73,7 +73,7 @@ public class ClassLoaderManagerDisablingTest extends AbstractInfinispanTest {
       CacheLoaderManager clm = TestingUtil.extractComponent(cache, CacheLoaderManager.class);
       assertTrue(clm.isEnabled());
       assertEquals(count, clm.getCacheLoaders(DummyInMemoryCacheStore.class).size());
-      clm.disableCacheStore(DummyInMemoryCacheStore.class.getName());
+      clm.disableCacheLoader(DummyInMemoryCacheStore.class.getName());
       assertFalse(clm.isEnabled());
    }
 }

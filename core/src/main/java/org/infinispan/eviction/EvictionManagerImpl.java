@@ -14,7 +14,7 @@ import org.infinispan.factories.annotations.Inject;
 import org.infinispan.factories.annotations.Start;
 import org.infinispan.factories.annotations.Stop;
 import org.infinispan.loaders.CacheLoaderManager;
-import org.infinispan.loaders.CacheStore;
+import org.infinispan.loaders.decorator.ChainingCacheLoader;
 import org.infinispan.notifications.cachelistener.CacheNotifier;
 import org.infinispan.util.TimeService;
 import org.infinispan.util.logging.Log;
@@ -36,7 +36,6 @@ public class EvictionManagerImpl implements EvictionManager {
    private Configuration configuration;
    private CacheLoaderManager cacheLoaderManager;
    private DataContainer dataContainer;
-   private CacheStore cacheStore;
    private CacheNotifier cacheNotifier;
    private TimeService timeService;
    private boolean enabled;
@@ -69,9 +68,6 @@ public class EvictionManagerImpl implements EvictionManager {
       // first check if eviction is enabled!
       enabled = configuration.expiration().reaperEnabled();
       if (enabled) {
-         if (cacheLoaderManager != null && cacheLoaderManager.isEnabled()) {
-            cacheStore = cacheLoaderManager.getCacheStore();
-         }
          // Set up the eviction timer task
          long expWakeUpInt = configuration.expiration().wakeUpInterval();
          if (expWakeUpInt <= 0) {
@@ -103,21 +99,7 @@ public class EvictionManagerImpl implements EvictionManager {
       }
 
       if (!Thread.currentThread().isInterrupted()) {
-         if (cacheStore != null) {
-            try {
-               if (trace) {
-                  log.trace("Purging cache store of expired entries");
-                  start = timeService.time();
-               }
-               cacheStore.purgeExpired();
-               if (trace) {
-                  log.tracef("Purging cache store completed in %s",
-                             Util.prettyPrintTime(timeService.timeDuration(start, TimeUnit.MILLISECONDS)));
-               }
-            } catch (Exception e) {
-               log.exceptionPurgingDataContainer(e);
-            }
-         }
+         cacheLoaderManager.purgeExpired();
       }
    }
 

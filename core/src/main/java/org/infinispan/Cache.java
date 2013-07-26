@@ -127,6 +127,8 @@ public interface Cache<K, V> extends BasicCache<K, V>, BatchingCache, Listenable
     */
    void evict(K key);
 
+
+
    @Deprecated
    Configuration getConfiguration();
 

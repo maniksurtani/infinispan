@@ -1,7 +1,6 @@
 package org.infinispan.loaders.jdbc.binary;
 
 import org.infinispan.Cache;
-import org.infinispan.CacheImpl;
 import org.infinispan.configuration.cache.CacheLoaderConfiguration;
 import org.infinispan.loaders.CacheLoaderManager;
 import org.infinispan.loaders.CacheStore;

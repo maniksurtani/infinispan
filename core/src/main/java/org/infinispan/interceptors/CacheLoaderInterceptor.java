@@ -13,10 +13,11 @@ import org.infinispan.commands.write.PutKeyValueCommand;
 import org.infinispan.commands.write.RemoveCommand;
 import org.infinispan.commands.write.ReplaceCommand;
 import org.infinispan.commons.util.InfinispanCollections;
-import org.infinispan.configuration.cache.CacheStoreConfiguration;
 import org.infinispan.container.EntryFactory;
+import org.infinispan.container.InternalEntryFactory;
 import org.infinispan.container.entries.CacheEntry;
 import org.infinispan.container.entries.InternalCacheEntry;
+import org.infinispan.container.entries.InternalCacheValue;
 import org.infinispan.context.Flag;
 import org.infinispan.context.InvocationContext;
 import org.infinispan.factories.annotations.Inject;
@@ -30,8 +31,9 @@ import org.infinispan.jmx.annotations.MeasurementType;
 import org.infinispan.jmx.annotations.Parameter;
 import org.infinispan.loaders.CacheLoader;
 import org.infinispan.loaders.CacheLoaderManager;
-import org.infinispan.loaders.CacheStore;
-import org.infinispan.loaders.decorators.ChainingCacheStore;
+import org.infinispan.loaders.spi.BasicCacheLoader;
+import org.infinispan.loaders.spi.BatchingCacheLoader;
+import org.infinispan.loaders.spi.BulkCacheLoader;
 import org.infinispan.metadata.Metadata;
 import org.infinispan.metadata.Metadatas;
 import org.infinispan.notifications.cachelistener.CacheNotifier;
@@ -42,12 +44,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-
-import static org.infinispan.loaders.decorators.AbstractDelegatingStore.undelegateCacheLoader;
 
 @MBean(objectName = "CacheLoader", description = "Component that handles loading entries from a CacheStore into memory.")
 public class CacheLoaderInterceptor extends JmxStatsCommandInterceptor {
@@ -56,9 +55,11 @@ public class CacheLoaderInterceptor extends JmxStatsCommandInterceptor {
 
    protected CacheLoaderManager clm;
    protected CacheNotifier notifier;
-   protected CacheLoader loader;
+   protected BasicCacheLoader loader;
+   protected BulkCacheLoader bulkLoader;
    protected volatile boolean enabled = true;
    private EntryFactory entryFactory;
+   private InternalEntryFactory iceFactory;
 
    private static final Log log = LogFactory.getLog(CacheLoaderInterceptor.class);
 
@@ -78,6 +79,7 @@ public class CacheLoaderInterceptor extends JmxStatsCommandInterceptor {
    @SuppressWarnings("unused")
    protected void startInterceptor() {
       loader = clm.getCacheLoader();
+      bulkLoader = clm.getBulkCacheLoader();
    }
 
    @Override
@@ -152,10 +154,10 @@ public class CacheLoaderInterceptor extends JmxStatsCommandInterceptor {
    @Override
    public Object visitSizeCommand(InvocationContext ctx, SizeCommand command) throws Throwable {
       int totalSize = 0;
-      if (enabled && !shouldSkipCacheLoader(command)) {
+      if (enabled && !shouldSkipCacheLoader(command) && bulkLoader != null) {
          // TODO: maybe we should add a size method to the loader so it can do additional optimizations?  It seems
          // awfully expensive to resurrect all keys just to count how many there are.
-         totalSize = loader.loadAllKeys(Collections.emptySet()).size();
+         totalSize = bulkLoader.size();
       }
       // Passivation stores evicted entries so we want to add those or if the loader didn't have anything or was skipped
       // we should at least return the in memory size
@@ -169,20 +171,24 @@ public class CacheLoaderInterceptor extends JmxStatsCommandInterceptor {
    @Override
    public Object visitKeySetCommand(InvocationContext ctx, KeySetCommand command) throws Throwable {
       Object keys = super.visitKeySetCommand(ctx, command);
-      if (enabled && !shouldSkipCacheLoader(command)) {
+      if (enabled && bulkLoader != null && !shouldSkipCacheLoader(command)) {
          Set<Object> union = new HashSet<Object>((Set<Object>)keys);
          // Exclude the keys in memory as we don't want to deserialize those again
-         union.addAll(loader.loadAllKeys(union));
+
+         //todo we can do much better here - return an iterator over the keys to the user.
+         union.addAll(keySet(bulkLoader.bulkLoadKeys(union)));
          return Collections.unmodifiableSet(union);
       }
       return keys;
    }
 
+
    @Override
    public Object visitEntrySetCommand(InvocationContext ctx, EntrySetCommand command) throws Throwable {
       Object entrySet = super.visitEntrySetCommand(ctx, command);
-      if (enabled && !shouldSkipCacheLoader(command)) {
-         Set<InternalCacheEntry> set = loader.loadAll();
+      if (enabled && bulkLoader != null && !shouldSkipCacheLoader(command)) {
+         //todo we can do much better here - return an iterator over the entries to the user.
+         Set<InternalCacheEntry> set = entrySet(bulkLoader.bulkLoad());
          Set<InternalCacheEntry> union = new HashSet<InternalCacheEntry>(set);
          union.addAll((Set<InternalCacheEntry>)entrySet);
          return Collections.unmodifiableSet(union);
@@ -194,7 +200,7 @@ public class CacheLoaderInterceptor extends JmxStatsCommandInterceptor {
    public Object visitValuesCommand(InvocationContext ctx, ValuesCommand command) throws Throwable {
       Object values = super.visitValuesCommand(ctx, command);
       if (enabled && !shouldSkipCacheLoader(command)) {
-         Set<InternalCacheEntry> set = loader.loadAll();
+         Set<InternalCacheEntry> set = entrySet(bulkLoader.bulkLoad());
          Collection<Object> valueCollection = (Collection<Object>)values;
          List<Object> valueList = new ArrayList<Object>(set.size() + valueCollection.size());
 
@@ -251,16 +257,17 @@ public class CacheLoaderInterceptor extends JmxStatsCommandInterceptor {
       // first check if the container contains the key we need.  Try and load this into the context.
       CacheEntry e = ctx.lookupEntry(key);
       if (e == null || e.isNull() || e.getValue() == null) {
-         InternalCacheEntry loaded = loader.load(key);
+         InternalCacheValue loaded = loader.load(key);
+         InternalCacheEntry ice = iceFactory.create(key, loaded);
          if (loaded != null) {
             CacheEntry wrappedEntry;
             if (cmd instanceof ApplyDeltaCommand) {
-               ctx.putLookedUpEntry(key, loaded);
+               ctx.putLookedUpEntry(key, ice);
                wrappedEntry = entryFactory.wrapEntryForDelta(ctx, key, ((ApplyDeltaCommand)cmd).getDelta());
             } else {
-               wrappedEntry = entryFactory.wrapEntryForPut(ctx, key, loaded, false, cmd, false);
+               wrappedEntry = entryFactory.wrapEntryForPut(ctx, key, ice, false, cmd, false);
             }
-            recordLoadedEntry(ctx, key, wrappedEntry, loaded, cmd);
+            recordLoadedEntry(ctx, key, wrappedEntry, ice, cmd);
             return Boolean.TRUE;
          } else {
             return Boolean.FALSE;
@@ -370,15 +377,7 @@ public class CacheLoaderInterceptor extends JmxStatsCommandInterceptor {
     */
    public Collection<String> getCacheLoaders() {
       if (enabled && clm.isEnabled()) {
-         if (loader instanceof ChainingCacheStore) {
-            ChainingCacheStore chainingStore = (ChainingCacheStore) loader;
-            LinkedHashMap<CacheStore, CacheStoreConfiguration> stores = chainingStore.getStores();
-            Set<String> storeTypes = new HashSet<String>(stores.size());
-            for (CacheStore cs : stores.keySet()) storeTypes.add(undelegateCacheLoader(cs).getClass().getName());
-            return storeTypes;
-         } else {
-            return Collections.singleton(undelegateCacheLoader(loader).getClass().getName());
-         }
+         return clm.getCacheLoadersAsString();
       } else {
          return InfinispanCollections.emptySet();
       }
@@ -398,11 +397,34 @@ public class CacheLoaderInterceptor extends JmxStatsCommandInterceptor {
     * @param loaderType fully qualified class name of the cache loader type to disable
     */
    public void disableCacheLoader(@Parameter(name="loaderType", description="Fully qualified class name of a CacheLoader implementation") String loaderType) {
-      if (enabled) clm.disableCacheStore(loaderType);
+      if (enabled) clm.disableCacheLoader(loaderType);
    }
 
    public void disableInterceptor() {
       enabled = false;
    }
 
+   Set<Object> keySet(BulkCacheLoader.KeysIterator it) {
+      try {
+         Set<Object> result = new HashSet();
+         while (it.hasNext()) {
+            result.add(it.nextKey());
+         }
+         return result;
+      } finally {
+         it.close();
+      }
+   }
+
+   private Set<InternalCacheEntry> entrySet(BulkCacheLoader.EntriesIterator ei) {
+      try {
+         Set<InternalCacheEntry> result = new HashSet<InternalCacheEntry>();
+         while (ei.hasNext()) {
+            result.add(iceFactory.create(ei.nextKey(), ei.value()));
+         }
+         return result;
+      } finally {
+         ei.close();
+      }
+   }
 }

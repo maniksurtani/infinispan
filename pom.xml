@@ -31,15 +31,15 @@
       <module>lucene/lucene-v4</module>
       <module>lucene/lucene-v3</module>
       <module>cachestore</module>
-      <module>cachestore/jdbc</module>
-      <module>cachestore/jdbm</module>
-      <module>cachestore/bdbje</module>
-      <module>cachestore/cloud</module>
-      <module>cachestore/remote</module>
-      <module>cachestore/cassandra</module>
-      <module>cachestore/hbase</module>
-      <module>cachestore/jpa</module>
-      <module>cachestore/leveldb</module>
+      <!--<module>cachestore/jdbc</module>-->
+      <!--<module>cachestore/jdbm</module>-->
+      <!--<module>cachestore/bdbje</module>-->
+      <!--<module>cachestore/cloud</module>-->
+      <!--<module>cachestore/remote</module>-->
+      <!--<module>cachestore/cassandra</module>-->
+      <!--<module>cachestore/hbase</module>-->
+      <!--<module>cachestore/jpa</module>-->
+      <!--<module>cachestore/leveldb</module>-->
       <module>server</module>
       <module>server/core</module>
       <module>server/memcached</module>

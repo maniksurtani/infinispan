@@ -134,14 +134,6 @@ public class DistCacheStoreInterceptor extends CacheStoreInterceptor {
       return returnValue;
    }
 
-   @Override
-   public Object visitPrepareCommand(TxInvocationContext ctx, PrepareCommand command) throws Throwable {
-      if (isStoreEnabled()) {
-         if (getLog().isTraceEnabled()) getLog().trace("Transactional so don't put stuff in the cache store yet.");
-         prepareCacheLoader(ctx, command.getGlobalTransaction(), ctx, command.isOnePhaseCommit());
-      }
-      return invokeNextInterceptor(ctx, command);
-   }
 
    @Override
    public Object visitClearCommand(InvocationContext ctx, ClearCommand command) throws Throwable {

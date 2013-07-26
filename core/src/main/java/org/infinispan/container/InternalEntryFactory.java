@@ -25,6 +25,8 @@ public interface InternalEntryFactory {
     */
    InternalCacheEntry create(CacheEntry cacheEntry);
 
+   InternalCacheEntry create(Object key, InternalCacheValue v);
+
    /**
     * Creates a new {@link InternalCacheEntry} instance based on the version and timestamp/lifespan
     * information reflected in the {@link CacheEntry} instance passed in.  Key and value are both passed in 

@@ -223,7 +223,7 @@ public class MapReduceTask<KIn, VIn, KOut, VOut> {
 
    /**
     * Rather than use all available keys as input <code>onKeys</code> allows users to specify a
-    * subset of keys as input to this task
+    * subset of keys as input to this task.
     *
     * @param input
     *           input keys for this task
