@@ -1,9 +1,11 @@
 # Read me on the documentation process
 
 This file is not fleshed out, it's just a collection of tips.
-A lot has been gathered from the Hibernate-OGM project.
+A lot of inspiration has been gained from the 
+[Hibernate-OGM](https://github.com/hibernate/hibernate-ogm/tree/master/hibernate-ogm-documentation) 
+project documentation.
 
-## Asciidoc
+## AsciiDoc
 
 ### Linefeed
 
@@ -26,4 +28,5 @@ Diagrams are done in OmniGraffle and stored as XML files in `src/main/omnigraffl
 Export the omnigraffle files as `png` with a dot per inch of 72. This will create
 a file of the right size for the web.
 
-`png` files, should be placed under `src/main/asciidoc/en-US/images`
+Binary images should be stored under `documentation/src/main/asciidoc/images`
+
