@@ -1,0 +1,27 @@
+[[sid-18645173]]
+
+==  Configuring cache
+
+ Infinispan offers both link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737097$$[Configuring Cache declaratively] and link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737033$$[Configuring cache programmatically] configuration approaches. 
+
+ Declarative configuration comes in a form of XML document that adheres to a provided Infinispan configuration XML link:$$http://www.infinispan.org/schemas/infinispan-config-4.0.xsd$$[schema] .  Every aspect of Infinispan that can be configured declaratively can also be configured programmatically. In fact, declarative configuration, behind the scenes, invokes programmatic configuration API as the XML configuration file is being processed. One can even use combination of these approaches. For example, you can read static XML configuration files and at runtime programmatically tune that same configuration. Or you can use a certain static configuration defined in XML as a starting point or template for defining additional configurations in runtime. 
+
+There are two main configuration abstractions in Infinispan: global and default configuration.
+
+ Global cache configuration defines global settings shared among all cache instances created by a single link:$$http://docs.jboss.org/infinispan/4.0/apidocs/org/infinispan/manager/CacheManager.html$$[CacheManager] . Shared resources like thread pools, serialization/marshalling settings, transport and network settings, JMX domains are all part of global configuration. 
+
+ Default cache configuration is more specific to actual caching domain itself. It specifies eviction, locking, transaction, clustering, cache store settings etc. The default cache can be retrieved via the CacheManager.getCache() API. However, the real power of default cache mechanism comes to light when used in conjuction with _named caches_ . Named caches have the same XML schema as the default cache. Whenever they are specified, named caches inherit settings from the default cache while additional behavior can be specified or overridden. Named caches are retrieved via CacheManager.getCache(String name) API. Therefore, note that the _name_ attribute of named cache is both mandatory and unique for every named cache specified. 
+
+ Do not forget to refer to Infinispan configuration link:$$http://docs.jboss.org/infinispan/5.1/configdocs$$[reference] for more details. 
+
+For more details, refer to the following documents:
+
+
+*  link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737097$$[Configuring Cache declaratively] 
+
+
+*  link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737033$$[Configuring cache programmatically] 
+
+
+*  link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737098$$[Configuration Migration Tools] 
+

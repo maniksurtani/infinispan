@@ -1,0 +1,87 @@
+[[sid-18645209_ContributingtoInfinispan-AddingConfiguration]]
+
+==  Adding Configuration
+
+[[sid-18645209_ContributingtoInfinispan-Introduction]]
+
+
+=== Introduction
+
+ Infinispan configuration is represented by the Configuration class, and Configuration is the root of the configuration class hierarchy. Every class class in the configuration hierarchy is annotated with JAXB annotations. 
+
+
+[TIP]
+.Java Architecture for XML Binding (JAXB)
+==== 
+ JAXB is a library that allows Java developers to map Java classes to XML representations. JAXB provides two main features: the ability to _marshall_ Java objects into XML and the inverse, the ability to _un-marshall_ XML back into Java objects. 
+
+
+==== 
+
+
+The JAXB annotations provides directives on to JAXB on how to un-marshall Infinispan XML configuration file into Infinispan configuration object model. In addition to un-marshalling, JAXB annotated class hierarchy is produces an XML Schema that each configuration file must adhere to in order to be considered valid.
+
+ An Infinispan XML configuration file consists of XML elements and attributes. The Infinispan configuration class hierarchy has an obvious mapping between the XML elements and the classes as well as the XML attributes and the Java primitives defined in those classes. Take, for example, the AbstractCacheStoreConfig class; some fields of AbstractCacheStoreConfig are Java primitives which match XML attributes in element loader, while other fields are non-primitives which match XML elements that are children of the loader element. All fields and class declarations are annotated with JAXB annotation as needed. 
+
+[[sid-18645209_ContributingtoInfinispan-Compatibilityduringminorandmicroreleases]]
+
+
+=== Compatibility during minor and micro releases
+
+ We allow the introduction of additional elements and attributes between minor version however we do not allow the removal of existing elements and attributes. There must not be any structural changes of existing elements. For example, we cannot change the parent of existing elements to another node (e.g. the locking element's parent being changed from &lt;default&gt; or &lt;namedCache&gt; to &lt;transaction&gt; . 
+
+If you need to add a new attribute to the XML configuration, follow these steps:
+
+
+. Locate the desired enclosing element and the matching class representation.
+
+
+. Add a new field (protected visibility) in the matching class for the desired primitive. The name of the field will automatically become the corresponding attribute name in the matching XML element. Use Java primitive wrapper class rather than primitive itself. Optionally initialize the default value of the field.
+
+
+.  Annotate the setter method for that field with @XmlAttribute . 
+
+
+.  Add an @ConfigurationDoc and/or @ConfigurationDocRef . 
+
+
+[WARNING]
+==== 
+ Note that the class containing the property must be annotated with @XmlAccessorType(PROPERTY ) or @XmlAccessorType(.PUBLIC_MEMBER) and not @XmlAccessorType(.FIELD) . If you do not do this, JAXB may complain about and improper mapping or it may not invoke the setter during un-marshalling. 
+
+
+==== 
+
+
+ If a new XML element is added then a new, matching Java class must be created as well. Follow instructions for adding new fields and do not forget to annotate the field that declares a reference to the new class. In this case the field should be annotated with @XmlElement rather than @XmlAttribute . See the current code base for examples. 
+
+[[sid-18645209_ContributingtoInfinispan-Unittests]]
+
+
+=== Unit tests
+
+ Every time a new attribute or an element is added the change should be unit tested in XmlFileParsingTest . Verify that the generated schema is correct. The generated schema is in infinispan/core/target/classes/schema directory. You need to run mvn process-classes (or a phase which occurs later in the lifecycle such as package or install ) in order to generate the schema. 
+
+[[sid-18645209_ContributingtoInfinispan-ConfigurationHTMLreference]]
+
+
+=== Configuration HTML reference
+
+ The Infinispan project uses the configuration class hierarchy to create an HTML configuration reference using [ a doclet|http://infinispan.sourceforge.net/4.0/apidocs/org/infinispan/tools/doclet/config/ConfigHtmlGenerator.html]. However, not all information we need to create a human readable HTML reference is available in the class hierarchy and the accompanying JAXB annotations. Infinispan requires that you annotate fields, setter methods and classes with @ConfigurationDoc and @ConfigurationDocRef . 
+
+[[sid-18645209_ContributingtoInfinispan-PreviewtheHTMLreference]]
+
+
+==== Preview the HTML reference
+
+To generate a preview of the configuration, use:
+
+
+----
+
+mvn -Pconfigdoc install -DskipTests=true
+
+----
+
+ The generated HTML file is in target/site/apidocs/config.html . 
+

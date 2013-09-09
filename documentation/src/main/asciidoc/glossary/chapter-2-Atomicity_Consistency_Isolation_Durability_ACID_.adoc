@@ -1,0 +1,6 @@
+[[sid-18645244]]
+
+==  Atomicity, Consistency, Isolation, Durability (ACID)
+
+TODO
+

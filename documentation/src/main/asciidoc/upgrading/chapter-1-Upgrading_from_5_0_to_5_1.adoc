@@ -1,0 +1,90 @@
+[[sid-18645257]]
+
+==  Upgrading from 5.0 to 5.1
+
+Please find below tips and recommendations when upgrading from Infinispan 5.0 to 5.1:
+
+[[sid-18645257_Upgradingfrom5.0to5.1-API]]
+
+
+=== API
+
+
+.  The cache and cache manager hierarchies have changed slightly in 5.1 with the introduction of 
+                link:$$https://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/api/BasicCache.html$$[BasicCache]
+               and 
+                link:$$https://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/api/BasicCacheContainer.html$$[BasicCacheContainer]
+               , which are parent classes of existing 
+                link:$$https://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/Cache.html$$[Cache]
+               and 
+                link:$$https://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/CacheContainer.html$$[CacheContainer]
+               classes respectively. What's important is that Hot Rod clients must now code against 
+                link:$$https://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/api/BasicCache.html$$[BasicCache]
+               and 
+                link:$$https://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/api/BasicCacheContainer.html$$[BasicCacheContainer]
+               rather than 
+                link:$$https://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/Cache.html$$[Cache]
+               and 
+                link:$$https://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/CacheContainer.html$$[CacheContainer]
+               . So previous code that was written like this will no longer compile. 
+
+
+----
+import org.infinispan.Cache;  
+import org.infinispan.manager.CacheContainer;  
+import org.infinispan.client.hotrod.RemoteCacheManager;  
+...  
+CacheContainer cacheContainer = new RemoteCacheManager();  
+Cache cache = cacheContainer.getCache();
+----
+
+Instead, if Hot Rod clients want to continue using interfaces higher up the hierarchy from the remote cache/container classes, they'll have to write:
+
+
+----
+import org.infinispan.BasicCache;  
+import org.infinispan.manager.BasicCacheContainer;  
+import org.infinispan.client.hotrod.RemoteCacheManager;  
+...  
+BasicCacheContainer cacheContainer = new RemoteCacheManager();  
+BasicCache cache = cacheContainer.getCache();
+----
+
+Previous code that interacted against the RemoteCache and RemoteCacheManager should work as it used to:
+
+
+----
+import org.infinispan.client.hotrod.RemoteCache;  
+import org.infinispan.client.hotrod.RemoteCacheManager;  
+...  
+RemoteCacheManager cacheContainer = new RemoteCacheManager();  
+RemoteCache cache = cacheContainer.getCache();
+----
+
+[[sid-18645257_Upgradingfrom5.0to5.1-EvictionandExpiration]]
+
+
+=== Eviction and Expiration
+
+
+.  The eviction XML element no longer defines the wakeUpInterval attribute. This is now configured via the expiration element: 
+
+
+----
+<expiration wakeUpInterval="60000"... />
+----
+
+
+.  Eviction's maxEntries is used as guide for the entire cache, but eviction happens on a per cache segment, so when the segment is full, the segment is evicted. That's why maxEntries is a theoretical limit but in practical terms, it'll be a bit less than that. This is done for performance reasons. 
+
+[[sid-18645257_Upgradingfrom5.0to5.1-Transactions]]
+
+
+=== Transactions
+
+
+.  A cache marked as TRANSACTIONAL cannot be accessed outside of a transaction, and a NON_TRANSACTIONAL cache cannot be accessed within a transaction. In 5.0, a transactional cache would support non-transactional calls as well.  This change was done to be in-line with expectations set out in link:$$https://github.com/jsr107$$[JSR-107] as well as to provide more consistent behavior. 
+
+
+. In 5.0, commit and rollback phases were asynchronous by default. Starting with 5.1, these are now synchronous by default, to provide the guarantees required by a single lock-owner model.
+

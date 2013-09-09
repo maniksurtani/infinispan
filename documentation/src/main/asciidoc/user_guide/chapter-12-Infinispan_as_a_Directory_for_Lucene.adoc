@@ -1,0 +1,124 @@
+[[sid-18645139]]
+
+==  Infinispan as a Directory for Lucene
+
+ Infinispan is including a highly scalable distributed _Apache Lucene Directory_ implementation. 
+
+This directory closely mimicks the same semantics of the traditional filesystem and RAM-based directories, being able to work as a drop-in replacement for existing applications using Lucene and providing reliable index sharing and other features of Infinispan like node autodiscovery, automatic failover and rebalancing, optionally transactions, and can be backed by traditional storage solutions as filesystem, databases or cloud store engines.
+
+ The implementation extends Lucene's _org.apache.lucene.store.Directory_ so it can be used to _store_ the index in a cluster-wide shared memory, making it easy to distribute the index. Compared to rsync-based replication this solution is suited for use cases in which your application makes frequent changes to the index and you need them to be quickly distributed to all nodes, having configurable consistency levels, synchronicity and guarantees, total elasticity and autodiscovery; also changes applied to the index can optionally participate in a JTA transaction; since version 5 supporting XA transactions with recovery. 
+
+ Two different _LockFactory_ implementations are provided to guarantee only one _IndexWriter_ at a time will make changes to the index, again implementing the same semantics as when opening an index on a local filesystem. As with other Lucene Directories, you can override the _LockFactory_ if you prefer to use an alternative implementation. 
+
+[[sid-18645139_InfinispanasaDirectoryforLucene-AdditionalLinks]]
+
+
+=== Additional Links
+
+ Javadoc: link:$$http://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/lucene/InfinispanDirectory.html$$[] Issue tracker: link:$$https://jira.jboss.org/browse/ISPN/component/12312732$$[] Source code: link:$$http://www.jboss.org/infinispan/sourcecode.html$$[] 
+
+[[sid-18645139_InfinispanasaDirectoryforLucene-Lucenecompatibility]]
+
+
+=== Lucene compatibility
+
+ Current version was developed and compiled against _Lucene 3.5.0_ , and also tested to work with Lucene versions from 3.0.x to 3.4.0, version 2.9.x, and  the older 2.4.1. 
+
+[[sid-18645139_InfinispanasaDirectoryforLucene-Howtouseit]]
+
+
+=== How to use it
+
+ To create a Directory instance: 
+
+
+----
+import org.apache.lucene.store.Directory;
+import org.infinispan.lucene.InfinispanDirectory;
+import org.infinispan.Cache;
+
+Cache cache = // create an Infinispan cache, configured as you like
+Directory indexDir = new InfinispanDirectory(cache, "indexName");
+----
+
+ The _indexName_ is a unique key to identify your index. It takes the same role as the path did on filesystem based indexes: you can create several different indexes giving them different names. When you use the same _indexName_ in another instance connected to the same network (or instantiated on the same machine, useful for testing) they will join, form a cluster and share all content. 
+
+New nodes can be added or removed dynamically, making the service administration very easy and also suited for cloud environments: it's simple to react to load spikes, as adding more memory and CPU power to the search system is done by just starting more nodes.
+
+[[sid-18645139_InfinispanasaDirectoryforLucene-Limitations]]
+
+
+=== Limitations
+
+ As when using an _IndexWriter_ on a filesystem based _Directory_ , even on the clustered edition only one _IndexWriter_ can be opened across the whole cluster. link:$$http://search.hibernate.org$$[Hibernate Search] , which includes integration with this Lucene Directory since version 3.3, sends index change requests across a JMS queue, or a _JGroups_ channel. Other valid approaches are to proxy the remote _IndexWriter_ or just design your application in such a way that only one node attempts to write it. Reading (searching) is of course possible in parallel, from any number of threads on each node; changes applied to the single IndexWriter are affecting results of all threads on all nodes in a very short time. 
+
+[[sid-18645139_InfinispanasaDirectoryforLucene-Configuration]]
+
+
+=== Configuration
+
+ This works with local only configurations and also with any clustering mode supported by Infinispan. A transaction manager is not mandatory, while batching needs to be enabled. An example configuration: 
+
+
+----
+public static Configuration createTestConfiguration() {
+      Configuration c = new Configuration();
+      c.setCacheMode(Configuration.CacheMode.DIST_SYNC);
+      c.setInvocationBatchingEnabled(true);
+      return c;
+}
+----
+
+ As better explained in the javadocs of _org.infinispan.lucene.InfinispanDirectory_ , it's possible for it to use more than a single cache, using specific configurations for different purposes. When using readlocks, make sure to not enable transactions on this cache. 
+
+[[sid-18645139_InfinispanasaDirectoryforLucene-Demo]]
+
+
+=== Demo
+
+ There is a simple command-line demo of it's capabilities distributed with Infinispan under demos/lucene-directory; make sure you grab the _"Binaries, server and demos"_ package from link:$$http://www.jboss.org/infinispan/downloads$$[download page] , which contains all demos. 
+
+Start several instances, then try adding text in one instance and searching for it on the other. The configuration is not tuned at all, but should work out-of-the box without any changes. If your network interface has multicast enabled, it will cluster across the local network with other instances of the demo.
+
+[[sid-18645139_InfinispanasaDirectoryforLucene-Mavendependencies]]
+
+
+=== Maven dependencies
+
+ All you need is _org.infinispan:infinispan-lucene-directory_ : 
+
+
+----
+<dependencies>
+   <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-lucene-directory</artifactId>
+      <version>5.1.1.FINAL</version>
+   </dependency>
+</dependencies>
+
+----
+
+In early versions the Infinispan Lucene Directory was needing a transaction manager, this is no longer needed but it's still optionally possible to use one to wrap all changes you make to the index in a transaction.
+
+[[sid-18645139_InfinispanasaDirectoryforLucene-UsingaCacheLoader]]
+
+
+=== Using a CacheLoader
+
+ Using a CacheLoader you can have the index content backed up to a permanent storage; you can use a shared store for all nodes or one per node, see <<sid-18645149>> for more details. When using a CacheLoader to store a Lucene index, to get best write performance you would need to configure the CacheLoader with _async=true_ . 
+
+[[sid-18645139_InfinispanasaDirectoryforLucene-Storingtheindexinadatabase]]
+
+
+==== Storing the index in a database
+
+ It might be useful to store the Lucene index in a relational database; this would be very slow but Infinispan can act as an efficient cache between the application and the JDBC interface, making this configuration useful in both clustered and non-clustered configurations. When storing indexes in a JDBC database, it's suggested to use the _JdbcStringBasedCacheStore_ , which will need this attribute: 
+
+
+----
+
+<property name="key2StringMapperClass" value="org.infinispan.lucene.LuceneKey2StringMapper" />
+
+----
+
