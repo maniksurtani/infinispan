@@ -1,0 +1,30 @@
+[[sid-8094038]]
+
+==  Writing custom commands in Infinispan
+
+ Infinispan makes use of a link:$$http://en.wikipedia.org/wiki/Command_pattern$$[command/visitor pattern] to implement the various top-level methods you see on the public-facing API.  This is explained in further detail in the link:$$http://community.jboss.org/wiki/ArchitecturalOverview$$[Architectural Overview] on the Infinispan public wiki.  However, these commands - and their corresponding visitors - are hard-coded as a part of Infinispan's core module, making it impossible for module authors to extend and enhance Infinispan to create new, arbitrary commands and visitors. 
+
+ However, since Infinispan 5.0, this capability has now been added.  As a module author (such as link:$$https://github.com/infinispan/infinispan/tree/master/tree$$[infinispan-tree] , link:$$https://github.com/infinispan/infinispan/tree/master/query$$[infinispan-query] , etc.) you can now define your own commands.  You do so by: 
+
+
+.  Creating an infinispan-module.properties file and ensuring that this is packaged in the root of your jar file. 
+
+
+.  Implementing 
+              link:$$https://github.com/infinispan/infinispan/blob/master/core/src/main/java/org/infinispan/commands/module/ModuleCommandFactory.java$$[ModuleCommandFactory]
+             and 
+              link:$$https://github.com/infinispan/infinispan/blob/master/core/src/main/java/org/infinispan/commands/module/ModuleCommandInitializer.java$$[ModuleCommandInitializer]
+             from infinispan-core 
+
+
+.  Specifing the fully-qualified class names of your implementations in infinispan-module.properties 
+
+
+. Implement your custom commands and visitors for these commands
+
+ Here is an example of an infinispan-modules.properties file, configured accordingly: 
+
+Code Snippet error: Unable to retrieve the URL: https://github.com/infinispan/infinispan-sample-module/raw/master/src/main/resources/infinispan-module.properties status code: 404.
+
+ For a full, working example of a sample module that makes use of custom commands and visitors, check out link:$$https://github.com/infinispan/infinispan-sample-module$$[] . 
+

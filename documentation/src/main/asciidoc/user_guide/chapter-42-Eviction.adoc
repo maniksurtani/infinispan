@@ -1,0 +1,90 @@
+[[sid-8093963]]
+
+==  Eviction
+
+Infinispan supports eviction of entries, such that you do not run out of memory.  Eviction is typically used in conjunction with a cache store, so that entries are not permanently lost when evicted, since eviction only removes entries from memory and not from cache stores or the rest of the cluster.
+
+
+[TIP]
+==== 
+Passivation is also a popular option when using eviction, so that only a single copy of an entry is maintained - either in memory or in a cache store, but not both. The main benefit of using passivation over a regular cache store is that updates to entries which exist in memory are cheaper since the update doesn't need to be made to the cache store as well.
+
+
+==== 
+
+
+ Note that eviction occurs on a _local_ basis, and is not cluster-wide.  Each node runs an eviction thread to analyse the contents of its in-memory container and decide what to evict. Eviction does not take into account the amount of free memory in the JVM as threshold to  starts evicting entries. You have to set maxEntries attribute of the eviction element to be greater than zero in order for eviction to be turned on. If maxEntries is too large you can run out of memory. maxEntries attribute will probably take some tuning in each use case. 
+
+[[sid-8093963_Eviction-Evictionin4.0]]
+
+
+=== Eviction in 4.0
+
+ Eviction is configured by adding the link:$$http://docs.jboss.org/infinispan/4.0/apidocs/config.html#ce_default_eviction$$[&lt;eviction /&gt;] element to your &lt;default /&gt; or &lt;namedCache /&gt; configuration sections. 
+
+[[sid-8093963_Eviction-NONE]]
+
+
+==== NONE
+
+This eviction strategy effectively disables the eviction thread.
+
+[[sid-8093963_Eviction-UNORDERED]]
+
+
+==== UNORDERED
+
+ _New in Infinispan 4.1_ 
+
+ This eviction strategy means that a simple, un-ordered data container is used. The eviction thread still runs and maintains the size of the data container within certain limits, but it selects entries for eviction in an indeterminate fashion. The benefit of this eviction strategy is that you get an efficient link:$$http://docs.jboss.org/infinispan/4.0/apidocs/org/infinispan/container/SimpleDataContainer.html$$[SimpleDataContainer] which does not incur the ordering costs of FIFO or LRU, as most operations are performed in constant-time. 
+
+[[sid-8093963_Eviction-FIFO]]
+
+
+==== FIFO
+
+ This strategy means that entries are selected for eviction using a first-in-first-out pattern.  See the Javadocs on the link:$$http://docs.jboss.org/infinispan/4.0/apidocs/org/infinispan/container/FIFOSimpleDataContainer.html$$[FIFOSimpleDataContainer] for information on the algorithm used and the performance tradeoffs involved. 
+
+[[sid-8093963_Eviction-LRU]]
+
+
+==== LRU
+
+ This strategy means that entries are selected for eviction using a least-recently-used pattern.  See the Javadocs on the  link:$$http://docs.jboss.org/infinispan/4.0/apidocs/org/infinispan/container/LRUSimpleDataContainer.html$$[LRUSimpleDataContainer] for information on the algorithm used and the  performance tradeoffs involved. 
+
+[[sid-8093963_Eviction-Tuningtheevictionthread]]
+
+
+==== Tuning the eviction thread
+
+ Eviction makes use of a link:$$http://java.sun.com/javase/6/docs/api/java/util/concurrent/ScheduledExecutorService.html$$[SheduledExecutorService] to kick in periodically and inspect the data container for size, and evict entries as needed. This can be tuned using the link:$$http://docs.jboss.org/infinispan/4.0/apidocs/config.html#ce_global_evictionScheduledExecutor$$[&lt;evictionScheduledExecutor /&gt;] configuration element. 
+
+[[sid-8093963_Eviction-Evictionin4.1%2C4.2and5.x]]
+
+
+=== Eviction in 4.1, 4.2 and 5.x
+
+ In Infinispan release 4.1 and later releases we have revamped DataContainer abstraction in order to support a more scalable, low lock contention data container structure. In addition to old eviction approaches you can now select link:$$http://infinispan.blogspot.com/2010/03/infinispan-eviction-batching-updates.html$$[LIRS] eviction algorithm. LRU remains the default and should be an excellent fit in many deployment scenarios. However, note that LRU eviction algorithm, although simple and easy to understand, under performs in some special cases of so called weak access locality (one time access entries are not timely replaced, entries to be accessed soonest are unfortunately replaced, and so on). 
+
+Starting with 4.1 release all cache entry eviction is done in piggyback fashion. Piggyback eviction thread policy, as it name implies, does eviction by piggybacking on user threads that are hitting the data container. Default eviction done on a dedicated EvictionManager thread has been deprecated and even though default eviction thread policy has been chosen in configuration it will fall back to piggyback style. Dedicated EvictionManager has not been completely removed; it is used to prune expired cache entries from cache.
+
+Also note that Infinispan 4.1 release considers only immortal entries for eviction. By default all entries are immortal, that is, their expiration and lifespan are -1. As soon as cache entries are not immortal they are not subject to eviction policies and container size can potentially grow above  limit specified in maxEntries. Starting with Infinispan 4.2 and beyond, 5.0 all container entries regardless of their type are considered as eviction candidates.
+
+[[sid-8093963_Eviction-Expiration]]
+
+
+=== Expiration
+
+Similar to, but unlike eviction, is expiration. Expiration allows you to attach lifespan and/or maximum idle times to entries. Entries that exceed these times are treated as invalid and are removed. When removed expired entries are not passivated like evicted entries (if passivation is turned on).
+
+
+[TIP]
+==== 
+Unlike eviction, expired entries are removed globally - from memory, cache stores, and cluster-wide.
+
+
+==== 
+
+
+ By default entries created are immortal and do not have a lifespan or maximum idle time.  Using the cache API, mortal entries can be created with lfiespans and/or maximum idle times.  Further, default lifespans and/or maximum idle times can be configured by adding the link:$$http://docs.jboss.org/infinispan/4.0/apidocs/config.html#ce_default_expiration$$[&lt;expiration /&gt;] element to your &lt;default /&gt; or &lt;namedCache /&gt; configuration sections. 
+

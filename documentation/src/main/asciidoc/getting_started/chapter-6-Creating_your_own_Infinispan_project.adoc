@@ -1,0 +1,6 @@
+[[sid-8093985_GettingStartedGuide-CreatingyourownInfinispanproject]]
+
+==  Creating your own Infinispan project
+
+TODO
+

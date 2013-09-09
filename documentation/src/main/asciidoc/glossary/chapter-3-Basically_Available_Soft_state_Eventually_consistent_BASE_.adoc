@@ -1,0 +1,21 @@
+[[sid-8094028]]
+
+==  Basically Available, Soft-state, Eventually-consistent (BASE)
+
+ BASE, also known as link:$$http://en.wikipedia.org/wiki/Eventual_consistency$$[Eventual Consistency] , is seen as the polar opposite of <<sid-8094027>> , properties seen as desirable in traditional database systems such as a <<sid-8094022>> . 
+
+ BASE essentially embraces the fact that true consistency cannot be achieved in the real world, and as such cannot be modelled in highly scalable distributed systems.  BASE has roots in Eric Brewer's <<sid-8094029>> , and eventual consistency is the underpinning of any distributed system that aims to provide high availability and partition tolerance. 
+
+Infinispan has traditionally followed ACID principles as far as possible, however an eventually consistent mode embracing BASE is on the roadmap.
+
+[[sid-8094028_BasicallyAvailable%2CSoft-state%2CEventually-consistent%28BASE%29-Moreresources]]
+
+
+=== More resources
+
+
+*  A link:$$http://queue.acm.org/detail.cfm?id=1394128$$[good article] on link:$$http://queue.acm.org/index.cfm$$[ACM] compares BASE versus ACID. 
+
+
+*  An link:$$http://www.infoq.com/presentations/Riak-Core$$[excellent talk] on eventual consistency and BASE in Riak is also available on InfoQ. 
+

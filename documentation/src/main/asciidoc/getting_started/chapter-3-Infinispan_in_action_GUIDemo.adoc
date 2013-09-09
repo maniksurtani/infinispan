@@ -1,0 +1,6 @@
+[[sid-8093985_GettingStartedGuide-InfinispaninactionGUIDemo]]
+
+==  Infinispan in action - GUIDemo
+
+TODO
+

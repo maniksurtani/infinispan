@@ -1,0 +1,6 @@
+[[sid-8094008]]
+
+==  Multiversion Concurrency Control (MVCC)
+
+TODO
+

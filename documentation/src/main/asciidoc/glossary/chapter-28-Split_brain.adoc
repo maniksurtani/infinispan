@@ -1,0 +1,6 @@
+[[sid-8094019]]
+
+==  Split brain
+
+ A colloquial term for a <<sid-8094018>> .  See <<sid-8094018>> for more details. 
+

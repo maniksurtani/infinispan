@@ -1,0 +1,50 @@
+[[sid-8093948]]
+
+==  Default Values For Property Based Attributes
+
+ The aim of this article is to complement the link:$$http://docs.jboss.org/infinispan/4.1/apidocs/config.html$$[configuration reference] documentation with information on default values that could not be automatically generated. Please find below the name of the XML elements and their corresponding property default values: 
+
+[[sid-8093948_DefaultValuesForPropertyBasedAttributes-asyncListenerExecutor]]
+
+
+=== asyncListenerExecutor
+
+
+* maxThreads = 1
+
+
+* threadNamePrefix = "notification-thread"
+
+[[sid-8093948_DefaultValuesForPropertyBasedAttributes-asyncTransportExecutor]]
+
+
+=== asyncTransportExecutor
+
+
+* maxThreads = 25
+
+
+* threadNamePrefix = "transport-thread"
+
+[[sid-8093948_DefaultValuesForPropertyBasedAttributes-evictionScheduledExecutor]]
+
+
+=== evictionScheduledExecutor
+
+
+* maxThreads = 1 (cannot be changed)
+
+
+* threadNamePrefix = "eviction-thread"
+
+[[sid-8093948_DefaultValuesForPropertyBasedAttributes-replicationQueueScheduledExecutor]]
+
+
+=== replicationQueueScheduledExecutor
+
+
+* maxThreads = 1 (cannot be changed)
+
+
+* threadNamePrefix = "replicationQueue-thread"
+
