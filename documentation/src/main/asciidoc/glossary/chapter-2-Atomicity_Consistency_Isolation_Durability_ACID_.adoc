@@ -1,6 +1,0 @@
-[[sid-65274127]]
-
-==  Atomicity, Consistency, Isolation, Durability (ACID)
-
-TODO
-

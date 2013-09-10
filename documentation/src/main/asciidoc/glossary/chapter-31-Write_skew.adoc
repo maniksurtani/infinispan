@@ -1,6 +1,0 @@
-[[sid-65274113]]
-
-==  Write skew
-
-TODO
-
