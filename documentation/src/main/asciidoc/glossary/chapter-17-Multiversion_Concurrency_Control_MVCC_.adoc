@@ -1,6 +1,0 @@
-[[sid-18645225]]
-
-==  Multiversion Concurrency Control (MVCC)
-
-TODO
-
