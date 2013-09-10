@@ -1,6 +1,0 @@
-[[sid-8093992_Videos-Geographicfailover]]
-
-==  Geographic failover
-
-link:$$http://www.vimeo.com/24825312$$[Geographic failover with Infinispan] 
-

@@ -1,6 +1,0 @@
-[[sid-8094021]]
-
-==  Structured Query Language (SQL)
-
-TODO
-
