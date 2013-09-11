@@ -1,4 +1,4 @@
-[[sid-8093986]]
+[[sid-68355134]]
 
 ==  Infinispan GUI demo
 
@@ -9,7 +9,7 @@
 NOTE: You will need either the -bin.zip or -all.zip version for this demo.
 ----
 
-[[sid-8093986_InfinispanGUIdemo-Step1%3AStartthedemoGUI]]
+[[sid-68355134_InfinispanGUIdemo-Step1%3AStartthedemoGUI]]
 
 
 === Step 1: Start the demo GUI
@@ -39,7 +39,7 @@ image::[]
 
  
 
-[[sid-8093986_InfinispanGUIdemo-Step3%3AManipulatedata]]
+[[sid-68355134_InfinispanGUIdemo-Step3%3AManipulatedata]]
 
 
 === Step 3: Manipulate data
@@ -52,7 +52,7 @@ image::[]
 
  
 
-[[sid-8093986_InfinispanGUIdemo-Step4%3AStartmorecacheinstances]]
+[[sid-68355134_InfinispanGUIdemo-Step4%3AStartmorecacheinstances]]
 
 
 === Step 4: Start more cache instances
@@ -65,7 +65,7 @@ image::[]
 
  
 
-[[sid-8093986_InfinispanGUIdemo-Step5%3AManipulatemoredata]]
+[[sid-68355134_InfinispanGUIdemo-Step5%3AManipulatemoredata]]
 
 
 === Step 5: Manipulate more data

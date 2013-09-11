@@ -1,9 +1,9 @@
-[[sid-8093923_UserGuide-NewinInfinispan5.0.0]]
+[[sid-68355028_UserGuide-NewinInfinispan5.0.0]]
 
 ==  New in Infinispan 5.0.0
 
 
-.  <<sid-8093955,Generating keys mapped to specific cluster nodes>> 
+.  link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737123$$[Generating keys mapped to specific cluster nodes] 
 
 
 .  link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737105$$[Portable Serialization for Hot Rod with Apache Avro] 
@@ -15,7 +15,10 @@
 .  link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737134$$[Distributed Executors Framework] 
 
 
-.  <<sid-8093926,Fluent Programmatic Configuration>> 
+.  link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=59146687$$[MapReduce Framework] 
+
+
+.  <<sid-68355030,Fluent Programmatic Configuration>> 
 
 
 .  link:$$http://docs.jboss.org/infinispan/5.0/apidocs/config.html$$[Configuration Reference] 

@@ -11,7 +11,3 @@ screencasts on Infnispan which we hope you'd find useful.
 * link:$$http://community.jboss.org/docs/DOC-14783$$[Montoring an Infinispan instance that was automatically discovered (video)] 
 * link:$$http://community.jboss.org/docs/DOC-14784$$[Montoring an Infinispan instance that was manually added (video)] 
 
-===  Geographic failover
-* link:$$http://www.vimeo.com/24825312$$[Geographic failover with Infinispan (presentation)] 
-
-

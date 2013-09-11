@@ -1,4 +1,4 @@
-[[sid-8093985_GettingStartedGuide-DownloadingandinstallingInfinispan]]
+[[sid-68355130_GettingStartedGuide-DownloadingandinstallingInfinispan]]
 
 ==  Downloading and installing Infinispan
 

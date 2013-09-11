@@ -1,8 +1,8 @@
-[[sid-8093979]]
+[[sid-68355106]]
 
 ==  Marshalling
 
-[[sid-8093979_Marshalling-Introduction]]
+[[sid-68355106_Marshalling-Introduction]]
 
 
 === Introduction
@@ -18,14 +18,14 @@ Marshalling is the process of converting Java POJOs into something that can be w
 
 * Store data in Infinispan in a wire format to provide lazy deserialization capabilities.
 
-[[sid-8093979_Marshalling-TheRoleOfJBossMarshalling]]
+[[sid-68355106_Marshalling-TheRoleOfJBossMarshalling]]
 
 
 === The Role Of JBoss Marshalling
 
 Since performance is a very important factor in this process, Infinispan uses JBoss Marshalling framework instead of standard Java Serialization in order to marshall/unmarshall Java POJOs. Amongst other things, this framework enables Infinispan to provide highly efficient ways to marshall internal Infinispan Java POJOs that are constantly used. Apart from providing more efficient ways to marshall Java POJOs, including internal Java classes, JBoss Marshalling uses highly performant java.io.ObjectOutput and java.io.ObjectInput implementations compared to standard java.io.ObjectOutputStream and java.io.ObjectInputStream.
 
-[[sid-8093979_Marshalling-SupportForNonSerializableObjects]]
+[[sid-68355106_Marshalling-SupportForNonSerializableObjects]]
 
 
 === Support For Non-Serializable Objects
@@ -45,19 +45,19 @@ From a users perspective, a very common concern is whether Infinispan supports s
 
  If you're unable to retrofit Serializable or Externalizable into the classes whose instances are stored in Infinispan, you could alternatively use something like link:$$http://xstream.codehaus.org/$$[XStream] to convert your Non-Serializable objects into an String that can be stored into Infinispan. You can find an example on how to use XStream link:$$http://anonsvn.jboss.org/repos/infinispan/trunk/core/src/test/java/org/infinispan/marshall/TestObjectStreamMarshaller.java$$[here] . The one caveat about using XStream is that it slows down the process of storing key/value objects due to the XML transformation that it needs to do. 
 
-[[sid-8093979_Marshalling-LazyDeserialization%28storeAsBinary%29]]
+[[sid-68355106_Marshalling-StoreAsBinary]]
 
 
-==== Lazy Deserialization (storeAsBinary)
+==== Store As Binary
 
-Lazy deserialization is the mechanism by which Infinispan by which serialization and deserialization of objects is deferred till the point in time in which they are used and needed. This typically means that any deserialization happens using the thread context class loader of the invocation that requires deserialization, and is an effective mechanism to provide classloader isolation. By default lazy deserialization is disabled but if you want to enable it, you can do it like this:
+Store as binary enables data to be stored in its serialized form. This can be useful to achieve lazy deserialization, which is the mechanism by which Infinispan by which serialization and deserialization of objects is deferred till the point in time in which they are used and needed. This typically means that any deserialization happens using the thread context class loader of the invocation that requires deserialization, and is an effective mechanism to provide classloader isolation. By default lazy deserialization is disabled but if you want to enable it, you can do it like this:
 
 
 * Via XML at the Cache level, either under &lt;namedCache&gt; or &lt;default&gt; elements:
 
 
 ----
-<lazyDeserialization enabled="true"/>
+<storeAsBinary enabled="true"/>
 ----
 
 
@@ -65,44 +65,62 @@ Lazy deserialization is the mechanism by which Infinispan by which serialization
 
 
 ----
-Configuration configuration = ...
-configuration.setUseLazyDeserialization(true);
+ConfigurationBuilder builder = ...
+builder.storeAsBinary().enable();
 
 ----
 
- _Note:_ Since 5.0 onwards, lazyDeserialization has been renamed to storeAsBinary to better represent its functionality: 
+[[sid-68355106_Marshalling-EqualityConsiderations]]
+
+
+===== Equality Considerations
+
+ When using lazy deserialization/storing as binary, keys and values are wrapped as link:$$http://docs.jboss.org/infinispan/5.3/apidocs/org/infinispan/marshall/MarshalledValue$$[MarshalledValue] s.  It is this wrapper class that transparently takes care of serialization and deserialization on demand, and internally may have a reference to the object itself being wrapped, or the serialized, byte array representation of this object. 
+
+ This has a particular effect on the behavior of equality. The equals() method of this class will either compare binary representations (byte arrays) or delegate to the wrapped object instance's equals() method, depending on whether both instances being compared are in serialized or deserialized form at the time of comparison.  If one of the instances being compared is in one form and the other in another form, then one instance is either serialized or deserialized.  The preference will be to compare object representations, unless the cache is link:$$http://docs.jboss.org/infinispan/5.3/apidocs/org/infinispan/Cache.html#compact()$$[compacted] , in which case byte array comparison is favored. 
+
+This will affect the way keys stored in the cache will work, when {{storeAsBinary]} is used, since comparisons happen on the key which will be wrapped by a MarshalledValue. Implementers of equals() methods on their keys need to be aware of the behavior of equality comparison, when a key is wrapped as a MarshalledValue, as detailed above.
+
+[[sid-68355106_Marshalling-Storebyvalueviadefensivecopying]]
+
+
+===== Store-by-value via defensive copying
+
+ Starting with Infinispan 5.3.0.Final, storeAsBinary configuration offers the possibility to enable defensive copying, which allows for store-by-value like behaviour. 
+
+When defensive copying is disabled (default), Infinispan keeps object references around and stores them in a binary format lazily. So clients can still modify entries via original object references, and marshalling only happens when entries are to be replicated/distributed, or stored in a cache store. Since client references are valid, clients can make changes to entries in the cache using those references, but these modifications are only local and you still need to call one of the cache's put/replace... methods in order for changes to replicate. This is essentially store-by-reference. This is the default mode for performance reasons.
+
+When defensive copies are enabled, Infinispan marshalls objects the moment they're stored, hence changes made to object references are not stored in the cache, not even for local caches. This provides store-by-value like behaviour. Enabling defensive copying can be achieved:
+
+
+*  Via XML at the Cache level, either under &lt;namedCache&gt; or &lt;default&gt; elements: 
 
 
 ----
-<storeAsBinary enabled="true"/>
+<storeAsBinary enabled="true" defensive="true"/>
 ----
 
-The programmatic configuration has changed as well together with a move towards more fluent configuration:
+
+* Programmatically:
 
 
 ----
-Configuration configuration = ...
-configuration.fluent().storeAsBinary();
+ConfigurationBuilder builder = ...
+builder.storeAsBinary().enable().defensive(true);
 
 ----
 
-Equality Considerations
-
- When using lazy deserialization/storing as binary, keys and values are wrapped as link:$$http://docs.jboss.org/infinispan/5.0/apidocs/?org/infinispan/marshall/MarshalledValue$$[MarshalledValue] s.  It is this wrapper class that transparently takes care of serialization and deserialization on demand, and internally may have a reference to the object itself being wrapped, or the serialized, byte array representation of this object This has a particular effect on the behavior of equality.  The equals() method of this class will either compare binary representations (byte arrays) or delegate to the wrapped object instance's equals() method, depending on whether both instances being compared are in serialized or deserialized form at the time of comparison.  If one of the instances being compared is in one form and the other in another form, then one instance is either serialized or deserialized.  The preference will be to compare object representations, unless the cache is link:$$http://docs.jboss.org/infinispan/5.0/apidocs/org/infinispan/Cache.html#compact()$$[compacted] , in which case byte array comparison is favored. 
-
-This will affect the way keys stored in the cache will work, when storeAsBinary is used, since comparisons happen on the key which will be wrapped by a MarshalledValue.  Implementers of equals() methods on their keys need to be aware of the behavior of equality comparison, when a key is wrapped as a MarshalledValue, as detailed above.
-
-[[sid-8093979_Marshalling-AdvancedConfiguration]]
+[[sid-68355106_Marshalling-AdvancedConfiguration]]
 
 
 === Advanced Configuration
 
  Internally, Infinispan uses an implementation of link:$$http://infinispan.sourceforge.net/4.0/apidocs/org/infinispan/marshall/Marshaller.html$$[this Marshaller interface] in order to marshall/unmarshall Java objects so that they're sent other nodes in the grid, or so that they're stored in a cache store, or even so to transform them into byte arrays for lazy deserialization. 
 
- By default, Infinispan uses the link:$$http://infinispan.sourceforge.net/4.0/apidocs/org/infinispan/marshall/VersionAwareMarshaller.html$$[VersionAwareMarshaller] which, as the name suggests, adds a version short to the start of any stream when writing, enabling similar VersionAwareMarshaller instances to read the version short and know which specific marshaller implementation to delegate the call to. Using a VersionAwareMarshaller helps achieve wire protocol compatibility between minor releases but still affords us the flexibility to tweak and improve the wire protocol between minor or micro releases. Optionally, Infinispan users to optionally provide their own marshaller, for example: 
+ By default, Infinispan uses the link:$$http://docs.jboss.org/infinispan/5.3/apidocs/org/infinispan/marshall/VersionAwareMarshaller.html$$[VersionAwareMarshaller] which, as the name suggests, adds a version short to the start of any stream when writing, enabling similar VersionAwareMarshaller instances to read the version short and know which specific marshaller implementation to delegate the call to. Using a VersionAwareMarshaller helps achieve wire protocol compatibility between minor releases but still affords us the flexibility to tweak and improve the wire protocol between minor or micro releases. Optionally, Infinispan users to optionally provide their own marshaller, for example: 
 
 
-* Via XML at the CacheManager level, under &lt;global&gt; element:
+*  Via XML at the CacheManager level, under &lt;global&gt; element: 
 
 
 ----
@@ -114,12 +132,15 @@ This will affect the way keys stored in the cache will work, when storeAsBinary 
 
 
 ----
-GlobalConfiguration globalConfiguration = ...
-globalConfiguration.setMarshallerClass("com.acme.MyMarshaller")
+GlobalConfigurationBuilder builder = ...
+builder.serialization().marshaller(myMarshaller); // needs an instance of the marshaller
 
 ----
 
-Troubleshooting
+[[sid-68355106_Marshalling-Troubleshooting]]
+
+
+==== Troubleshooting
 
 Sometimes it might happen that the Infinispan marshalling layer, and in particular JBoss Marshalling, might have issues marshalling/unmarshalling some user object. In Infinispan 4.0, marshalling exceptions will contain further information on the objects that were being marshalled. Example:
 
