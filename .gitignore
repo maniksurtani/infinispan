@@ -32,4 +32,5 @@ rhq-plugin.xml
 core/src/main/resources/schema
 # Compiled python files
 *.pyc
+documentation*/*.html
 
