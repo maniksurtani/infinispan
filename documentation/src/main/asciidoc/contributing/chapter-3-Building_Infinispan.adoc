@@ -1,10 +1,10 @@
-[[sid-18645209_ContributingtoInfinispan-BuildingInfinispan]]
+[[sid-68355157_ContributingtoInfinispan-BuildingInfinispan]]
 
 ==  Building Infinispan
 
  Infinispan uses link:$$http://maven.apache.org/$$[Maven] as a build system. 
 
-[[sid-18645209_ContributingtoInfinispan-Requirements]]
+[[sid-68355157_ContributingtoInfinispan-Requirements]]
 
 
 === Requirements
@@ -18,13 +18,94 @@
 
 [WARNING]
 ==== 
- Make sure you follow the steps outlined in link:$$http://community.jboss.org/docs/15169$$[Maven Getting Started - Users] to set up your JBoss repository correctly. This step is _crucial_ to ensure your Maven setup can locate JBoss artifacts! 
+ Make sure you follow the steps outlined in link:$$http://community.jboss.org/docs/15169$$[Maven Getting Started - Users] to set up your JBoss repository correctly. This step is _crucial_ to ensure your Maven setup can locate JBoss artifacts! If you also want to test the EAP integration modules you should also add the appropriate link:$$http://maven.repository.redhat.com/$$[Enterprise Red Hat Maven Repository.] 
 
 
 ==== 
 
 
-[[sid-18645209_ContributingtoInfinispan-Quickcommandreference]]
+The following is an example settings.xml to get you started:
+
+
+----
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      http://maven.apache.org/xsd/settings-1.0.0.xsd" >
+  <localRepository/>
+  <interactiveMode/>
+  <usePluginRegistry/>
+  <offline/>
+  <proxies/>
+  <profiles>
+    <profile>
+      <id>jboss-public-repository</id>
+      <repositories>
+        <repository>
+          <id>jboss-public-repository-group</id>
+          <name>JBoss Public Maven Repository Group</name>
+          <url> https://repository.jboss.org/nexus/content/groups/public-jboss/ </url>
+          <layout>default</layout>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>jboss-public-repository-group</id>
+          <name>JBoss Public Maven Repository Group</name>
+          <url> https://repository.jboss.org/nexus/content/groups/public-jboss/ </url>
+          <layout>default</layout>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+
+    <!-- Include early access of application server and other products -->
+    <profile>
+      <id>redhat-earlyaccess-repository</id>
+        <repositories>
+          <repository>
+            <id>redhat-earlyaccess-repository-group</id>
+            <name>Red Hat early access repository</name>
+            <url> http://maven.repository.redhat.com/earlyaccess/all/ </url>
+            <layout>default</layout>
+            <releases>
+              <enabled>true</enabled>
+              <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+              <enabled>true</enabled>
+              <updatePolicy>never</updatePolicy>
+            </snapshots>
+          </repository>
+        </repositories>
+     </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>jboss-public-repository</activeProfile>
+    <activeProfile>redhat-earlyaccess-repository</activeProfile>
+  </activeProfiles>
+</settings>
+
+
+----
+
+[[sid-68355157_ContributingtoInfinispan-Quickcommandreference]]
 
 
 === Quick command reference
@@ -64,7 +145,7 @@
 ==== 
 
 
-[[sid-18645209_ContributingtoInfinispan-PublishingreleasestoMaven]]
+[[sid-68355157_ContributingtoInfinispan-PublishingreleasestoMaven]]
 
 
 === Publishing releases to Maven
@@ -97,7 +178,7 @@
 
 ----
 
-[[sid-18645209_ContributingtoInfinispan-Publishingsnapshots]]
+[[sid-68355157_ContributingtoInfinispan-Publishingsnapshots]]
 
 
 ==== Publishing snapshots
@@ -113,14 +194,14 @@ $ mvn clean deploy -Dmaven.test.skip.exec=true
 
 in the Infinispan root directory will deploy a snapshot.
 
-[[sid-18645209_ContributingtoInfinispan-Publishingreleases]]
+[[sid-68355157_ContributingtoInfinispan-Publishingreleases]]
 
 
 ==== Publishing releases
 
 Use the bin/release.py script.
 
-[[sid-18645209_ContributingtoInfinispan-TheMavenArchetypes]]
+[[sid-68355157_ContributingtoInfinispan-TheMavenArchetypes]]
 
 
 === The Maven Archetypes
@@ -145,7 +226,7 @@ These archetypes have only been tested with Maven 3.  Please report back if you
 ==== 
 
 
-[[sid-18645209_ContributingtoInfinispan-Startinganewproject]]
+[[sid-68355157_ContributingtoInfinispan-Startinganewproject]]
 
 
 ==== Starting a new project
@@ -165,14 +246,14 @@ $ mvn archetype:generate \
 
  You will be prompted for a few things, including the artifactId , groupId and version of your new project. And that's it - you're ready to go! 
 
-[[sid-18645209_ContributingtoInfinispan-Exploringyournewproject]]
+[[sid-68355157_ContributingtoInfinispan-Exploringyournewproject]]
 
 
 ===== Exploring your new project
 
  The skeleton project ships with a sample application class for interacting with Infinispan. You can open this new project in your IDE - most good IDEs such as IntelliJ and Eclipse allow you to import Maven projects, see link:$$http://www.jetbrains.com/idea/webhelp/importing-maven-project.html$$[this guide] and link:$$http://m2eclipse.sonatype.org/$$[this guide] .  Once you open your project in your IDE, you should examine the generated classes and read through the comments. 
 
-[[sid-18645209_ContributingtoInfinispan-Onthecommandline...]]
+[[sid-68355157_ContributingtoInfinispan-Onthecommandline...]]
 
 
 ===== On the command line...
@@ -188,7 +269,7 @@ $ mvn install -Prun
 
 in your newly generated project. This runs the main() method in the generated application class.
 
-[[sid-18645209_ContributingtoInfinispan-WritingatestcaseforInfinispan]]
+[[sid-68355157_ContributingtoInfinispan-WritingatestcaseforInfinispan]]
 
 
 ==== Writing a test case for Infinispan
@@ -210,7 +291,7 @@ $ mvn archetype:generate \
 
 As above, this will prompt you for project details and again as above, you should open this project in your IDE. Once you have done so, you will see some sample tests written for Infinispan making use of Infinispan's test harness and testing tools along with extensive comments and links for further reading.
 
-[[sid-18645209_ContributingtoInfinispan-Onthecommandline...x]]
+[[sid-68355157_ContributingtoInfinispan-Onthecommandline...x]]
 
 
 ===== On the command line...
@@ -235,7 +316,7 @@ $ mvn test -Pudp
 
 ----
 
-[[sid-18645209_ContributingtoInfinispan-Availableprofiles]]
+[[sid-68355157_ContributingtoInfinispan-Availableprofiles]]
 
 
 ===== Available profiles
@@ -251,7 +332,7 @@ The profiles available in the generated sample project are:
 
 *  jbosstm: Use the embedded link:$$http://www.jboss.org/jbosstm$$[JBoss Transaction Manager] rather than Infinispan's dummy test transaction manager 
 
-[[sid-18645209_ContributingtoInfinispan-ContributingtestsbacktoInfinispan]]
+[[sid-68355157_ContributingtoInfinispan-ContributingtestsbacktoInfinispan]]
 
 
 ===== Contributing tests back to Infinispan
@@ -269,14 +350,14 @@ Want to know how best to work with the repositories and contribute code?  Read 
 ==== 
 
 
-[[sid-18645209_ContributingtoInfinispan-Versions]]
+[[sid-68355157_ContributingtoInfinispan-Versions]]
 
 
 ==== Versions
 
 The archetypes generate poms with dependencies to specific versions of Infinispan. You should edit these generated poms by hand to point to other versions of Infinispan that you are interested in.
 
-[[sid-18645209_ContributingtoInfinispan-SourceCode]]
+[[sid-68355157_ContributingtoInfinispan-SourceCode]]
 
 
 ==== Source Code

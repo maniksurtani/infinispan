@@ -1,8 +1,8 @@
-[[sid-18645209_ContributingtoInfinispan-WritingDocumentationandFAQs]]
+[[sid-68355157_ContributingtoInfinispan-WritingDocumentationandFAQs]]
 
 ==  Writing Documentation and FAQs
 
-[[sid-18645209_ContributingtoInfinispan-Introductionx]]
+[[sid-68355157_ContributingtoInfinispan-Introduction]]
 
 
 === Introduction
@@ -12,17 +12,17 @@ Infinispan uses this Confluence instance to store documentation and FAQs. The do
 [options="header"]
 |===============
 | | |Future plans
-| <<sid-18645196>> |Tutorials for using Infinispan|This will be developed into a Getting Started Guide, where each tutorial as an associated quickstart example
-| <<sid-18645130>> |Goes into depth on using and configuring Infinispan|This will be split into a Developer Reference Guide, a Configuration Guide and a Tuning Guide
-| <<sid-18645220>> |An explanation of the terminology used by Infinispan| 
-| <<sid-18645039>> |Contains both product and technical FAQs|Each Q&amp;A will be moved into a document and included into the outline document
+| <<sid-68355130>> |Tutorials for using Infinispan|This will be developed into a Getting Started Guide, where each tutorial as an associated quickstart example
+| <<sid-68355028>> |Goes into depth on using and configuring Infinispan|This will be split into a Developer Reference Guide, a Configuration Guide and a Tuning Guide
+| <<sid-68355169>> |An explanation of the terminology used by Infinispan| 
+| <<sid-68354929>> |Contains both product and technical FAQs|Each Q&amp;A will be moved into a document and included into the outline document
 
 |===============
 
 
  Editing and adding pages on Confluence is restricted to regular contributors to Infinispan (if you think you should have access, or want to become a regular contributor to the documentation, then please email infinispan-dev@lists.jboss.org . 
 
-[[sid-18645209_ContributingtoInfinispan-Whatgoeswhere%3F]]
+[[sid-68355157_ContributingtoInfinispan-Whatgoeswhere%3F]]
 
 
 === What goes where?
@@ -38,14 +38,14 @@ Once the final set of guides (as described in the table above) is complete, ther
 ==== 
 
 
-[[sid-18645209_ContributingtoInfinispan-Wikimarkuporrichtext]]
+[[sid-68355157_ContributingtoInfinispan-Wikimarkuporrichtext]]
 
 
 === Wiki markup or rich text
 
 You should always use wiki markup, it gives you much greater control over output format. The "Full notation guide" link in the "Help Tips" panel to the right (on the edit page) gives a full list of markup available.
 
-[[sid-18645209_ContributingtoInfinispan-Markupguide]]
+[[sid-68355157_ContributingtoInfinispan-Markupguide]]
 
 
 === Markup guide
@@ -54,7 +54,7 @@ This section discusses the typical markup you would use to write a documentation
 
 Let's start at the beginning - headers, page structure, and the table of contents.
 
-[[sid-18645209_ContributingtoInfinispan-Headers%2CPageStructureandtheTableofContents]]
+[[sid-68355157_ContributingtoInfinispan-Headers%2CPageStructureandtheTableofContents]]
 
 
 ==== Headers, Page Structure and the Table of Contents
@@ -78,9 +78,9 @@ The child nodes of the Infinispan space represent the various guides, and the FA
 
  h1 headers should only be used to name sections of guide, h2 headers to name sub-sections and so on. You should not skip header levels. Headings should follow the same capitalization rules as a sentence - only capitalize the first letter and proper nouns. 
 
- For an example, take a look at the wiki markup for the <<sid-18645209>> guide. 
+ For an example, take a look at the wiki markup for the <<sid-68355157>> guide. 
 
-[[sid-18645209_ContributingtoInfinispan-Markinguptext]]
+[[sid-68355157_ContributingtoInfinispan-Markinguptext]]
 
 
 ==== Marking up text
@@ -103,12 +103,12 @@ You will likely want to introduce some inline formatting for text. Here are the 
 |===============
 
 
-[[sid-18645209_ContributingtoInfinispan-Listsandtables]]
+[[sid-68355157_ContributingtoInfinispan-Listsandtables]]
 
 
 ==== Lists and tables
 
-[[sid-18645209_ContributingtoInfinispan-Markup]]
+[[sid-68355157_ContributingtoInfinispan-Markup]]
 
 
 ===== Markup
@@ -117,7 +117,7 @@ You will normally wish to use an unordered list, however a numbered list is usef
 
 You can make nested lists by using "double" markup.
 
-[[sid-18645209_ContributingtoInfinispan-Grammarinlistsandtables]]
+[[sid-68355157_ContributingtoInfinispan-Grammarinlistsandtables]]
 
 
 ===== Grammar in lists and tables
@@ -126,14 +126,14 @@ The trailing sentence in a list or a table should normally not have a full stop 
 
 Often, you will want to introduce a list or a table using a sentence. If you do this, a colon is often used to punctuate the end of the sentence, rather than a full stop/period.
 
-[[sid-18645209_ContributingtoInfinispan-Links]]
+[[sid-68355157_ContributingtoInfinispan-Links]]
 
 
 ==== Links
 
 Links should be used as normal!
 
-[[sid-18645209_ContributingtoInfinispan-Admonitions]]
+[[sid-68355157_ContributingtoInfinispan-Admonitions]]
 
 
 ==== Admonitions
@@ -151,7 +151,7 @@ Confluence supports three admonition styles, and you are encouraged to use them 
 
  You can use the title attribute to give the admonition a title 
 
-[[sid-18645209_ContributingtoInfinispan-Imagesandothermedia]]
+[[sid-68355157_ContributingtoInfinispan-Imagesandothermedia]]
 
 
 ==== Images and other media
@@ -177,7 +177,7 @@ This produces
 
 You can also embed Google Docs documents, Twitter searches, slide decks from SlideShare, and presentations from SlideRocket. Just follow the above example, substituting the URL for your media.
 
-[[sid-18645209_ContributingtoInfinispan-Codesamples]]
+[[sid-68355157_ContributingtoInfinispan-Codesamples]]
 
 
 ==== Code samples
@@ -220,7 +220,7 @@ git checkout -b <topic>
 ==== 
 
 
-[[sid-18645209_ContributingtoInfinispan-Voiceandgrammarguide]]
+[[sid-68355157_ContributingtoInfinispan-Voiceandgrammarguide]]
 
 
 === Voice and grammar guide
@@ -322,12 +322,12 @@ ____
 
 * If you are telling the user about a procedure they can follow, do be explicit about this, and enumerate the steps clearly
 
-[[sid-18645209_ContributingtoInfinispan-Glossary]]
+[[sid-68355157_ContributingtoInfinispan-Glossary]]
 
 
 === Glossary
 
- When writing a glossary entry, you should follow the <<sid-18645245>> as a template. 
+ When writing a glossary entry, you should follow the <<sid-68355194>> as a template. 
 
 
 * If the entry is commonly referred to using an acronym, then the title should consistent of the fully expanded name, with the acronym in brackets. You can then use the acronym always within the main text body
@@ -338,7 +338,7 @@ ____
 
 * If you want to make external links (e.g. wikipedia, user guide), then add a h2 header "More resources", and list them there. This clearly indicates to users when they are moving outside of our definitions
 
-[[sid-18645209_ContributingtoInfinispan-Screencasts]]
+[[sid-68355157_ContributingtoInfinispan-Screencasts]]
 
 
 === Screencasts

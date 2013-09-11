@@ -1,4 +1,4 @@
-[[sid-18645255]]
+[[sid-68355204]]
 
 ==  Writing custom commands in Infinispan
 
@@ -43,7 +43,7 @@
 ==== 
  For a full, working example of a sample module that makes use of custom commands and visitors, check out link:$$https://github.com/infinispan/infinispan-sample-module$$[Infinispan Sample Module] . 
 
-[[sid-18645255_WritingcustomcommandsinInfinispan-PreassignedCustomCommandIdRanges]]
+[[sid-68355204_WritingcustomcommandsinInfinispan-PreassignedCustomCommandIdRanges]]
 
 
 === Preassigned Custom Command Id Ranges
@@ -53,6 +53,7 @@
 
 |===============
 |Infinispan Query:|100 - 119
+|Hibernate Search:|120 - 139
 
 |===============
 

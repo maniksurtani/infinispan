@@ -1,24 +1,24 @@
-[[sid-18645209_ContributingtoInfinispan-SourceControl]]
+[[sid-68355157_ContributingtoInfinispan-SourceControl]]
 
 ==  Source Control
 
 
 [NOTE]
 ==== 
- As a convention, _upstream_ is used as the name of the link:$$http://github.com/infinispan/infinispan$$[] repository. This repository is the canonical repository for Infinispan. 
+ As a convention, _upstream_ is used as the name of the link:$$http://github.com/infinispan/infinispan$$[] repository. This repository is the canonical repository for Infinispan. We usually name _origin_ the fork on github of each contributor. So the exact meaning of _origin_ is relative to the developer: you could think of _origin_ as your own fork. 
 
 
 ==== 
 
 
-[[sid-18645209_ContributingtoInfinispan-Prerequisitesx]]
+[[sid-68355157_ContributingtoInfinispan-Prerequisitesx]]
 
 
 === requisites
 
- This document assumes some working knowledge of git. We recommend Scott Chacon's excellent link:$$http://progit.org/$$[Pro Git] as a valuable piece of background reading. The book is released under the Creative Commons license and can be downloaded in electronic form for free At very least, we recommend that link:$$http://progit.org/book/ch2-0.html$$[Chapter 2] , link:$$http://progit.org/book/ch3-0.html$$[Chapter 3] and link:$$http://progit.org/book/ch5-0.html$$[Chapter 5] of Pro Git are read before proceeding. 
+ This document assumes some working knowledge of git. We recommend Scott Chacon's excellent link:$$http://progit.org/$$[Pro Git] as a valuable piece of background reading. The book is released under the Creative Commons license and can be downloaded in electronic form for free. At very least, we recommend that link:$$http://progit.org/book/ch2-0.html$$[Chapter 2] , link:$$http://progit.org/book/ch3-0.html$$[Chapter 3] and link:$$http://progit.org/book/ch5-0.html$$[Chapter 5] of Pro Git are read before proceeding. 
 
-[[sid-18645209_ContributingtoInfinispan-Repositories]]
+[[sid-68355157_ContributingtoInfinispan-Repositories]]
 
 
 === Repositories
@@ -27,7 +27,7 @@
 
  Typically, only _Project Admins_ would be able to push to this repo while all else may clone or fork this repo. 
 
-[[sid-18645209_ContributingtoInfinispan-Roles]]
+[[sid-68355157_ContributingtoInfinispan-Roles]]
 
 
 === Roles
@@ -52,7 +52,7 @@ None of the roles assume that you are a Red Hat employee.  All it assumes is ho
 ==== 
 
 
-[[sid-18645209_ContributingtoInfinispan-OccasionalContributor]]
+[[sid-68355157_ContributingtoInfinispan-OccasionalContributor]]
 
 
 ==== Occasional Contributor
@@ -76,7 +76,7 @@ A GitHub pull request is the preferred method to submit a patch!
 ==== 
 
 
-[[sid-18645209_ContributingtoInfinispan-AttachapatchfiletotheJIRAissue]]
+[[sid-68355157_ContributingtoInfinispan-AttachapatchfiletotheJIRAissue]]
 
 
 ===== Attach a patch file to the JIRA issue
@@ -100,7 +100,7 @@ Rather than emailing the patches to a developer mail list, please attach your pa
 ==== 
 
 
-[[sid-18645209_ContributingtoInfinispan-CreatingapullrequestonGitHub]]
+[[sid-68355157_ContributingtoInfinispan-CreatingapullrequestonGitHub]]
 
 
 ===== Creating a pull request on GitHub
@@ -127,13 +127,13 @@ Before you push your work onto your fork of the repository, it is often a good i
 
  The section on _Public Small Project_ in link:$$http://progit.org/book/ch5-2.html$$[Chapter 5, Section 2] of Pro Git has more information on this style of workflow. 
 
-[[sid-18645209_ContributingtoInfinispan-Aworkedexample]]
+[[sid-68355157_ContributingtoInfinispan-Aworkedexample]]
 
 
 ===== =A worked example
 
 
-.  Make sure your master is synced up with upstream. See <<sid-18645209_ContributingtoInfinispan-Ifyouhaveforkedupstream,this section>> for how to do this 
+.  Make sure your master is synced up with upstream. See <<sid-68355157_ContributingtoInfinispan-Ifyouhaveforkedupstream,this section>> for how to do this 
 
 
 . Create new branch for your topic and switch to it. For the example issue, ISPN-1234:
@@ -224,7 +224,7 @@ If you are sharing your forked Infinispan repo with others, then do not rebase! 
 ==== 
 
 
-[[sid-18645209_ContributingtoInfinispan-Multistepcoordinationbetweendevelopersusingforkedrepositories]]
+[[sid-68355157_ContributingtoInfinispan-Multistepcoordinationbetweendevelopersusingforkedrepositories]]
 
 
 ===== Multi-step coordination between developers using forked repositories
@@ -233,7 +233,7 @@ Sometimes a feature/task is rather complex to implement and requires competence 
 
 For example, developer A using his personal Infinispan fork creates a topic branch T and completes as much work as he/she can before requesting for assistance from developer B. Developer A pushes topic T to his personal Infinispan fork where developer B picks it up and brings it down to his local repo. Developer B then in turn completes necessary work, commits his/her changes on branch T, and finally pushes back T to his own personal fork. After issuing request for pull to developer A, developer B waits for notification that developer A integrated his changes. This exchange can be repeated as much as it is necessary and can involve multiple developers.
 
-[[sid-18645209_ContributingtoInfinispan-Aworkedexamplex]]
+[[sid-68355157_ContributingtoInfinispan-Aworkedexamplex]]
 
 
 ===== =A worked example
@@ -243,7 +243,7 @@ For example, developer A using his personal Infinispan fork creates a topic bran
 
 ----
 
-git remote add devA https://github.com/developerA/infinispan.git]
+git remote add devA https://github.com/developerA/infinispan.git
 
 ----
 
@@ -277,14 +277,14 @@ git push origin my_ispn244
 
 .  Developer B sends pull request to developer A to integrate changes from my_ispn244 to ispn244 
 
-[[sid-18645209_ContributingtoInfinispan-FrequentContributor]]
+[[sid-68355157_ContributingtoInfinispan-FrequentContributor]]
 
 
 ==== Frequent Contributor
 
 A frequent contributor will only ever submit patches via a pull requests. The pull request will be submitted via GitHub.
 
- Frequent contributors should _always_ fork the upstream project on GitHub and work off a clone of this fork. This is very similar to <<sid-18645209_ContributingtoInfinispan-CreatingapullrequestonGitHub,Creating a pull request on GitHub>> workflow used by a <<sid-18645209_ContributingtoInfinispan-OccasionalContributor,Occasional Contributor>> . 
+ Frequent contributors should _always_ fork the upstream project on GitHub and work off a clone of this fork. This is very similar to <<sid-68355157_ContributingtoInfinispan-CreatingapullrequestonGitHub,Creating a pull request on GitHub>> workflow used by a <<sid-68355157_ContributingtoInfinispan-OccasionalContributor,Occasional Contributor>> . 
 
 
 [NOTE]
@@ -295,7 +295,7 @@ All Infinispan core developers are considered frequent contributors and work off
 ==== 
 
 
-[[sid-18645209_ContributingtoInfinispan-ProjectAdmin]]
+[[sid-68355157_ContributingtoInfinispan-ProjectAdmin]]
 
 
 ==== Project Admin
@@ -313,7 +313,7 @@ All Contributors who are also Project Admins are encouraged to not merge their o
 
 This approach ensures Infinispan maintains quality on the main code source tree, and allows for important code reviews to take place again ensuring quality. Further, it ensures clean and easily traceable code history and makes sure that more than one person knows about the changes being performed.
 
-[[sid-18645209_ContributingtoInfinispan-Merginginpatches]]
+[[sid-68355157_ContributingtoInfinispan-Merginginpatches]]
 
 
 ===== Merging in patches
@@ -328,7 +328,7 @@ Patches submitted via JIRA are audited and promoted to the upstream repository a
 
  More information on applying patches can be found in link:$$http://progit.org/book/ch5-3.html$$[Chapter 5, Section 3] of Pro Git, under _Applying Patches From Email._ 
 
-[[sid-18645209_ContributingtoInfinispan-Handlingpullrequests]]
+[[sid-68355157_ContributingtoInfinispan-Handlingpullrequests]]
 
 
 ===== Handling pull requests
@@ -362,7 +362,7 @@ $ git reset cb4e5d6  # revert the bad merge
 
  More information on pulling changes from remote, forked repos can be found in link:$$http://progit.org/book/ch5-3.html$$[Chapter 5, Section 3] of Pro Git, under _Checking Out Remote Branches_ . 
 
-[[sid-18645209_ContributingtoInfinispan-Possibletroublehandlingpullrequests]]
+[[sid-68355157_ContributingtoInfinispan-Possibletroublehandlingpullrequests]]
 
 
 ===== =Possible trouble handling pull requests
@@ -383,32 +383,39 @@ $ git reset cb4e5d6  # revert the bad merge
 [WARNING]
 .Never use force on git push
 ==== 
- Using _-f_ while pushing on a shared repository such as _upstream_ you could effectively erase other committed patches. Noone shall ever use this option unless unanimously approved on the public mailing list: the most dangerous aspect of it is that nobody get any notification if this happens, and we might think issues are solved but you silently removed the fix and it's history from the repository. 
+ Using _-f_ while pushing on a shared repository such as _upstream_ you could effectively erase other committed patches. Noone shall ever use this option unless unanimously approved on the public mailing list: the most dangerous aspect of it is that nobody gets any notification if this happens, and we might think issues are solved but you silently removed the fix and it's history from the repository. 
 
 
 ==== 
 
 
-[[sid-18645209_ContributingtoInfinispan-Cuttingreleases]]
+[[sid-68355157_ContributingtoInfinispan-Cuttingreleases]]
 
 
 ===== Cutting releases
 
 Releases can only me cut by Project Admins, and must be done off a recently updated (git fetch and git pull origin) clone of the upstream repo. Infinispan's release.py script takes care of the rest.
 
-[[sid-18645209_ContributingtoInfinispan-Committingyourwork]]
+[[sid-68355157_ContributingtoInfinispan-ContributorLicenseAgreement%28CLA%29]]
+
+
+=== Contributor License Agreement (CLA)
+
+ Contributors that submit patches to Infinispan, if they're not employed by Red Hat, are required to sign the _Contributor License Agreement (CLA)_ following the instructions in link:$$https://cla.jboss.org/index.seam$$[our dedicated site] . 
+
+[[sid-68355157_ContributingtoInfinispan-Committingyourwork]]
 
 
 === Committing your work
 
-[[sid-18645209_ContributingtoInfinispan-Releasebranches]]
+[[sid-68355157_ContributingtoInfinispan-Releasebranches]]
 
 
 ==== Release branches
 
-Infinispan has 4 main release branches.  These are master (ongoing work on the 5.0.x series), 4.2.x (ongoing work on the 4.2.x series), 4.1.x and 4.0.x (respective maintenance branches). Work should never be committed directly to any of these release branches; topic branches should always be used for work, and these topic branches should be merged in.
+Infinispan has 4 main release branches. These are master (ongoing work on the 5.0.x series), 4.2.x (ongoing work on the 4.2.x series), 4.1.x and 4.0.x (respective maintenance branches). Work should never be committed directly to any of these release branches; topic branches should always be used for work, and these topic branches should be merged in.
 
-[[sid-18645209_ContributingtoInfinispan-Topicbranches]]
+[[sid-68355157_ContributingtoInfinispan-Topicbranches]]
 
 
 ==== Topic branches
@@ -417,7 +424,7 @@ Some of the biggest features of git are speed and efficiency of branching, and a
 
  link:$$http://progit.org/book/ch3-4.html$$[Chapter 3, Section 4] of Pro Git has a detailed discussion of topic branches. For Infinispan, it makes sense to create a topic branch and name it after the JIRA it corresponds to. (if it doesn't correspond to a JIRA, a simple but descriptive name should be used). 
 
-[[sid-18645209_ContributingtoInfinispan-TopicBranchesAffectingMoreThanOneReleaseBranch]]
+[[sid-68355157_ContributingtoInfinispan-TopicBranchesAffectingMoreThanOneReleaseBranch]]
 
 
 ===== Topic Branches Affecting More Than One Release Branch
@@ -444,7 +451,7 @@ git checkout -b <topic>_master master
 *  Do your work on &lt;topic&gt;_master , test and commit your fixes 
 
 
-* Switch to {{&lt;topic&gt;_4.2.x}. For example:
+*  Switch to &lt;topic&gt;_4.2.x . For example: 
 
 
 ----
@@ -465,7 +472,7 @@ git cherry-pick <commit_id>
 
 * Issue pull requests for both topic branches
 
-[[sid-18645209_ContributingtoInfinispan-Comments]]
+[[sid-68355157_ContributingtoInfinispan-Comments]]
 
 
 ==== Comments
@@ -474,10 +481,10 @@ git cherry-pick <commit_id>
 
 
 ----
-ISPN-XXX - Subject line of the JIRA in question
+ISPN-XXX Subject line of the JIRA in question
 ----
 
-This should be followed by a detailed explanation of the commit.  Why it was done, how much of it. was completed, etc. You may wish to express this as a list, for example:
+This can optionally be followed by a detailed explanation of the commit. Why it was done, how much of it was completed, etc. You may wish to express this as a list, for example:
 
 
 ----
@@ -489,27 +496,25 @@ This should be followed by a detailed explanation of the commit.  Why it was do
 
 ----
 
-[[sid-18645209_ContributingtoInfinispan-Commits]]
+Make sure however to split separate concerns - especially if they are unrelated - in separate commits.
+
+[[sid-68355157_ContributingtoInfinispan-Commits]]
 
 
 ==== Commits
 
- Sometimes work on your topic branch may include several commits. For example, committing a test. Then committing another test. Then perhaps committing a fix. And perhaps fixing the fix in the next commit 
-.TODO Gliffy image title empty
-image::[]
-
- . Before issuing a pull request for this topic branch, consider cleaning up these commits. Interactive rebasing helps you squash several commits into a single commit, which is often more coherent to deal with for others merging in your work. link:$$http://progit.org/book/ch6-4.html$$[Chapter 6, Section 4] of Pro Git has details on how to squash commits and generally, clean up a series of commits before sharing this work with others. 
+ Sometimes work on your topic branch may include several commits. For example, committing a test. Then committing another test. Then perhaps committing a fix. And perhaps fixing your own fix in the next commit... Before issuing a pull request for this topic branch, consider cleaning up these commits. Interactive rebasing helps you squash several commits into a single commit, which is often more coherent to deal with for others merging in your work. link:$$http://progit.org/book/ch6-4.html$$[Chapter 6, Section 4] of Pro Git has details on how to squash commits and generally, clean up a series of commits before sharing this work with others. Note that you can also easily reorder them, just change the order of lines during the interactive rebase process. 
 
  Also, it is important to make sure you don't accidentally commit files for which no real changes have happened, but rather, whitespace has been modified. This often happens with some IDEs. git diff --check should be run before you issue such a pull request, which will check for such "noise" commits and warn you accordingly. Such files should be reverted and not be committed to the branch. 
 
- Further, adhering to <<sid-18645210_Contributing-TheBasics-StyleRequirements,Infinispan's code style>> guidelines will help minimise "noise" commits. Project Admins should feel free to ask contributors to reformat their code if necessary. 
+ Adhering to <<sid-68355158_Contributing-TheBasics-StyleRequirements,Infinispan's code style>> guidelines will help minimise "noise" commits. Project Admins are going to ask contributors to reformat their code if necessary. 
 
-[[sid-18645209_ContributingtoInfinispan-Keepingyourrepoinsyncwithupstream]]
+[[sid-68355157_ContributingtoInfinispan-Keepingyourrepoinsyncwithupstream]]
 
 
 === Keeping your repo in sync with upstream
 
-[[sid-18645209_ContributingtoInfinispan-Ifyouhaveclonedupstream]]
+[[sid-68355157_ContributingtoInfinispan-Ifyouhaveclonedupstream]]
 
 
 ==== If you have cloned upstream
@@ -536,7 +541,7 @@ $ git pull origin 4.2.x
 
 ----
 
-[[sid-18645209_ContributingtoInfinispan-Updatingtopicbranches]]
+[[sid-68355157_ContributingtoInfinispan-Updatingtopicbranches]]
 
 
 ===== Updating topic branches
@@ -561,7 +566,7 @@ $ git rebase 4.2.x
 
 ----
 
-[[sid-18645209_ContributingtoInfinispan-Ifyouhaveforkedupstream]]
+[[sid-68355157_ContributingtoInfinispan-Ifyouhaveforkedupstream]]
 
 
 ==== If you have forked upstream
@@ -575,7 +580,7 @@ $ git remote add upstream git://github.com/infinispan/infinispan.git
 
 ----
 
- You should now be able to fetch and pull changes from upstream into your local repo, though you should make sure you have no uncommitted changes. (You _do_ use topic branches, right?) 
+ You should now be able to fetch and pull changes from upstream into your local repository, though you should make sure you have no uncommitted changes. (You _do_ use topic branches, right?) 
 
 
 ----
@@ -593,7 +598,7 @@ $ git push origin 4.2.x
 
  A script can do this for you - have a look at link:$$https://github.com/maniksurtani/githelpers/blob/master/contributors/sync_with_upstream$$[sync_with_upstream] . 
 
-[[sid-18645209_ContributingtoInfinispan-Updatingtopicbranchesx]]
+[[sid-68355157_ContributingtoInfinispan-Updatingtopicbranchesx]]
 
 
 ===== Updating topic branches
@@ -620,12 +625,12 @@ $ git rebase 4.2.x
 
 The sync_with_upstream script can do this for you if your topic branch naming conventions match the script.
 
-[[sid-18645209_ContributingtoInfinispan-Tipsonenhancinggit]]
+[[sid-68355157_ContributingtoInfinispan-Tipsonenhancinggit]]
 
 
 === Tips on enhancing git
 
-[[sid-18645209_ContributingtoInfinispan-Autocompletions]]
+[[sid-68355157_ContributingtoInfinispan-Autocompletions]]
 
 
 ==== completions
@@ -645,7 +650,7 @@ source ~/.git-completion.bash
 
  Note that you get git autocompletion for free if you use link:$$http://zsh.sourceforge.net/$$[zsh] instead of bash. 
 
-[[sid-18645209_ContributingtoInfinispan-Terminalcolours]]
+[[sid-68355157_ContributingtoInfinispan-Terminalcolours]]
 
 
 ==== Terminal colours
@@ -673,12 +678,12 @@ source ~/.git-completion.bash
 
 ----
 
-[[sid-18645209_ContributingtoInfinispan-Aliases]]
+[[sid-68355157_ContributingtoInfinispan-Aliases]]
 
 
 ==== Aliases
 
- Some git commands are pretty long to type, especially with various switches. Aliases help you to map shortcuts to more complex commands.; Again, For example, add the followin to ~/.gitconfig : 
+ Some git commands are pretty long to type, especially with various switches. Aliases help you to map shortcuts to more complex commands.; Again, For example, add the following to ~/.gitconfig : 
 
 
 ----
@@ -700,21 +705,21 @@ source ~/.git-completion.bash
 
 ----
 
-[[sid-18645209_ContributingtoInfinispan-VisualHistory]]
+[[sid-68355157_ContributingtoInfinispan-VisualHistory]]
 
 
 ==== Visual History
 
- Git ships with gitk, a GUI that visually represents a log. If you use Mac OS X, link:$$http://gitx.frim.nl/$$[GitX] is a good alternative. Try typing gitk or gitx in a git project directory. 
+ Git ships with gitk, a GUI that visually represents a log. If you use Mac OS X, link:$$http://gitx.frim.nl/$$[GitX] is a good alternative. Try typing gitk or gitx in a git project directory. For Linux users, there are lots of alternatives: _gitk_ , _gitg_ , _giggle_ , ... up to _egit_ for Eclipse. 
 
-[[sid-18645209_ContributingtoInfinispan-Visualdiffandmergetools]]
+[[sid-68355157_ContributingtoInfinispan-Visualdiffandmergetools]]
 
 
 ==== Visual diff and merge tools
 
  There are several options available, including link:$$http://kdiff3.sourceforge.net/$$[KDiff3] , link:$$http://meld.sourceforge.net/$$[meld] and Perforce's link:$$http://www.perforce.com/perforce/products/merge.html$$[P4Merge] which are all either open source or available for free. See link:$$http://progit.org/book/ch7-1.html$$[this link] on setting these up (section under External Merge and Diff Tools) 
 
-[[sid-18645209_ContributingtoInfinispan-ChoosinganEditor]]
+[[sid-68355157_ContributingtoInfinispan-ChoosinganEditor]]
 
 
 ==== Choosing an Editor
@@ -731,7 +736,7 @@ source ~/.git-completion.bash
 
 Alternatively, you could fire up TextMate or another editors of your choice.
 
-[[sid-18645209_ContributingtoInfinispan-Shellprompt]]
+[[sid-68355157_ContributingtoInfinispan-Shellprompt]]
 
 
 ==== Shell prompt
@@ -779,7 +784,7 @@ For example, the following prompt indicates that the current branch is 't_ispn77
 
 ----
 
-~/Go/code/infinispan.git]% (t_ispn775_master⚡)
+[~/Go/code/infinispan.git]% (t_ispn775_master⚡)
 
 ----
 

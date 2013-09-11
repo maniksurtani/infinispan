@@ -1,13 +1,13 @@
-[[sid-18645206]]
+[[sid-68355154]]
 
 ==  Labs
 
-[[sid-18645207]]
+[[sid-68355155]]
 
 
 === Lab - Getting Started with Infinispan
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Introduction]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Introduction]]
 
 
 ==== Introduction
@@ -16,12 +16,12 @@
 
 The lab has been updated by Galder Zamarreño for Infinispan 5.1 and has been featured in the Neuchatel JBUG and JUDCon India 2012
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Setup]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Setup]]
 
 
 ==== Setup
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Gettingsetuptorunthelab]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Gettingsetuptorunthelab]]
 
 
 ===== Getting setup to run the lab
@@ -63,24 +63,24 @@ git checkout -b checkpointX checkpointX
 
 * Unzip JBoss AS to your disk to a location of your choice
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Introductionx]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Introductionx]]
 
 
 ==== Introduction
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Usecases%2CkeyfeaturesandbenefitsofInfinispan]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Usecases%2CkeyfeaturesandbenefitsofInfinispan]]
 
 
 ===== Use cases, key features and benefits of Infinispan
 
  _slides, presented by Pete_ _20 minutes_ 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Sampleproject]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Sampleproject]]
 
 
 ==== Sample project
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Explanationofsampleprojectarchitecture]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Explanationofsampleprojectarchitecture]]
 
 
 ===== Explanation of sample project architecture
@@ -116,12 +116,12 @@ git checkout -b checkpointX checkpointX
 
  _Checkpoint 1_ 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-InterludeCachinginJavaEE]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-InterludeCachinginJavaEE]]
 
 
 ==== Interlude - Caching in Java EE
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-JSR107%28JCACHE%29andJSR347%28DatagridsforJava%29]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-JSR107%28JCACHE%29andJSR347%28DatagridsforJava%29]]
 
 
 ===== 107 (JCACHE) and JSR-347 (Datagrids for Java)
@@ -133,14 +133,14 @@ Topics covered include:
 
 * TODO
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-JGroups%26Networks]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-JGroups%26Networks]]
 
 
 ==== JGroups &amp; Networks
 
  _presented by Sanne_ _10 minutes_ 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Makesureyournodescanseeeachother]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Makesureyournodescanseeeachother]]
 
 
 ===== Make sure your nodes can see each other
@@ -151,7 +151,7 @@ Topics covered include:
 
 * If all goes well, you'll get two windows in which you can draw up on your screen. Draw on one, see it in both.
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-HowdoesJGroupswork%3FWhydoyouneedit%3F]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-HowdoesJGroupswork%3FWhydoyouneedit%3F]]
 
 
 ===== How does JGroups work? Why do you need it?
@@ -167,14 +167,14 @@ Topics covered include:
 
 * LAN/WAN based: multicast or TCP for transport
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-InfinispanasalocalcacheandJMX]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-InfinispanasalocalcacheandJMX]]
 
 
 ==== Infinispan as a local cache and JMX
 
  _presented by Sanne_ _10 minutes_ 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-AddingInfinispantothedemo]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-AddingInfinispantothedemo]]
 
 
 ===== Adding Infinispan to the demo
@@ -265,7 +265,7 @@ if (tickets.getConfiguration().getCacheMode() != CacheMode.LOCAL) {
 
 ----
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-ShowInfinispaninusewithbasicmonitoring]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-ShowInfinispaninusewithbasicmonitoring]]
 
 
 ===== Show Infinispan in use with basic monitoring
@@ -292,14 +292,14 @@ if (tickets.getConfiguration().getCacheMode() != CacheMode.LOCAL) {
 
  _Checkpoint 2_ 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Expiration%26Eviction]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Expiration%26Eviction]]
 
 
 ==== Expiration &amp; Eviction
 
  _presented by Mircea_ _10 minutes_ 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-InterludeWhatisexpiration%3FWhatiseviction%3F]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-InterludeWhatisexpiration%3FWhatiseviction%3F]]
 
 
 ===== Interlude - What is expiration? What is eviction?
@@ -318,7 +318,7 @@ Topics covered include:
 
 * Available eviction mechanisms
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Demo]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Demo]]
 
 
 ===== Demo
@@ -341,7 +341,7 @@ tickets.put(allocation.getId(), allocation, 10, TimeUnit.SECONDS);
 
  _Checkpoint 3_ 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-6.Listeners]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-6.Listeners]]
 
 
 ==== 6. Listeners
@@ -377,19 +377,19 @@ public void registerAbuseListener(@New AbuseListener abuseListener) {
 
  _Checkpoint 4_ 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Interlude.WhatcanyoulistentoinInfinispan%3F]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Interlude.WhatcanyoulistentoinInfinispan%3F]]
 
 
 ===== Interlude. What can you listen to in Infinispan?
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-TransactionswithInfinispan]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-TransactionswithInfinispan]]
 
 
 ==== Transactions with Infinispan
 
  _presented by Mircea_ _15 minutes_ 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Transactionsinaction]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Transactionsinaction]]
 
 
 ===== Transactions in action
@@ -528,14 +528,14 @@ Topics discussed include
 
 * Deadlock detection
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Break]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Break]]
 
 
 ==== Break
 
  _15 minutes_ 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Distribution]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Distribution]]
 
 
 ==== Distribution
@@ -582,7 +582,7 @@ public EmbeddedCacheManager configureCacheManager() {
 
 *  Explain that this JGroups file is exactly as normal for UDP, except that the jgroups.bind_addr is set to the loopback interface 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-InterludeJBossAS7]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-InterludeJBossAS7]]
 
 
 ==== Interlude - JBoss AS 7
@@ -676,7 +676,7 @@ Topics discussed include:
 
 * Note that nodes don't get much memory by default, we need to increase it
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Showthecacherunningindistributedmode]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Showthecacherunningindistributedmode]]
 
 
 ===== Show the cache running in distributed mode
@@ -711,7 +711,7 @@ Topics discussed include:
 
 * show that we can put an entry, and then find it in one of the caches in Infinispan (10 mins)
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-InterludeWhatmodescanInfinispanrunin%3FWhenwouldyouwanttousethem%3F]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-InterludeWhatmodescanInfinispanrunin%3FWhenwouldyouwanttousethem%3F]]
 
 
 ===== Interlude - What modes can Infinispan run in? When would you want to use them?
@@ -733,7 +733,7 @@ Topics discussed include:
 
 * Talk about vnodes to even distribution
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-L1cache]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-L1cache]]
 
 
 ==== L1 cache
@@ -769,7 +769,7 @@ Topics discussed include:
 
  _Checkpoint 6_ 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-ClientServerModes]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-ClientServerModes]]
 
 
 ==== Client Server Modes
@@ -794,7 +794,7 @@ Topics discussed include:
 
 *  Use a rest client to GET link:$$http://localhost:9080/infinispan-server-rest/rest/ticketAllocationCache/manik-Best%20of%20Abba$$[] 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-InterludewhatclientservermodesdoesInfinispanoffer%3F]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-InterludewhatclientservermodesdoesInfinispanoffer%3F]]
 
 
 ===== Interlude - what client-server modes does Infinispan offer?
@@ -807,7 +807,7 @@ Topics discussed include:
 
 * benefits of Hot Rod
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-CacheStores]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-CacheStores]]
 
 
 ==== CacheStores
@@ -880,7 +880,7 @@ image::[]
 
  _Checkpoint 7_ 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-InterludeWhatCacheStoresareavailable%3FInwhatscenarioscantheybeused%3F]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-InterludeWhatCacheStoresareavailable%3FInwhatscenarioscantheybeused%3F]]
 
 
 ===== Interlude - What Cache Stores are available? In what scenarios can they be used?
@@ -893,12 +893,12 @@ Topics discussed include:
 
 * CacheStores available as built in
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Bonustopics]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Bonustopics]]
 
 
 ==== Bonus topics
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-QueryingInfinispan]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-QueryingInfinispan]]
 
 
 ===== Querying Infinispan
@@ -910,7 +910,7 @@ Topics discussed include:
 
 * TODO
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-HibernateOGM]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-HibernateOGM]]
 
 
 ===== Hibernate OGM
@@ -922,7 +922,7 @@ Topics discussed include:
 
 * TODO
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-MapReduce]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-MapReduce]]
 
 
 ===== Reduce
@@ -934,7 +934,7 @@ Topics discussed include:
 
 * TODO
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Benchmarkingdatagirds%5CRadargun]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Benchmarkingdatagirds%5CRadargun]]
 
 
 ===== Benchmarking data girds - Radargun
@@ -943,7 +943,7 @@ Introducing project Radargun
 
  _presented by Mircea_ _5 minutes_ 
 
-[[sid-18645207_Lab-GettingStartedwithInfinispan-Conclusion]]
+[[sid-68355155_Lab-GettingStartedwithInfinispan-Conclusion]]
 
 
 ==== Conclusion

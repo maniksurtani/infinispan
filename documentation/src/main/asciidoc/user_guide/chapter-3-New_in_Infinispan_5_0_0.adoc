@@ -1,4 +1,4 @@
-[[sid-18645130_UserGuide-NewinInfinispan5.0.0]]
+[[sid-68355028_UserGuide-NewinInfinispan5.0.0]]
 
 ==  New in Infinispan 5.0.0
 
@@ -15,7 +15,10 @@
 .  link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737134$$[Distributed Executors Framework] 
 
 
-.  <<sid-18645133,Fluent Programmatic Configuration>> 
+.  link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=59146687$$[MapReduce Framework] 
+
+
+.  <<sid-68355030,Fluent Programmatic Configuration>> 
 
 
 .  link:$$http://docs.jboss.org/infinispan/5.0/apidocs/config.html$$[Configuration Reference] 

@@ -1,4 +1,4 @@
-[[sid-18645196_GettingStartedGuide-CreatingyourownInfinispanproject]]
+[[sid-68355130_GettingStartedGuide-CreatingyourownInfinispanproject]]
 
 ==  Creating your own Infinispan project
 
