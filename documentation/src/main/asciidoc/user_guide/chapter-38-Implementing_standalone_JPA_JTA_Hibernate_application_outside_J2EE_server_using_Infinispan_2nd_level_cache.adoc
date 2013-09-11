@@ -1,8 +1,8 @@
-[[sid-65274025]]
+[[sid-68355081]]
 
 ==  Implementing standalone JPA JTA Hibernate application outside J2EE server using Infinispan 2nd level cache
 
-[[sid-65274025_ImplementingstandaloneJPAJTAHibernateapplicationoutsideJ2EEserverusingInfinispan2ndlevelcache-Introduction]]
+[[sid-68355081_ImplementingstandaloneJPAJTAHibernateapplicationoutsideJ2EEserverusingInfinispan2ndlevelcache-Introduction]]
 
 
 === Introduction
@@ -37,7 +37,7 @@ A very important aspect is not forgetting to couple the datasource with your tra
 ==== 
 
 
-[[sid-65274025_ImplementingstandaloneJPAJTAHibernateapplicationoutsideJ2EEserverusingInfinispan2ndlevelcache-JBossTransactions]]
+[[sid-68355081_ImplementingstandaloneJPAJTAHibernateapplicationoutsideJ2EEserverusingInfinispan2ndlevelcache-JBossTransactions]]
 
 
 === JBoss Transactions
@@ -237,7 +237,7 @@ The content of the corresponding complete persistence.xml:
 
 ----
 
-[[sid-65274025_ImplementingstandaloneJPAJTAHibernateapplicationoutsideJ2EEserverusingInfinispan2ndlevelcache-JOTM]]
+[[sid-68355081_ImplementingstandaloneJPAJTAHibernateapplicationoutsideJ2EEserverusingInfinispan2ndlevelcache-JOTM]]
 
 
 === JOTM
@@ -374,12 +374,12 @@ Adjust following 2 properties in your persistence.xml:
 
  For using the JTA Hibernate application as servlet in tomcat please read  link:$$http://jotm.objectweb.org/current/jotm/doc/howto-tomcat-jotm.html$$[] and also link:$$https://forum.hibernate.org/viewtopic.php?f=1&amp;t=1003866$$[] 
 
-[[sid-65274025_ImplementingstandaloneJPAJTAHibernateapplicationoutsideJ2EEserverusingInfinispan2ndlevelcache-Bitronix]]
+[[sid-68355081_ImplementingstandaloneJPAJTAHibernateapplicationoutsideJ2EEserverusingInfinispan2ndlevelcache-Bitronix]]
 
 
 === Bitronix
 
- The Transaction Manager comes bundled with a fake in memory jndi-implementation which is ideal for standalone purpose. To integrate with Infinispan I did need a ad-hoc pre-alpha improvement (see attached link:$$https://docs.jboss.org/author/download/attachments/65274025/btm-ispn.jar?version=1&amp;modificationDate=1308852871000$$[btm-ispn.jar] by courtesy of  Mr. Ludivic Orban). BitronixTM offers the so-called Last Resource Commit optimization (aka Last Resource Gambit or Last Agent optimization) and it allows a single non-XA database to participate in a XA transaction by cleverly ordering the resources. "Last Resource Commit" is not part of the XA spec as it doesn't cover the transaction-recovery aspect, so if your database does not support XA (or if you don't wish to have the Xa-driver performance overhead against the plain jdbc) then the "Last Resource Commit" feature should be ideal for the combination 1 single database plus infinispan. 
+ The Transaction Manager comes bundled with a fake in memory jndi-implementation which is ideal for standalone purpose. To integrate with Infinispan I did need a ad-hoc pre-alpha improvement (see attached link:$$https://docs.jboss.org/author/download/attachments/68355081/btm-ispn.jar?version=1&amp;modificationDate=1308852871000$$[btm-ispn.jar] by courtesy of  Mr. Ludivic Orban). BitronixTM offers the so-called Last Resource Commit optimization (aka Last Resource Gambit or Last Agent optimization) and it allows a single non-XA database to participate in a XA transaction by cleverly ordering the resources. "Last Resource Commit" is not part of the XA spec as it doesn't cover the transaction-recovery aspect, so if your database does not support XA (or if you don't wish to have the Xa-driver performance overhead against the plain jdbc) then the "Last Resource Commit" feature should be ideal for the combination 1 single database plus infinispan. 
 
 
 ----
@@ -480,7 +480,7 @@ Adjust following 2 properties in your corresponding persistence.xml:
 
 ----
 
-[[sid-65274025_ImplementingstandaloneJPAJTAHibernateapplicationoutsideJ2EEserverusingInfinispan2ndlevelcache-Atominkos]]
+[[sid-68355081_ImplementingstandaloneJPAJTAHibernateapplicationoutsideJ2EEserverusingInfinispan2ndlevelcache-Atominkos]]
 
 
 === Atominkos

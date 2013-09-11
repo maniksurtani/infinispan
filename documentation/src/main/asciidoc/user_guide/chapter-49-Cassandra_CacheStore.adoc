@@ -1,17 +1,17 @@
-[[sid-65274040]]
+[[sid-68355096]]
 
 ==  Cassandra CacheStore
 
  Infinispan's CassandraCacheStore leverages link:$$http://cassandra.apache.org/$$[Apache Cassandra] 's distributed database architecture to provide a virtually unlimited, horizontally scalable persistent store for Infinispan's caches. 
 
-[[sid-65274040_CassandraCacheStore-Version]]
+[[sid-68355096_CassandraCacheStore-Version]]
 
 
 === Version
 
 The Cassandra CacheStore was added in Infinspan 4.2.0 "Ursus". You'll need this release or later in order to use it.
 
-[[sid-65274040_CassandraCacheStore-]]
+[[sid-68355096_CassandraCacheStore-]]
 
 
 === 

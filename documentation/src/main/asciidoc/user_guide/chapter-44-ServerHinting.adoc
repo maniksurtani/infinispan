@@ -1,22 +1,22 @@
-[[sid-65274033]]
+[[sid-68355089]]
 
 ==  ServerHinting
 
-[[sid-65274033_ServerHinting-Whatisserverhinting%3F]]
+[[sid-68355089_ServerHinting-Whatisserverhinting%3F]]
 
 
 === What is server hinting?
 
 The motivations behind this feature is to ensure when using distribution, backups are not picked to reside on the same physical server, rack or data centre. For obvious reasons it doesn't work with total replication.
 
-[[sid-65274033_ServerHinting-Version]]
+[[sid-68355089_ServerHinting-Version]]
 
 
 === Version
 
 Server hinting was added in Infinspan 4.2.0 "Ursus". You'll need this release or later in order to use it.
 
-[[sid-65274033_ServerHinting-Configuration]]
+[[sid-68355089_ServerHinting-Configuration]]
 
 
 === Configuration
@@ -43,7 +43,7 @@ Following topology hints can be specified:
 
 * siteId - to differentiate between nodes in different data centres replicating to each other.    All of the above are optional, and if not provided, the distribution algorithms provide no guarantees that backups will not be stored in instances on the same host/rack/site.
 
-[[sid-65274033_ServerHinting-Algorithm]]
+[[sid-68355089_ServerHinting-Algorithm]]
 
 
 === Algorithm

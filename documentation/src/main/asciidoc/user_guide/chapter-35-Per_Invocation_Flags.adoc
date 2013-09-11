@@ -1,4 +1,4 @@
-[[sid-65274022]]
+[[sid-68355078]]
 
 ==  Invocation Flags
 
@@ -6,7 +6,7 @@
 
  What Infinispan is doing here is effectively saying that when putting data read from external read, it will use an almost-zero lock acquisition time and that if the locks cannot be acquired, it will fail silently without throwing any exception related to lock acquisition. It also specifies that regardless of the cache mode, if the cache is clustered, it will replicate asynchronously and so won't wait for responses from other nodes. The combination of all these flags make this kind of operation very efficient, and the efficiency comes from the fact this type of _putForExternalRead_ calls are used with the knowledge that client can always head back to a persistent store of some sorts to retrieve the data that should be stored in memory. So, any attempt to store the data is just a best effort and if not possible, the client should try again if there's a cache miss. 
 
-[[sid-65274022_Per-InvocationFlags-Examples]]
+[[sid-68355078_Per-InvocationFlags-Examples]]
 
 
 === Examples
@@ -24,7 +24,7 @@ cache.getAdvancedCache()
 
  It's worth noting that these flags are only active for the duration of the cache operation. If the same flags need to be used in several invocations, even if they're in the same transaction, link:$$http://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/AdvancedCache.html#withFlags(org.infinispan.context.Flag...)$$[withFlags()] needs to be called repeatedly. Clearly, if the cache operation is to be replicated in another node, the flags are carried over to the remote nodes as well. 
 
-[[sid-65274022_Per-InvocationFlags-DecoratedCache]]
+[[sid-68355078_Per-InvocationFlags-DecoratedCache]]
 
 
 === DecoratedCache
@@ -43,7 +43,7 @@ strictlyLocal.put("local_3", "only");
 
 This approach makes your code more readable.
 
-[[sid-65274022_Per-InvocationFlags-Suppressingreturnvaluesfromaput%28%29orremove%28%29]]
+[[sid-68355078_Per-InvocationFlags-Suppressingreturnvaluesfromaput%28%29orremove%28%29]]
 
 
 === Suppressing return values from a put() or remove()

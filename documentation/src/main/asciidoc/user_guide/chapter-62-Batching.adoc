@@ -1,15 +1,15 @@
-[[sid-65274028]]
+[[sid-68355084]]
 
 ==  Batching
 
-[[sid-65274028_Batching-Introduction]]
+[[sid-68355084_Batching-Introduction]]
 
 
 === Introduction
 
 Generally speaking, one should use batching API whenever the only participant in the transaction is an Infinispan cluster. On the other hand, JTA transactions (involving TransactionManager) should be used whenever the transactions involves multiple systems. E.g. considering the "Hello world!" of transactions: transferring money from one bank account to the other. If both accounts are stored within Infinispan, then batching can be used. If one account is in a database and the other is Infinispan, then distributed transactions are required.
 
-[[sid-65274028_Batching-Configuringbatching]]
+[[sid-68355084_Batching-Configuringbatching]]
 
 
 === Configuring batching
@@ -34,7 +34,7 @@ By default, invocation batching is disabled.
 
 Note that you do not have to have a transaction manager defined to use batching.
 
-[[sid-65274028_Batching-BatchingAPI]]
+[[sid-68355084_Batching-BatchingAPI]]
 
 
 === Batching API
@@ -61,7 +61,7 @@ cache.endBatch(false); // This will "discard" changes made in the batch
 
 ----
 
-[[sid-65274028_Batching-Advanced%3AbatchingandJTA]]
+[[sid-68355084_Batching-Advanced%3AbatchingandJTA]]
 
 
 === Advanced: batching and JTA

@@ -1,4 +1,4 @@
-[[sid-65274091_ContributingtoInfinispan-AddingConfiguration]]
+[[sid-68355157_ContributingtoInfinispan-AddingConfiguration]]
 
 ==  Adding Configuration
 
@@ -15,7 +15,7 @@ Note, these guides assume you are adding an element to the cache configuration, 
 
 Before you start adding a configuration property, identify whether you want to add a property to an existing configuration group/element, or whether you need to create a child object. We call the configuration group XXX in the steps below.
 
-[[sid-65274091_ContributingtoInfinispan-Addingaproperty]]
+[[sid-68355157_ContributingtoInfinispan-Addingaproperty]]
 
 
 === Adding a property
@@ -30,7 +30,7 @@ Before you start adding a configuration property, identify whether you want to a
 
  The final step is to add parsing logic to the Parser class. First, add the attribute to name to the Attribute enum (this class simply provides a mapping between the non-type-safe name of the attribute in XML and a type-safe reference to use in the parser). Locate the relevant parseXXX() method on the class, and add a case to the switch statement for the attribute. Call the builder mutator you created above, performing any XML related validation (you are unlikely to need this), and type conversion (using the static methods on the primitive wrapper classes, String class, or relevant enum class). 
 
-[[sid-65274091_ContributingtoInfinispan-Addingagroup]]
+[[sid-68355157_ContributingtoInfinispan-Addingagroup]]
 
 
 === Adding a group
@@ -49,14 +49,14 @@ Before you start adding a configuration property, identify whether you want to a
 
  Finally, add this to the parser. First, add the element to the Element class, which provides a type safe representation of the element name in XML. In the Parser class, add a new parseXXX method, copying one of the others that most matches your requirements (parse methods either parse elements only - look for ParseUtils.requireNoAttributes() , attributes only – look for ParseUtils.requireNoContent() or a combination of both – look for an iterator over both elements and attributes). Add any attributes as discussed in the adding a property guide. Finally, wire this in by locating the parseYYY() method, and adding an element to the switch statement, that calls your new parseXXX() method. 
 
-[[sid-65274091_ContributingtoInfinispan-Don%27tforgettoupdatetheXSDandXSDtest]]
+[[sid-68355157_ContributingtoInfinispan-Don%27tforgettoupdatetheXSDandXSDtest]]
 
 
 === Don't forget to update the XSD and XSD test
 
  Add your new elements or attributes to the XSD in src/main/resources . Update src/test/resources/configs/all.xml to include your new elements or attributes. 
 
-[[sid-65274091_ContributingtoInfinispan-Bridgingtotheoldconfiguration]]
+[[sid-68355157_ContributingtoInfinispan-Bridgingtotheoldconfiguration]]
 
 
 === Bridging to the old configuration

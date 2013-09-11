@@ -1,4 +1,4 @@
-[[sid-65274066_GettingStartedGuide-UsingInfinispanasanembeddedcacheinJavaSE]]
+[[sid-68355130_GettingStartedGuide-UsingInfinispanasanembeddedcacheinJavaSE]]
 
 ==  Using Infinispan as an embedded cache in Java SE
 
@@ -14,7 +14,7 @@ Running Infinispan in embedded mode is very easy. First, we'll set up a project,
 ==== 
 
 
-[[sid-65274066_GettingStartedGuide-CreatinganewInfinispanproject]]
+[[sid-68355130_GettingStartedGuide-CreatinganewInfinispanproject]]
 
 
 === Creating a new Infinispan project
@@ -101,7 +101,7 @@ You'll also need to enable the JBoss Maven repository. We recommend adding a pro
 
  If you are using Ant, or another build system which doesn't provide declarative dependency management, then the Infinispan distribution zip contains a lib/ directory. Add the contents of this to the build classpath. 
 
-[[sid-65274066_GettingStartedGuide-RunningInfinispanonasinglenode]]
+[[sid-68355130_GettingStartedGuide-RunningInfinispanonasinglenode]]
 
 
 === Running Infinispan on a single node
@@ -144,7 +144,7 @@ You should see Infinispan start up, and the version in use logged to the console
 
 Congratulations, you now have Infinispan running as a local cache!
 
-[[sid-65274066_GettingStartedGuide-Usethedefaultcache]]
+[[sid-68355130_GettingStartedGuide-Usethedefaultcache]]
 
 
 === Use the default cache
@@ -203,7 +203,7 @@ By default entries are immortal but you can override this on a per-key basis and
 ----
 
 ==== 
-[[sid-65274066_GettingStartedGuide-Useacustomcache]]
+[[sid-68355130_GettingStartedGuide-Useacustomcache]]
 
 
 === Use a custom cache

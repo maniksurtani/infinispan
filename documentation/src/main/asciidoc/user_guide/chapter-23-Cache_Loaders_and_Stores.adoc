@@ -1,15 +1,15 @@
-[[sid-65274001]]
+[[sid-68355053]]
 
 ==  Cache Loaders and Stores
 
-[[sid-65274001_CacheLoadersandStores-Introduction]]
+[[sid-68355053_CacheLoadersandStores-Introduction]]
 
 
 === Introduction
 
 Cache loader is Infinispan's connection to a (persistent) data store. Cache loader fetches data from a store when that data is not in the cache, and when modifications are made to data in the cache the CacheLoader is called to store those modifications back to the store. Cache loaders are associated with individual caches, i.e. different caches from the same cache manager might have different cache store configurations.
 
-[[sid-65274001_CacheLoadersandStores-Configuration]]
+[[sid-68355053_CacheLoadersandStores-Configuration]]
 
 
 === Configuration
@@ -27,7 +27,7 @@ Cache loaders can be configured in a chain. Cache read operations will look at a
            purgeSynchronously="true"
            ignoreModifications="false"
            purgeOnStartup="false"
-           location="${java.io.tmpdir}" />
+           location="${java.io.tmpdir}">
       <async
            enabled="true"
            flushLockTimeout="15000"
@@ -68,7 +68,7 @@ builder.loaders()
 ----
 
 
-*  passivation (false by default) has a significant impact on how Infinispan interacts with the loaders, and is discussed in the <<sid-65274001,next paragraph>> . 
+*  passivation (false by default) has a significant impact on how Infinispan interacts with the loaders, and is discussed in the <<sid-68355053,next paragraph>> . 
 
 
 * shared (false by default) indicates that the cache loader is shared among different cache instances, for example where all instances in a cluster use the same JDBC settings to talk to the same remote, shared database. Setting this to true prevents repeated and unnecessary writes of the same data to the cache loader by different cache instances.
@@ -103,7 +103,7 @@ builder.loaders()
 
 *  async element has to do with cache store persisting data (a)synchronously to the actual store. It is discussed in detail link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737144$$[here] . 
 
-[[sid-65274001_CacheLoadersandStores-CachePassivation]]
+[[sid-68355053_CacheLoadersandStores-CachePassivation]]
 
 
 === Cache Passivation
@@ -112,7 +112,7 @@ A cache loader can be used to enforce entry passivation and activation on evicti
 
 When an eviction policy in effect evicts an entry from the cache, if passivation is enabled, a notification that the entry is being passivated will be emitted to the cache listeners and the entry will be stored. When a user attempts to retrieve a entry that was evicted earlier, the entry is (lazily) loaded from the cache loader into memory. When the entry and its children have been loaded, they're removed from the cache loader and a notification is emitted to the cache listeners that the entry has been activated. In order to enable passivation just set passivation to true (false by default). When passivation is used, only the first cache loader configured is used and all others are ignored.
 
-[[sid-65274001_CacheLoadersandStores-CacheLoaderBehaviorwithPassivationDisabledvsEnabled]]
+[[sid-68355053_CacheLoadersandStores-CacheLoaderBehaviorwithPassivationDisabledvsEnabled]]
 
 
 ==== Cache Loader Behavior with Passivation Disabled vs Enabled
@@ -177,7 +177,7 @@ When passivation is disabled, whenever an element is modified, added or removed,
 
 . Memory: keyOne Disk:
 
-[[sid-65274001_CacheLoadersandStores-Filesystembasedcacheloaders]]
+[[sid-68355053_CacheLoadersandStores-Filesystembasedcacheloaders]]
 
 
 === File system based cache loaders
@@ -193,11 +193,14 @@ Infinispan ships with several cache loaders that utilize the file system as a da
 
 *  link:$$http://jdbm.sourceforge.net/$$[JdbmCacheStore] , which is a cache loader implementation based on the JDBM engine, a fast and free alternative to BerkeleyDB. 
 
+
+* LevelDBCacheStore, which is a cache store implementation based on Google's LevelDB, a fast key-value store.
+
  Note that the BerkeleyDB implementation is much more efficient than the filesystem-based implementation, but requires a commercial license if distributed with an application (see link:$$http://www.oracle.com/database/berkeley-db/index.html$$[] for details). 
 
  For detailed description of all the parameters supported by the stores, please consult the link:$$http://infinispan.sourceforge.net/4.0/apidocs/$$[javadoc] . 
 
-[[sid-65274001_CacheLoadersandStores-JDBCbasedcacheloaders]]
+[[sid-68355053_CacheLoadersandStores-JDBCbasedcacheloaders]]
 
 
 === JDBC based cache loaders
@@ -213,14 +216,14 @@ Based on the type of keys to be persisted, there are three JDBC cache loaders:
 
 *  link:$$http://infinispan.sourceforge.net/4.0/apidocs/org/infinispan/loaders/jdbc/mixed/JdbcMixedCacheStore.html$$[JdbcMixedCacheStore] - it is a hybrid implementation that, based on the key type, delegates to either link:$$http://infinispan.sourceforge.net/4.0/apidocs/org/infinispan/loaders/jdbc/binary/JdbcBinaryCacheStore.html$$[JdbcBinaryCacheStore] or link:$$http://infinispan.sourceforge.net/4.0/apidocs/org/infinispan/loaders/jdbc/stringbased/JdbcStringBasedCacheStore.html$$[JdbcStringBasedCacheStore] . 
 
-[[sid-65274001_CacheLoadersandStores-WhichJDBCcacheloadershouldIuse%3F]]
+[[sid-68355053_CacheLoadersandStores-WhichJDBCcacheloadershouldIuse%3F]]
 
 
 ==== Which JDBC cache loader should I use?
 
  It is generally preferable to use link:$$http://infinispan.sourceforge.net/4.0/apidocs/org/infinispan/loaders/jdbc/stringbased/JdbcStringBasedCacheStore.html$$[JdbcStringBasedCacheStore] when you are in control of the key types, as it offers better throughput under heavy load. One scenario in which it is not possible to use it though, is when you can't write an link:$$http://infinispan.sourceforge.net/4.0/apidocs/$$[Key2StringMapper] to map the keys to to string objects (e.g. when you don't have control over the types of the keys, for whatever reason). Then you should use either link:$$http://infinispan.sourceforge.net/4.0/apidocs/org/infinispan/loaders/jdbc/binary/JdbcBinaryCacheStore.html$$[JdbcBinaryCacheStore] or link:$$http://infinispan.sourceforge.net/4.0/apidocs/org/infinispan/loaders/jdbc/mixed/JdbcMixedCacheStore.html$$[JdbcMixedCacheStore] . The later is preferred to the former when the majority of the keys are handled by link:$$http://infinispan.sourceforge.net/4.0/apidocs/org/infinispan/loaders/jdbc/stringbased/JdbcStringBasedCacheStore.html$$[JdbcStringBasedCacheStore] , but you still have some keys you cannot convert through link:$$http://infinispan.sourceforge.net/4.0/apidocs/$$[Key2StringMapper] . 
 
-[[sid-65274001_CacheLoadersandStores-Connectionmanagement%28pooling%29]]
+[[sid-68355053_CacheLoadersandStores-Connectionmanagement%28pooling%29]]
 
 
 ==== Connection management (pooling)
@@ -238,7 +241,7 @@ Based on the type of keys to be persisted, there are three JDBC cache loaders:
 
 The PooledConnectionFactory is generally recommended for stand-alone deployments (i.e. not running within AS or servlet container). ManagedConnectionFactory can be used when running in a managed environment where a DataSource is present, so that connection pooling is performed within the DataSource.
 
-[[sid-65274001_CacheLoadersandStores-Sampleconfigurations]]
+[[sid-68355053_CacheLoadersandStores-Sampleconfigurations]]
 
 
 ==== Sample configurations
@@ -434,14 +437,14 @@ ConfigurationBuilder builder = new ConfigurationBuilder();
 ==== 
 
 
-[[sid-65274001_CacheLoadersandStores-Cloudcacheloader]]
+[[sid-68355053_CacheLoadersandStores-Cloudcacheloader]]
 
 
 === Cloud cache loader
 
  The CloudCacheStore implementation utilizes link:$$http://code.google.com/p/jclouds/$$[JClouds] to communicate with cloud storage providers such as link:$$http://aws.amazon.com/s3/$$[Amazon's S3] , Rackspace's link:$$http://www.rackspacecloud.com/cloud_hosting_products/files$$[Cloudfiles] or any other such provider supported by JClouds. If you're planning to use Amazon S3 for storage, consider using it with Infinispan. Infinispan itself provides in-memory caching for your data to minimize the amount of remote access calls, thus reducing the latency and cost of fetching your Amazon S3 data. With cache replication, you are also able to load data from your local cluster without having to remotely access it every time. Note that Amazon S3 does not support transactions. If transactions are used in your application then there is some possibility of state inconsistency when using this cache loader. However, writes are atomic, in that if a write fails nothing is considered written and data is never corrupted. For a list of configuration refer to the link:$$http://infinispan.sourceforge.net/4.0/apidocs/org/infinispan/loaders/cloud/CloudCacheStoreConfig.html$$[javadoc] . 
 
-[[sid-65274001_CacheLoadersandStores-Remotecacheloader]]
+[[sid-68355053_CacheLoadersandStores-Remotecacheloader]]
 
 
 === Remote cache loader
@@ -501,14 +504,14 @@ b.loaders().addStore(RemoteCacheStoreConfigurationBuilder.class)
 
 In this sample configuration, the remote cache store is configured to use the remote cache named "mycache" on servers "one" and "two". It also configures connection pooling and provides a custom transport executor. Additionally the cache store is asynchronous.
 
-[[sid-65274001_CacheLoadersandStores-Cassandracacheloader]]
+[[sid-68355053_CacheLoadersandStores-Cassandracacheloader]]
 
 
 === Cassandra cache loader
 
  The CassandraCacheStore was introduced in Infinispan 4.2. Read the link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737148$$[specific page] for details on implementation and configuration. 
 
-[[sid-65274001_CacheLoadersandStores-Clustercacheloader]]
+[[sid-68355053_CacheLoadersandStores-Clustercacheloader]]
 
 
 === Cluster cache loader
@@ -542,10 +545,353 @@ b.loaders()
 
 Note: The ClusterCacheLoader does not support preloading(preload=true). It also won't provide state if fetchPersistentSate=true.
 
-[[sid-65274001_CacheLoadersandStores-CacheLoadersandtransactionalcaches]]
+[[sid-68355053_CacheLoadersandStores-JPAcachestore]]
+
+
+=== JPA cache store
+
+The implementation depends on JPA 2.0 specification to access entity meta model.
+
+In normal use cases, it's recommended to leverage Infinispan for JPA second level cache and/or query cache.  However, if you'd like to use only Infinispan API and you want Infinispan to persist into a cache store using a common format (e.g., a database with well defined schema), then JPA Cache Store could be right for you.
+
+When using JPA Cache Store, the key should be the ID of the entity, while the value should be the entity object.  Only a single @Id or @EmbeddedId annotated property is allowed.  Auto-generated ID is not supported.  Lastly, all entries will be stored as immortal entries.
+
+[[sid-68355053_CacheLoadersandStores-SampleUsage]]
+
+
+==== Sample Usage
+
+For example, given a persistence unit "myPersistenceUnit", and a JPA entity User:
+
+persistence.xml
+
+
+----
+
+<persistence-unit name="myPersistenceUnit">
+	...
+</persistence-unit>
+
+----
+
+ User entity class ﻿(see link:$$https://github.com/infinispan/infinispan/tree/master/cachestore/jpa/src/test/java/org/infinispan/loaders/jpa/entity$$[test for full example] ) 
+
+
+----
+
+@Entity
+public class User implements Serializable {
+	@Id
+	private String username;
+	private String firstName;
+	private String lastName;
+
+	...
+}
+
+----
+
+Then you can configure a cache "usersCache" to use JPA Cache Store, so that when you put data into the cache, the data would be persisted into the database based on JPA configuration.
+
+
+----
+
+EmbeddedCacheManager cacheManager = ...;
+
+
+Configuration cacheConfig = new ConfigurationBuilder().loaders()
+				.addLoader(JpaCacheStoreConfigurationBuilder.class)
+				.persistenceUnitName("myPersistenceUnit")
+				.entityClass(User.class)
+				.build();
+cacheManager.defineCache("usersCache", cacheConfig);
+
+Cache<String, User> usersCache = cacheManager.getCache("usersCache");
+usersCache.put("raytsang", new User(...));
+
+----
+
+Normally a single Infinispan cache can store multiple types of key/value pairs, for example:
+
+
+----
+
+Cache<String, User> usersCache = cacheManager.getCache("myCache");
+usersCache.put("raytsang", new User());
+Cache<Integer, Teacher> teachersCache = cacheManager.getCache("myCache");
+teachersCache.put(1, new Teacher());
+
+----
+
+It's important to note that, when a cache is configured to use a JPA Cache Store, that cache would only be able to store ONE type of data.
+
+
+----
+
+Cache<String, User> usersCache = cacheManager.getCache("myJPACache"); // configured for User entity class
+usersCache.put("raytsang", new User());
+Cache<Integer, Teacher> teachersCache = cacheManager.getCache("myJPACache"); // cannot do this when this cache is configured to use a JPA cache store
+teachersCache.put(1, new Teacher());
+
+----
+
+ Use of @EmbeddedId is supported so that you can also use composite keys (see the link:$$https://github.com/infinispan/infinispan/blob/master/cachestore/jpa/src/test/java/org/infinispan/loaders/jpa/entity/Vehicle.java$$[test code] for full example). 
+
+
+----
+
+@Entity
+public class Vehicle implements Serializable {
+	@EmbeddedId
+	private VehicleId id;
+	private String color;	...
+}
+
+@Embeddable
+public class VehicleId implements Serializable
+{
+	private String state;
+	private String licensePlate;
+	...
+}
+
+----
+
+Lastly, auto-generated IDs ﻿(e.g., @GeneratedValue) is not supported.  When putting things into the cache with a JPA cache store, the key should be the ID value!
+
+[[sid-68355053_CacheLoadersandStores-Configurationx]]
+
+
+==== Configuration
+
+[[sid-68355053_CacheLoadersandStores-SampleProgramaticConfiguration]]
+
+
+===== Sample Programatic Configuration
+
+
+----
+
+Configuration cacheConfig = new ConfigurationBuilder().loaders()
+				.addLoader(JpaCacheStoreConfigurationBuilder.class)
+				.persistenceUnitName("org.infinispan.loaders.jpa.configurationTest")
+				.entityClass(User.class)
+				.build();
+
+----
+
+[options="header"]
+|===============
+|Parameter|Description
+|persistenceUnitName| JPA persistence unit name in JPA configuration ﻿(persistence.xml) that contains the JPA entity class 
+|entityClass| JPA entity class that is expected to be stored in this cache.  Only one class is allowed. 
+
+|===============
+
+
+[[sid-68355053_CacheLoadersandStores-SampleXMLConfiguration]]
+
+
+===== Sample XML Configuration
+
+
+----
+
+<namedCache name="vehicleCache">
+	<loaders passivation="false" shared="true" preload="true">
+		<jpaStore 
+			persistenceUnitName="org.infinispan.loaders.jpa.configurationTest"
+			entityClassName="org.infinispan.loaders.jpa.entity.User"
+		/>
+	</loaders>
+</namedCache>
+
+----
+
+[options="header"]
+|===============
+|Parameter|Description
+|persistenceUnitName| JPA persistence unit name in JPA configuration ﻿(persistence.xml) that contains the JPA entity class 
+|entityClassName|Fully qualified JPA entity class name that is expected to be stored in this cache.  Only one class is allowed.
+
+|===============
+
+
+[[sid-68355053_CacheLoadersandStores-AdditionalReferences]]
+
+
+==== Additional References
+
+ Refer to the link:$$https://github.com/infinispan/infinispan/blob/master/cachestore/jpa/src/test/java/org/infinispan/loaders/jpa/config/ConfigurationTest.java$$[test case] for code samples in action. 
+
+ Refer to link:$$https://github.com/infinispan/infinispan/blob/master/cachestore/jpa/src/test/resources/config/jpa-config-53.xml$$[test configurations] for configuration samples. 
+
+[[sid-68355053_CacheLoadersandStores-LevelDBcachestore]]
+
+
+=== LevelDB cache store
+
+ link:$$http://code.google.com/p/leveldb/$$[LevelDB] is a fast key-value filesystem-based storage written at Google.  LevelDB cache store currently uses a link:$$https://github.com/dain/leveldb$$[Java implementation] .  It may be possible to use a link:$$https://github.com/fusesource/leveldbjni$$[JNI implementation] in the future. 
+
+[[sid-68355053_CacheLoadersandStores-SampleUsagex]]
+
+
+==== Sample Usage
+
+LevelDB cache store requires 2 filesystem directories to be configured - each directory for a LevelDB database.  One location is used to store non-expired data, while the second location is used to store expired keys pending purge.
+
+EmbeddedCacheManager cacheManager = ...;
+
+
+----
+
+Configuration cacheConfig = new ConfigurationBuilder().loaders()
+				.addLoader(LevelDBCacheStoreConfigurationBuilder.class)
+				.build();
+cacheManager.defineCache("usersCache", cacheConfig);
+
+Cache<String, User> usersCache = cacheManager.getCache("usersCache");
+usersCache.put("raytsang", new User(...));
+
+----
+
+[[sid-68355053_CacheLoadersandStores-Configurationxx]]
+
+
+==== Configuration
+
+[[sid-68355053_CacheLoadersandStores-SampleProgramaticConfigurationx]]
+
+
+===== Sample Programatic Configuration
+
+
+----
+
+Configuration cacheConfig = new ConfigurationBuilder().loaders()
+				.addLoader(LevelDBCacheStoreConfigurationBuilder.class)
+				.location("/tmp/leveldb/data")
+				.expiredLocation("/tmp/leveldb/expired")
+				.entityClass(User.class)
+				.build();
+
+----
+
+[options="header"]
+|===============
+|Parameter|Description
+|location|Directory to use for LevelDB to store primary cache store data.  Directory will be auto-created if it does not exit.
+|expiredLocation| Directory to use for LevelDB to store expiring data pending to be purged permanently.  Directory will be auto-created if it does not exit. 
+| expiryQueueSize |Size of the in-memory queue to hold expiring entries before it gets flushed into expired LevelDB store
+|clearThreshold| There are two methods to clear all entries in LevelDB.  One method is to iterate through all entries and remove each entry individually.  The other method is to delete the database and re-init.  For smaller databases, deleting individual entries is faster than the latter method.  This configuration sets the max number of entries allowed before using the latter method 
+| compressionType |Configuration for LevelDB for data compression, see CompressionType enum for options
+| blockSize | Configuration for LevelDB - see link:$$http://leveldb.googlecode.com/svn/trunk/doc/index.html$$[documentation] for performance tuning 
+| cacheSize | Configuration for LevelDB - see link:$$http://leveldb.googlecode.com/svn/trunk/doc/index.html$$[documentation] for performance tuning 
+
+|===============
+
+
+[[sid-68355053_CacheLoadersandStores-SampleXMLConfigurationx]]
+
+
+===== Sample XML Configuration
+
+
+----
+
+<namedCache name="vehicleCache">
+	<loaders passivation="false" shared="true" preload="true">
+		<leveldbStore 
+			location="/tmp/leveldb/data"
+			expiredLocation="/tmp/leveldb/expired"
+		/>
+	</loaders>
+</namedCache>
+
+----
+
+[[sid-68355053_CacheLoadersandStores-AdditionalReferencesx]]
+
+
+==== Additional References
+
+ Refer to the link:$$https://github.com/infinispan/infinispan/blob/master/cachestore/leveldb/src/test/java/org/infinispan/loaders/leveldb/config/ConfigurationTest.java$$[test case] for code samples in action. 
+
+ Refer to link:$$https://github.com/infinispan/infinispan/blob/master/cachestore/leveldb/src/test/resources/config/leveldb-config-52.xml$$[test configurations] for configuration samples. 
+
+[[sid-68355053_CacheLoadersandStores-CacheLoadersandtransactionalcaches]]
 
 
 === Cache Loaders and transactional caches
 
 When a cache is transactional and a cache loader is present, the cache loader won't be enlisted in the transaction in which the cache is part. That means that it is possible to have inconsistencies at cache loader level: the transaction to succeed applying the in-memory state but (partially) fail applying the changes to the store. Manual recovery would not work with caches stores.
+
+[[sid-68355053_CacheLoadersandStores-MongoDBcacheloader]]
+
+
+=== MongoDB cache loader
+
+The MongoDB cachestore is released within the 5.3 version of Infinispan aka "Tactical Nuclear Penguin".
+
+To communicate with the MongoDB server instance, we are using the official java driver version  2.10.1
+
+To configure the cachestore, you just need to add a new entry into the loaders section.
+
+Here is an example for your xml configuration file:
+
+
+----
+
+<loaders>
+   <mongodbStore xmlns="urn:infinispan:config:mongodb:5.3" >
+        <connection host="localhost" port="27017" timeout="2000" acknowledgment="0"/>
+        <authentication username="mongoUser" password="mongoPass" />
+        <storage database="infinispan_test_database" collection="infispan_cachestore" />
+   </mongodbStore>
+</loaders>
+
+----
+
+If you prefer the programmatic API here is a snippet:
+
+
+----
+
+ConfigurationBuilder b = new ConfigurationBuilder();
+b.loaders().addStore(MongoDBCacheStoreConfigurationBuilder.class)
+   .host( "localhost" )
+   .port( 27017 )
+   .timeout( 1500 )
+   .acknowledgment( 0 )
+   .username( "mongoDBUSer" )
+   .password( "mongoBDPassword" )
+   .database( "infinispan_cachestore" )
+   .collection( "indexes" );
+
+final Configuration config = b.build();
+MongoDBCacheStoreConfiguration store = (MongoDBCacheStoreConfiguration) config.loaders().cacheLoaders().get(0);
+
+----
+
+ The connection section contains the connection information to connect to the MongoDB server instance. The authentication section is optional, it allows you to specificy username and password if you are using some. The storage section explicits where you will store the data. 
+
+[options="header"]
+|===============
+|Section|property|usage|default value
+| _connection_ | | | 
+| |host| The hostname of the server on which the MongoDB is running |localhost
+| |port| The port used by the MongoDB server instance. |27017
+| |timeout| The timeout used by the MongoDB driver at the connection. (in ms) |2000
+| |acknoledgement| The value used to configure the acknowledgment for write operation (-1 / 0 / 1 / 2+) |1
+| _authentication_ | | | 
+| |username| The username used for the authentication with the MongoDB server. | 
+| |password| The password used for the authentication with the MongoDB server. | 
+| _storage_ | | | 
+| |database| The database used to store elements. | 
+| |collection| The collection which will contain the elements. | 
+
+|===============
+
+
+ For more information about the configuration property usage, you can refer to the official link:$$http://api.mongodb.org/java/2.10.1/com/mongodb/WriteConcern.html$$[MongoDB java driver documentation] 
 

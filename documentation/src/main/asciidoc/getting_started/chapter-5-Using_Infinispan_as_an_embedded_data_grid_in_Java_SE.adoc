@@ -1,4 +1,4 @@
-[[sid-65274066_GettingStartedGuide-UsingInfinispanasanembeddeddatagridinJavaSE]]
+[[sid-68355130_GettingStartedGuide-UsingInfinispanasanembeddeddatagridinJavaSE]]
 
 ==  Using Infinispan as an embedded data grid in Java SE
 
@@ -34,7 +34,7 @@ Cache<Object, Object> cache3 = cm.getCache("invalidationSyncCache");
 ==== 
 
 
-[[sid-65274066_GettingStartedGuide-RunningInfinispaninacluster]]
+[[sid-68355130_GettingStartedGuide-RunningInfinispaninacluster]]
 
 
 === Running Infinispan in a cluster
@@ -99,7 +99,7 @@ $> java -cp target/classes/:target/dependency/* org.infinispan.quickstart.cluste
 
 You should see JGroups and Infinispan start up on both consoles, and after about 15s see the 10 entries added by third node distributed to the first and second nodes.
 
-[[sid-65274066_GettingStartedGuide-clusteredcachequickstartarchitecture]]
+[[sid-68355130_GettingStartedGuide-clusteredcachequickstartarchitecture]]
 
 
 ==== clustered-cache quickstart architecture
@@ -153,7 +153,7 @@ Listeners methods are declared using annotations, and receive a payload which co
 ==== 
 
 
- The replication mode example contains two nodes, each of which are started in a separate process. The nodes are very simple, Node0 starts up, registers a listener that logs any changes, and waits for the cluster to form. Node1 starts up, waits for the cluster to form, and then adds an entry. The interesting work happens in the common super class, examined in <<sid-65274066_GettingStartedGuide-Configuringareplicateddatagrid,Configuring a replicated data-grid>> . 
+ The replication mode example contains two nodes, each of which are started in a separate process. The nodes are very simple, Node0 starts up, registers a listener that logs any changes, and waits for the cluster to form. Node1 starts up, waits for the cluster to form, and then adds an entry. The interesting work happens in the common super class, examined in <<sid-68355130_GettingStartedGuide-Configuringareplicateddatagrid,Configuring a replicated data-grid>> . 
 
 
 [IMPORTANT]
@@ -165,9 +165,9 @@ Listeners methods are declared using annotations, and receive a payload which co
 ==== 
 
 
- The distribution mode example contains three nodes, each of which are started in a separate process. The nodes are very simple, Node0 and Node1 start up, register listeners that logs any changes, and wait for the cluster to form. Node2 starts up, waits for the cluster to form, and then adds 20 entries. Each entry get's distributed to it's owners, and you will see some entries add on Node0 and some on Node1 .  You'll notice that Node2 gets _notified_ of all adds - this is just because it is the node which adds the entry, it doesn't reflect that the fact that all these entries are stored there! The interesting work happens in the common super class, examined in <<sid-65274066_GettingStartedGuide-Configuringadistributeddatagrid,Configuring a distributed data-grid>> . 
+ The distribution mode example contains three nodes, each of which are started in a separate process. The nodes are very simple, Node0 and Node1 start up, register listeners that logs any changes, and wait for the cluster to form. Node2 starts up, waits for the cluster to form, and then adds 20 entries. Each entry get's distributed to it's owners, and you will see some entries add on Node0 and some on Node1 .  You'll notice that Node2 gets _notified_ of all adds - this is just because it is the node which adds the entry, it doesn't reflect that the fact that all these entries are stored there! The interesting work happens in the common super class, examined in <<sid-68355130_GettingStartedGuide-Configuringadistributeddatagrid,Configuring a distributed data-grid>> . 
 
-[[sid-65274066_GettingStartedGuide-Configuringthecluster]]
+[[sid-68355130_GettingStartedGuide-Configuringthecluster]]
 
 
 === Configuring the cluster
@@ -192,7 +192,7 @@ new ConfigurationBuilder()
 ==== 
 
 
-[[sid-65274066_GettingStartedGuide-Tweakingtheclusterconfigurationforyournetwork]]
+[[sid-68355130_GettingStartedGuide-Tweakingtheclusterconfigurationforyournetwork]]
 
 
 ==== Tweaking the cluster configuration for your network
@@ -237,7 +237,7 @@ You can also configure the JGroups properties to use in Infinispan's XML configu
 
 ----
 
-[[sid-65274066_GettingStartedGuide-Configuringareplicateddatagrid]]
+[[sid-68355130_GettingStartedGuide-Configuringareplicateddatagrid]]
 
 
 === Configuring a replicated data-grid
@@ -303,7 +303,7 @@ private static EmbeddedCacheManager createCacheManagerFromXml() throws IOExcepti
 ==== 
 
 
-[[sid-65274066_GettingStartedGuide-Configuringadistributeddatagrid]]
+[[sid-68355130_GettingStartedGuide-Configuringadistributeddatagrid]]
 
 
 === Configuring a distributed data-grid

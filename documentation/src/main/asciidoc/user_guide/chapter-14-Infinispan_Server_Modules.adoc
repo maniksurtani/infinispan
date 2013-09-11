@@ -1,8 +1,8 @@
-[[sid-65273989]]
+[[sid-68355040]]
 
 ==  Infinispan Server Modules
 
-[[sid-65273989_InfinispanServerModules-Introduction]]
+[[sid-68355040_InfinispanServerModules-Introduction]]
 
 
 === Introduction
@@ -15,7 +15,7 @@ image::[]
 
  
 
-[[sid-65273989_InfinispanServerModules-ClientServeroverPeertoPeer]]
+[[sid-68355040_InfinispanServerModules-ClientServeroverPeertoPeer]]
 
 
 ==== Client-Server over Peer-to-Peer
@@ -54,7 +54,7 @@ image::[]
 
 Deploying Infinispan in this way also allows you to manage each tier independently, for example, you can upgrade you application or app server without bringing down your Infinispan data grid nodes.
 
-[[sid-65273989_InfinispanServerModules-PeertoPeeroverClientServer]]
+[[sid-68355040_InfinispanServerModules-PeertoPeeroverClientServer]]
 
 
 ==== to-Peer over Client-Server
@@ -65,14 +65,14 @@ Client-server Infinispan requests are likely to take longer compared to p2p requ
 
 Environments where application tier elasticity is not so important, or where server side applications access state-transfer-disabled, replicated Infinispan cache instances are amongst scenarios where Infinispan p2p deployments can be more suited than client-server ones.
 
-[[sid-65273989_InfinispanServerModules-ServerModules]]
+[[sid-68355040_InfinispanServerModules-ServerModules]]
 
 
 === Server Modules
 
 So, now that it's clear when it makes sense to deploy Infinispan in client-server mode, what are available solutions? All Infinispan server modules are based on the same pattern where the server backend creates an embedded Infinispan instance and if you start multiple backends, they can form a cluster and share/distribute state if configured to do so. The server types below primarily differ in the type of listener endpoint used to handle incoming connections. Here's a brief look at each of them:
 
-[[sid-65273989_InfinispanServerModules-RESTServerModule]]
+[[sid-68355040_InfinispanServerModules-RESTServerModule]]
 
 
 ==== REST Server Module
@@ -89,7 +89,7 @@ So, now that it's clear when it makes sense to deploy Infinispan in client-serve
 
 *  Clients wanting to load balance or failover between different Infinispan REST servers can do so using any standard HTTP load balancer such as link:$$http://www.jboss.org/mod_cluster$$[mod_cluster] . It's worth noting though these load balancers maintain a static view of the servers in the backend and if a new one was to be added, it would require manual update of the load balancer. 
 
-[[sid-65273989_InfinispanServerModules-MemcachedServerModule]]
+[[sid-68355040_InfinispanServerModules-MemcachedServerModule]]
 
 
 ==== Memcached Server Module
@@ -106,7 +106,7 @@ So, now that it's clear when it makes sense to deploy Infinispan in client-serve
 
 * In terms of load balancing and failover, there're a few clients that can load balance or failover given a static list of server addresses (perl's Cache::Memcached for example) but any server addition or removal would require manual intervention.
 
-[[sid-65273989_InfinispanServerModules-HotRodServerModule]]
+[[sid-68355040_InfinispanServerModules-HotRodServerModule]]
 
 
 ==== Hot Rod Server Module
@@ -123,7 +123,7 @@ So, now that it's clear when it makes sense to deploy Infinispan in client-serve
 
 * Load balancing and failover is dynamically provided by Hot Rod client implementations using information provided by the server.
 
-[[sid-65273989_InfinispanServerModules-WebSocketServerModule]]
+[[sid-68355040_InfinispanServerModules-WebSocketServerModule]]
 
 
 ==== WebSocket Server Module
@@ -140,7 +140,7 @@ So, now that it's clear when it makes sense to deploy Infinispan in client-serve
 
 * Since websockets work on the same HTTP port, any HTTP load balancer would do to load balance and failover.
 
-[[sid-65273989_InfinispanServerModules-ServerComparisonSummary]]
+[[sid-68355040_InfinispanServerModules-ServerComparisonSummary]]
 
 
 === Server Comparison Summary

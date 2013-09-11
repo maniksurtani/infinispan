@@ -1,15 +1,15 @@
-[[sid-65274063]]
+[[sid-68355120]]
 
 ==  Map Reduce framework
 
-[[sid-65274063_MapReduceframework-Introduction]]
+[[sid-68355120_MapReduceframework-Introduction]]
 
 
 === Introduction
 
  _MapReduce is a programming model allowing transparent distributed processing of very large data sets over data grids. The name MapReduce comes from an idea of using two distinct computational phases of map and reduce. In the map phase,_ _master node that initiates a task takes the task input, divides it and sends tasks for map phase execution on the grid. Each node in turns executes a map function on its input returning intermediate results back to master node._ _Master node_ _task collects all intermediate results from map phase combines them by intermediate result keys and sends intermediate keys/values for reduction on the grid. Finally master tasks node receives all results from reduction phases and returns the final result to invoker of the MapReduce task._ 
 
-[[sid-65274063_MapReduceframework-MapReduceAPI]]
+[[sid-68355120_MapReduceframework-MapReduceAPI]]
 
 
 === MapReduce API
@@ -65,7 +65,38 @@ public interface Reducer<KOut, VOut> extends Serializable {
 
  Finally, link:$$https://github.com/infinispan/infinispan/blob/master/core/src/main/java/org/infinispan/distexec/mapreduce/MapReduceTask.java$$[MapReduceTask] is a distributed task unifying Mapper, Reducer and Collator into a cohesive large scale computation to be transparently parallelized across Infinispan cluster nodes. Users of MapReduceTask need to provide a cache whose data is used as input for this task. Infinispan execution environment will instantiate and migrate instances of provided mappers and reducers seamlessly across Infinispan nodes. Unless otherwise specified using onKeys method input keys filter all available key value pairs of a specified cache will be used as input data for this task. 
 
-[[sid-65274063_MapReduceframework-MapperandCDI]]
+[[sid-68355120_MapReduceframework-MapReducetasktimeout]]
+
+
+==== Map Reduce task timeout
+
+
+[NOTE]
+==== 
+The timeout per Map/Reduce task is only available for Infinispan 5.3.0.CR2 and higher.
+
+
+==== 
+
+
+ It is possible to set a timeout value for each Map/Reduce tasks. However, if no timeout is specified, it uses the replication timeout as a default timeout (the same behavior as the previous Infinispan versions). You can set the timeout in your task by doing the following: 
+
+
+----
+MapReduceTask task = new MapReduceTask(cache);
+task.timeout(1, TimeUnit.MINUTES);
+----
+
+Also, it is possible to know which is the current timeout value for the task:
+
+
+----
+System.out.println("Map/Reduce task timeout is " + task.timeout(TimeUnit.MILLISECONDS) + " millseconds"); 
+----
+
+ For more information about this, please check the java doc in link:$$http://docs.jboss.org/infinispan/5.3/apidocs/org/infinispan/distexec/mapreduce/MapReduceTask.html$$[Map Reduce Task API Documentation] 
+
+[[sid-68355120_MapReduceframework-MapperandCDI]]
 
 
 === Mapper and CDI
@@ -93,7 +124,7 @@ public class WordCountCacheInjectedMapper implements Mapper<String, String, Stri
 }
 ----
 
-[[sid-65274063_MapReduceframework-MapReduceTaskdistributedexecution]]
+[[sid-68355120_MapReduceframework-MapReduceTaskdistributedexecution]]
 
 
 === MapReduceTask distributed execution
@@ -142,7 +173,7 @@ image::[]
 
  _Distributed reduce phase is turned on by using a MapReduceTask_ link:$$http://docs.jboss.org/infinispan/5.2/apidocs/org/infinispan/distexec/mapreduce/MapReduceTask.html#MapReduceTask(org.infinispan.Cache, boolean)$$[constructor] _specifying cache to use as input data for the task and boolean parameter distributeReducePhase set to true. Map/Reduce API_ link:$$http://docs.jboss.org/infinispan/5.2/apidocs/org/infinispan/distexec/mapreduce/package-summary.html$$[javadoc] _and demos are included in distribution._ 
 
-[[sid-65274063_MapReduceframework-Examples]]
+[[sid-68355120_MapReduceframework-Examples]]
 
 
 === Examples

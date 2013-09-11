@@ -1,15 +1,15 @@
-[[sid-65273986]]
+[[sid-68355037]]
 
 ==  Tree API Module
 
-[[sid-65273986_TreeAPIModule-Introduction]]
+[[sid-68355037_TreeAPIModule-Introduction]]
 
 
 === Introduction
 
  link:$$http://docs.jboss.org/infinispan/4.2/apidocs/org/infinispan/tree/package-summary.html$$[Infinispan's tree API module] offers clients the possibility of storing data using a tree-structure like API. This API is similar to the one link:$$http://docs.jboss.org/jbosscache/3.2.1.GA/apidocs/org/jboss/cache/package-summary.html$$[provided by JBoss Cache] , hence the tree module is perfect for those users wanting to migrate their applications from JBoss Cache to Infinispan, who want to limit changes their codebase as part of the migration. Besides, it's important to understand that Infinispan provides this tree API much more efficiently than JBoss Cache did, so if you're a user of the tree API in JBoss Cache, you should consider migrating to Infinispan. 
 
-[[sid-65273986_TreeAPIModule-WhatisTreeAPIabout%3F]]
+[[sid-68355037_TreeAPIModule-WhatisTreeAPIabout%3F]]
 
 
 === What is Tree API about?
@@ -20,12 +20,12 @@
 
 Please remember that users should not use root as a place to store data. Instead, users should define their own paths and store data there. The following sections will delve into the practical aspects of this API.
 
-[[sid-65273986_TreeAPIModule-UsingTreeAPI]]
+[[sid-68355037_TreeAPIModule-UsingTreeAPI]]
 
 
 === Using Tree API
 
-[[sid-65273986_TreeAPIModule-Dependencies]]
+[[sid-68355037_TreeAPIModule-Dependencies]]
 
 
 ==== Dependencies
@@ -47,7 +47,7 @@ Please remember that users should not use root as a place to store data. Instead
 
 ----
 
-[[sid-65273986_TreeAPIModule-CreatingaTreeCache]]
+[[sid-68355037_TreeAPIModule-CreatingaTreeCache]]
 
 
 ==== Creating a Tree Cache
@@ -67,7 +67,7 @@ TreeCache treeCache = TreeCacheFactory.createTreeCache(cache);
 
 ----
 
-[[sid-65273986_TreeAPIModule-ManipulatingdatainaTreeCache]]
+[[sid-68355037_TreeAPIModule-ManipulatingdatainaTreeCache]]
 
 
 ==== Manipulating data in a Tree Cache
@@ -146,7 +146,7 @@ Or:
 Set<Node<String, Object>> personsChildren = persons.getChildren();
 ----
 
-[[sid-65273986_TreeAPIModule-CommonOperations]]
+[[sid-68355037_TreeAPIModule-CommonOperations]]
 
 
 ==== Common Operations
@@ -215,7 +215,7 @@ Final tree structure:
 
 ----
 
-[[sid-65273986_TreeAPIModule-LockingInTreeAPI]]
+[[sid-68355037_TreeAPIModule-LockingInTreeAPI]]
 
 
 === Locking In Tree API
@@ -271,7 +271,7 @@ To make this move, locks would have been acquired on:
 
 *  _/a/b/c_ and _/a/b/c/e_ - because that's new target location for the nodes being moved 
 
-[[sid-65273986_TreeAPIModule-Listenersfortreecacheevents]]
+[[sid-68355037_TreeAPIModule-Listenersfortreecacheevents]]
 
 
 === Listeners for tree cache events

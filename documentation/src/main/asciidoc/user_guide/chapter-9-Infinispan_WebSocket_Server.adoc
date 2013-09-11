@@ -1,10 +1,10 @@
-[[sid-65273983]]
+[[sid-68355034]]
 
 ==  Infinispan WebSocket Server
 
  The Infinispan WebSocket Server can be used to expose an Infinispan Cache instance over a link:$$http://dev.w3.org/html5/websockets/$$[WebSocket Interface] via a very simple Javascript "Cache" API.  The WebSocket Interface was introduced as part of the HTML 5 specification.  It defines a full-duplex communication channel to the browser, operating over a single socket (unlike Comet or Ajax) and is exposed to the browser via a Javascript interface. 
 
-[[sid-65273983_InfinispanWebSocketServer-StartingTheServer]]
+[[sid-68355034_InfinispanWebSocketServer-StartingTheServer]]
 
 
 === Starting The Server
@@ -18,7 +18,7 @@ $ bin/startServer.sh -r websocket
 
  For more help on available switches, check out the link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737161$$[server command line options article] . 
 
-[[sid-65273983_InfinispanWebSocketServer-JavascriptAPI]]
+[[sid-68355034_InfinispanWebSocketServer-JavascriptAPI]]
 
 
 === Javascript API
@@ -32,7 +32,7 @@ $ bin/startServer.sh -r websocket
 <script type="text/javascript" src="<a href="http://www.acme.com:61999/infinispan-ws.js" target="_blank">http://www.acme.com:8181/infinispan-ws.js</a>" />
 ----
 
-[[sid-65273983_InfinispanWebSocketServer-CreatingaClientSideCacheObjectInstance]]
+[[sid-68355034_InfinispanWebSocketServer-CreatingaClientSideCacheObjectInstance]]
 
 
 ==== Creating a Client-Side Cache Object Instance
@@ -58,7 +58,7 @@ var cache = new Cache("omCache", "ws://ws.acmews.com:8181");
 // etc...
 ----
 
-[[sid-65273983_InfinispanWebSocketServer-CacheOperations]]
+[[sid-68355034_InfinispanWebSocketServer-CacheOperations]]
 
 
 ==== Cache Operations
@@ -106,35 +106,35 @@ function cacheCallback(key, value) {
 
 ----
 
-[[sid-65273983_InfinispanWebSocketServer-Samplecode]]
+[[sid-68355034_InfinispanWebSocketServer-Samplecode]]
 
 
 === Sample code
 
  Infinispan's source tree contains a sample HTML document that makes use of the WebSocket server.  Browse through the source of this HTML document link:$$http://fisheye.jboss.org/browse/Infinispan/trunk/server/websocket/src/main/distribution/sample-websocket-client.html$$[here] . 
 
-[[sid-65273983_InfinispanWebSocketServer-BrowserSupport]]
+[[sid-68355034_InfinispanWebSocketServer-BrowserSupport]]
 
 
 === Browser Support
 
  At the time of writing, Google Chrome was the only browser with native WebSocket support.  However, the link:$$http://jwebsocket.org/$$[jWebSocket] project provides a client side Javascript library that adds WebSocket support to any Flash enabled browser. 
 
-[[sid-65273983_InfinispanWebSocketServer-Screencast]]
+[[sid-68355034_InfinispanWebSocketServer-Screencast]]
 
 
 === Screencast
 
  See the following link:$$http://www.screencast.com/t/ZGEzNDJlY$$[demo of the Infinispan WebSocket Server] in action. 
 
-[[sid-65273983_InfinispanWebSocketServer-Status]]
+[[sid-68355034_InfinispanWebSocketServer-Status]]
 
 
 === Status
 
 Prototype/Alpha.
 
-[[sid-65273983_InfinispanWebSocketServer-Source]]
+[[sid-68355034_InfinispanWebSocketServer-Source]]
 
 
 === Source

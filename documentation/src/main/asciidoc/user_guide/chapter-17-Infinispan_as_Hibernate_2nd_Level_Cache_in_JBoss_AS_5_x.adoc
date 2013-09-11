@@ -1,4 +1,4 @@
-[[sid-65273992]]
+[[sid-68355044]]
 
 ==  Infinispan as Hibernate 2nd-Level Cache in JBoss AS 5.x
 

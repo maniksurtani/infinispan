@@ -1,8 +1,8 @@
-[[sid-65274000]]
+[[sid-68355052]]
 
 ==  Consistent Concurrent Updates With Hot Rod Versioned Operations
 
-[[sid-65274000_ConsistentConcurrentUpdatesWithHotRodVersionedOperations-Introduction]]
+[[sid-68355052_ConsistentConcurrentUpdatesWithHotRodVersionedOperations-Introduction]]
 
 
 === Introduction
@@ -11,7 +11,7 @@
 
  However, when it comes to link:$$http://community.jboss.org/wiki/HotRodProtocol$$[Hot Rod protocol] backed link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737146$$[servers] , clients do not yet have the ability to start remote transactions but they can call instead versioned operations to mimic the conditional methods provided by the embedded Infinispan cache instance API.  Let's look at a real example to understand how it works. 
 
-[[sid-65274000_ConsistentConcurrentUpdatesWithHotRodVersionedOperations-DataConsistencyProblem]]
+[[sid-68355052_ConsistentConcurrentUpdatesWithHotRodVersionedOperations-DataConsistencyProblem]]
 
 
 === Data Consistency Problem
@@ -34,7 +34,7 @@ image::[]
 
 Obviously, this would be wrong.  Two concurrent updates have resulted in an incorrect account balance.  The second update should not have been allowed since the balance the second ATM had was incorrect. Even if the ATM would have retrieved the balance before calculating the new balance, someone could have updated between the new balance being retrieved and the update. Before finding out how to solve this issue in a client-server scenario with Hot Rod, let's look at how this is solved when Infinispan clients run in peer-to-peer mode where clients and Infinispan live within the same JVM.
 
-[[sid-65274000_ConsistentConcurrentUpdatesWithHotRodVersionedOperations-PeertoPeerSolution]]
+[[sid-68355052_ConsistentConcurrentUpdatesWithHotRodVersionedOperations-PeertoPeerSolution]]
 
 
 ==== to-Peer Solution
@@ -47,7 +47,7 @@ image::[]
 
  
 
-[[sid-65274000_ConsistentConcurrentUpdatesWithHotRodVersionedOperations-ClientServerSolution]]
+[[sid-68355052_ConsistentConcurrentUpdatesWithHotRodVersionedOperations-ClientServerSolution]]
 
 
 ==== Client-Server Solution

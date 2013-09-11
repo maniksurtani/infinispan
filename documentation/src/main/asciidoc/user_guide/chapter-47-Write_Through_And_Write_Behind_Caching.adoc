@@ -1,8 +1,8 @@
-[[sid-65274038]]
+[[sid-68355094]]
 
 ==  Write-Through And Write-Behind Caching
 
-[[sid-65274038_Write-ThroughAndWrite-BehindCaching-Introduction]]
+[[sid-68355094_Write-ThroughAndWrite-BehindCaching-Introduction]]
 
 
 === Introduction
@@ -15,7 +15,7 @@ Infinispan can optionally be configured with one or several cache stores allowin
 
 * Write-Behind (Asynchronous)
 
-[[sid-65274038_Write-ThroughAndWrite-BehindCaching-WriteThrough%28Synchronous%29]]
+[[sid-68355094_Write-ThroughAndWrite-BehindCaching-WriteThrough%28Synchronous%29]]
 
 
 === Write-Through (Synchronous)
@@ -49,7 +49,7 @@ Configuring a write-through or synchronous cache store does not require any part
 
 ----
 
-[[sid-65274038_Write-ThroughAndWrite-BehindCaching-WriteBehind%28Asynchronous%29]]
+[[sid-68355094_Write-ThroughAndWrite-BehindCaching-WriteBehind%28Asynchronous%29]]
 
 
 === Write-Behind (Asynchronous)
@@ -58,7 +58,7 @@ In this mode, updates to the cache are asynchronously written to the cache store
 
 One of the major advantages of this mode is that the performance of a cache operation does not get affected by the update of the underlying store. On the other hand, since the update happens asynchronously, there's a time window during the which the cache store can contain stale data compared to the cache. Even within write-behind, there are different strategies that can be used to store data:
 
-[[sid-65274038_Write-ThroughAndWrite-BehindCaching-UnscheduledWriteBehindStrategy]]
+[[sid-68355094_Write-ThroughAndWrite-BehindCaching-UnscheduledWriteBehindStrategy]]
 
 
 === Unscheduled Write-Behind Strategy
@@ -93,7 +93,7 @@ This strategy is suited for cache stores with low latency and cheap operation co
 
 ----
 
-[[sid-65274038_Write-ThroughAndWrite-BehindCaching-ScheduledWriteBehindStrategy]]
+[[sid-68355094_Write-ThroughAndWrite-BehindCaching-ScheduledWriteBehindStrategy]]
 
 
 === Scheduled Write-Behind Strategy

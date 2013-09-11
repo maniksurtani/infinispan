@@ -1,8 +1,8 @@
-[[sid-65274043]]
+[[sid-68355099]]
 
 ==  Plugging Infinispan With User Defined Externalizers
 
-[[sid-65274043_PluggingInfinispanWithUserDefinedExternalizers-Introduction]]
+[[sid-68355099_PluggingInfinispanWithUserDefinedExternalizers-Introduction]]
 
 
 === Introduction
@@ -13,7 +13,7 @@ One of the key aspects of Infinispan is that it often needs to marshall/unmarsha
 
 Starting with 5.0, users of Infinispan can now benefit from this marshalling framework as well, and they can provide their own externalizer implementations, but before finding out how to provide externalizers, let's look at the benefits they bring.
 
-[[sid-65274043_PluggingInfinispanWithUserDefinedExternalizers-BenefitsofExternalizers]]
+[[sid-68355099_PluggingInfinispanWithUserDefinedExternalizers-BenefitsofExternalizers]]
 
 
 === Benefits of Externalizers
@@ -24,7 +24,7 @@ Starting with 5.0, users of Infinispan can now benefit from this marshalling fra
 
 It's quite common, and in general recommended, that Externalizer implementations are stored as inner static public classes within classes that they externalize. The advantages of doing this is that related code stays together, making it easier to maintain. In Infinispan, there are two ways in which Infinispan can be plugged with user defined externalizers:
 
-[[sid-65274043_PluggingInfinispanWithUserDefinedExternalizers-UserFriendlyExternalizers]]
+[[sid-68355099_PluggingInfinispanWithUserDefinedExternalizers-UserFriendlyExternalizers]]
 
 
 ==== User Friendly Externalizers
@@ -80,7 +80,7 @@ Even though this way of defining externalizers is very user friendly, it has som
 
 If you're affected by any of these disadvantages, an alternative method to provide externalizers is available via more advanced externalizers:
 
-[[sid-65274043_PluggingInfinispanWithUserDefinedExternalizers-AdvancedExternalizers]]
+[[sid-68355099_PluggingInfinispanWithUserDefinedExternalizers-AdvancedExternalizers]]
 
 
 ==== Advanced Externalizers
@@ -131,7 +131,7 @@ public class Person {
 
  The first noticeable difference is that this method does not require user classes to be annotated in anyway, so it can be used with classes for which source code is not available or that cannot be modified. The bound between the externalizer and the classes that are marshalled/unmarshalled is set by providing an implementation for link:$$http://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/marshall/AdvancedExternalizer.html#getTypeClasses()$$[getTypeClasses()] which should return the list of classes that this externalizer can marshall: 
 
-[[sid-65274043_PluggingInfinispanWithUserDefinedExternalizers-LinkingExternalizerswithMarshallerClasses]]
+[[sid-68355099_PluggingInfinispanWithUserDefinedExternalizers-LinkingExternalizerswithMarshallerClasses]]
 
 
 ===== Linking Externalizers with Marshaller Classes
@@ -171,7 +171,7 @@ public Set<Class<? extends List>> getTypeClasses() {
 
 ----
 
-[[sid-65274043_PluggingInfinispanWithUserDefinedExternalizers-ExternalizerIdentifier]]
+[[sid-68355099_PluggingInfinispanWithUserDefinedExternalizers-ExternalizerIdentifier]]
 
 
 ===== Externalizer Identifier
@@ -184,7 +184,7 @@ Regardless of the source of the the id, using a positive integer allows for very
 
 When it comes to maintaining which ids are in use, it's highly recommended that this is done in a centralized way. For example, getId() implementations could reference a set of statically defined identifiers in a separate class or interface. Such class/interface would give a global view of the identifiers in use and so can make it easier to assign new ids.
 
-[[sid-65274043_PluggingInfinispanWithUserDefinedExternalizers-RegisteringAdvancedExternalizers]]
+[[sid-68355099_PluggingInfinispanWithUserDefinedExternalizers-RegisteringAdvancedExternalizers]]
 
 
 ===== Registering Advanced Externalizers
@@ -256,7 +256,7 @@ builder.serialization()
 
 ----
 
-[[sid-65274043_PluggingInfinispanWithUserDefinedExternalizers-PreassignedExternalizerIdRanges]]
+[[sid-68355099_PluggingInfinispanWithUserDefinedExternalizers-PreassignedExternalizerIdRanges]]
 
 
 ===== Preassigned Externalizer Id Ranges

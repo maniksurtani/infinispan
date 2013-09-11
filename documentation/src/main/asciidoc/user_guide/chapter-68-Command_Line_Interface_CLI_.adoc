@@ -1,4 +1,4 @@
-[[sid-65274065]]
+[[sid-68355122]]
 
 ==  Command-Line Interface (CLI)
 
@@ -56,12 +56,12 @@ begin       commit      disconnect  evict       info     
 
  The CLI is based on link:$$https://github.com/aeshell/aesh$$[Æsh] and therefore offers many keyboard shortcuts to navigate and search the history of commands, to manipulate the cursor at the prompt, including both Emacs and VI modes of operation. 
 
-[[sid-65274065_Command-LineInterface%28CLI%29-Commands]]
+[[sid-68355122_Command-LineInterface%28CLI%29-Commands]]
 
 
 === Commands
 
-[[sid-65274065_Command-LineInterface%28CLI%29-]]
+[[sid-68355122_Command-LineInterface%28CLI%29-]]
 
 
 ==== 
@@ -71,7 +71,7 @@ begin       commit      disconnect  evict       info     
 
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-abort]]
+[[sid-68355122_Command-LineInterface%28CLI%29-abort]]
 
 
 ==== abort
@@ -87,7 +87,7 @@ begin       commit      disconnect  evict       info     
 null
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-begin]]
+[[sid-68355122_Command-LineInterface%28CLI%29-begin]]
 
 
 ==== begin
@@ -102,7 +102,7 @@ null
 [jmx://localhost:12000/MyCacheManager/namedCache]> commit
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-cache]]
+[[sid-68355122_Command-LineInterface%28CLI%29-cache]]
 
 
 ==== cache
@@ -117,7 +117,7 @@ ___defaultcache
 [jmx://localhost:12000/MyCacheManager/___defaultcache]>
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-clear]]
+[[sid-68355122_Command-LineInterface%28CLI%29-clear]]
 
 
 ==== clear
@@ -132,7 +132,7 @@ ___defaultcache
 null
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-commit]]
+[[sid-68355122_Command-LineInterface%28CLI%29-commit]]
 
 
 ==== commit
@@ -147,7 +147,7 @@ null
 [jmx://localhost:12000/MyCacheManager/namedCache]> commit
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-container]]
+[[sid-68355122_Command-LineInterface%28CLI%29-container]]
 
 
 ==== container
@@ -162,7 +162,7 @@ MyCacheManager OtherCacheManager
 [jmx://localhost:12000/OtherCacheManager/]>
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-create]]
+[[sid-68355122_Command-LineInterface%28CLI%29-create]]
 
 
 ==== create
@@ -176,7 +176,7 @@ MyCacheManager OtherCacheManager
 [jmx://localhost:12000/MyCacheManager/newCache]>
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-disconnect]]
+[[sid-68355122_Command-LineInterface%28CLI%29-disconnect]]
 
 
 ==== disconnect
@@ -189,7 +189,7 @@ MyCacheManager OtherCacheManager
 [disconnected//]
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-encoding]]
+[[sid-68355122_Command-LineInterface%28CLI%29-encoding]]
 
 
 ==== encoding
@@ -208,7 +208,7 @@ rest
 [jmx://localhost:12000/MyCacheManager/namedCache]> encoding hotrod
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-end]]
+[[sid-68355122_Command-LineInterface%28CLI%29-end]]
 
 
 ==== end
@@ -224,7 +224,7 @@ rest
 a
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-evict]]
+[[sid-68355122_Command-LineInterface%28CLI%29-evict]]
 
 
 ==== evict
@@ -237,7 +237,7 @@ a
 [jmx://localhost:12000/MyCacheManager/namedCache]> evict a
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-get]]
+[[sid-68355122_Command-LineInterface%28CLI%29-get]]
 
 
 ==== get
@@ -251,7 +251,7 @@ a
 a
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-info]]
+[[sid-68355122_Command-LineInterface%28CLI%29-info]]
 
 
 ==== info
@@ -264,7 +264,7 @@ a
 GlobalConfiguration{asyncListenerExecutor=ExecutorFactoryConfiguration{factory=org.infinispan.executors.DefaultExecutorFactory@98add58}, asyncTransportExecutor=ExecutorFactoryConfiguration{factory=org.infinispan.executors.DefaultExecutorFactory@7bc9c14c}, evictionScheduledExecutor=ScheduledExecutorFactoryConfiguration{factory=org.infinispan.executors.DefaultScheduledExecutorFactory@7ab1a411}, replicationQueueScheduledExecutor=ScheduledExecutorFactoryConfiguration{factory=org.infinispan.executors.DefaultScheduledExecutorFactory@248a9705}, globalJmxStatistics=GlobalJmxStatisticsConfiguration{allowDuplicateDomains=true, enabled=true, jmxDomain='jboss.infinispan', mBeanServerLookup=org.jboss.as.clustering.infinispan.MBeanServerProvider@6c0dc01, cacheManagerName='local', properties={}}, transport=TransportConfiguration{clusterName='ISPN', machineId='null', rackId='null', siteId='null', strictPeerToPeer=false, distributedSyncTimeout=240000, transport=null, nodeName='null', properties={}}, serialization=SerializationConfiguration{advancedExternalizers={1100=org.infinispan.server.core.CacheValue$Externalizer@5fabc91d, 1101=org.infinispan.server.memcached.MemcachedValue$Externalizer@720bffd, 1104=org.infinispan.server.hotrod.ServerAddress$Externalizer@771c7eb2}, marshaller=org.infinispan.marshall.VersionAwareMarshaller@6fc21535, version=52, classResolver=org.jboss.marshalling.ModularClassResolver@2efe83e5}, shutdown=ShutdownConfiguration{hookBehavior=DONT_REGISTER}, modules={}, site=SiteConfiguration{localSite='null'}}
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-locate]]
+[[sid-68355122_Command-LineInterface%28CLI%29-locate]]
 
 
 ==== locate
@@ -277,7 +277,7 @@ GlobalConfiguration{asyncListenerExecutor=ExecutorFactoryConfiguration{factory=o
 [host/node1,host/node2]
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-put]]
+[[sid-68355122_Command-LineInterface%28CLI%29-put]]
 
 
 ==== put
@@ -301,7 +301,7 @@ The put command can optionally specify a lifespan and a maximum idle time.
 [jmx://localhost:12000/MyCacheManager/namedCache]> put a a expires 10m maxidle 1m
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-replace]]
+[[sid-68355122_Command-LineInterface%28CLI%29-replace]]
 
 
 ==== replace
@@ -322,7 +322,7 @@ c
 c
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-rollback]]
+[[sid-68355122_Command-LineInterface%28CLI%29-rollback]]
 
 
 ==== rollback
@@ -337,7 +337,7 @@ c
 [jmx://localhost:12000/MyCacheManager/namedCache]> rollback
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-site]]
+[[sid-68355122_Command-LineInterface%28CLI%29-site]]
 
 
 ==== site
@@ -355,7 +355,7 @@ offline
 [jmx://localhost:12000/MyCacheManager/namedCache]> site --online NYC
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-start]]
+[[sid-68355122_Command-LineInterface%28CLI%29-start]]
 
 
 ==== start
@@ -370,7 +370,7 @@ offline
 [jmx://localhost:12000/MyCacheManager/namedCache]> end
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-stats]]
+[[sid-68355122_Command-LineInterface%28CLI%29-stats]]
 
 
 ==== stats
@@ -403,7 +403,7 @@ LockManager: {
 }
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-upgrade]]
+[[sid-68355122_Command-LineInterface%28CLI%29-upgrade]]
 
 
 ==== upgrade
@@ -416,7 +416,7 @@ LockManager: {
 [jmx://localhost:12000/MyCacheManager/namedCache]> upgrade --disconnectsource=hotrod --all
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-version]]
+[[sid-68355122_Command-LineInterface%28CLI%29-version]]
 
 
 ==== version
@@ -430,12 +430,12 @@ Client Version 5.2.1.Final
 Server Version 5.2.1.Final
 ----
 
-[[sid-65274065_Command-LineInterface%28CLI%29-DataTypes]]
+[[sid-68355122_Command-LineInterface%28CLI%29-DataTypes]]
 
 
 === Data Types
 
-[[sid-65274065_Command-LineInterface%28CLI%29-DataTypesx]]
+[[sid-68355122_Command-LineInterface%28CLI%29-DataTypesx]]
 
 
 The CLI understands the following types:
@@ -470,12 +470,12 @@ The CLI understands the following types:
 
 *  JSON serialized Java classes can be represented using JSON notation, e.g. {"package.MyClass":{"i":5,"x":null,"b":true}}. Please note that the specified class must be available to the CacheManager's class loader. 
 
-[[sid-65274065_Command-LineInterface%28CLI%29-TimeValues]]
+[[sid-68355122_Command-LineInterface%28CLI%29-TimeValues]]
 
 
 === Time Values
 
-[[sid-65274065_Command-LineInterface%28CLI%29-TimeValuesx]]
+[[sid-68355122_Command-LineInterface%28CLI%29-TimeValuesx]]
 
 
 A time value is an integer number followed by time unit suffix: days (d), hours (h), minutes (m), seconds (s), milliseconds (ms).

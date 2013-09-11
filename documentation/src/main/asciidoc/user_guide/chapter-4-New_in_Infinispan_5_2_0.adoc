@@ -1,4 +1,4 @@
-[[sid-65273977_UserGuide-NewinInfinispan5.2.0]]
+[[sid-68355028_UserGuide-NewinInfinispan5.2.0]]
 
 ==  New in Infinispan 5.2.0
 

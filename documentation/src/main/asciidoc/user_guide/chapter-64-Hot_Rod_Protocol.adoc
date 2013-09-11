@@ -1,22 +1,22 @@
-[[sid-65274055]]
+[[sid-68355112]]
 
 ==  Hot Rod Protocol
 
 
-.  <<sid-65274056,Hot Rod protocol version 1.0>> 
+.  <<sid-68355113,Hot Rod protocol version 1.0>> 
 
 
-.  <<sid-65274057,Hot Rod protocol version 1.1>> 
+.  <<sid-68355114,Hot Rod protocol version 1.1>> 
 
 
-.  <<sid-65274058,Hot Rod protocol version 1.2>> 
+.  <<sid-68355115,Hot Rod protocol version 1.2>> 
 
-[[sid-65274056]]
+[[sid-68355113]]
 
 
 === Hot Rod Protocol - Version 1.0
 
-[[sid-65274056_HotRodProtocol-Version1.0-Introduction]]
+[[sid-68355113_HotRodProtocol-Version1.0-Introduction]]
 
 
 ==== Introduction
@@ -51,7 +51,7 @@ All key and values are sent and stored as byte arrays. Hot Rod makes no assumpti
 ==== 
 
 
-[[sid-65274056_HotRodProtocol-Version1.0-RequestHeader]]
+[[sid-68355113_HotRodProtocol-Version1.0-RequestHeader]]
 
 
 ==== Request Header
@@ -147,7 +147,7 @@ The header for a request is composed of:
 
 *  _Transaction Id_ : The byte array uniquely identifying the transaction associated to this call. It's length is determined by the transaction type. If transaction type is 0, no transaction id will be present. 
 
-[[sid-65274056_HotRodProtocol-Version1.0-ResponseHeader]]
+[[sid-68355113_HotRodProtocol-Version1.0-ResponseHeader]]
 
 
 ==== Response Header
@@ -179,14 +179,14 @@ The header for a request is composed of:
 
 *  _Topology Change Marker_ : This is a marker byte that indicates whether the response is prepended with topology change information. When no topology change follows, the content of this byte is 0. If a topology change follows, its contents are 1. 
 
-[[sid-65274056_HotRodProtocol-Version1.0-TopologyChangeHeaders]]
+[[sid-68355113_HotRodProtocol-Version1.0-TopologyChangeHeaders]]
 
 
 ===== Topology Change Headers
 
 The following section discusses how the response headers look for topology-aware or hash-distribution-aware clients when there's been a cluster or view formation change. Note that it's the server that makes the decision on whether it sends back the new topology based on the current topology id and the one the client sent. If they're different, it will send back the new topology.
 
-[[sid-65274056_HotRodProtocol-Version1.0-TopologyAwareClientTopologyChangeHeader]]
+[[sid-68355113_HotRodProtocol-Version1.0-TopologyAwareClientTopologyChangeHeader]]
 
 
 ===== =Topology-Aware Client Topology Change Header
@@ -215,7 +215,7 @@ This is what topology-aware clients receive as response header when a topology c
 
 *  _Port_ : Port that Hot Rod clients can use to communicat with this cluster member. 
 
-[[sid-65274056_HotRodProtocol-Version1.0-HashDistributionAwareClientTopologyChangeHeader]]
+[[sid-68355113_HotRodProtocol-Version1.0-HashDistributionAwareClientTopologyChangeHeader]]
 
 
 ===== =Distribution-Aware Client Topology Change Header
@@ -238,7 +238,7 @@ This is what hash-distribution-aware clients receive as response header when a t
 *  _Number key owners_ : Globally configured number of copies for each Infinispan distributed key 
 
 
-*  _Hash function version_ : Hash function version, pointing to a specific hash function in use. See <<sid-65274059,Hot Rod hash functions>> for details. 
+*  _Hash function version_ : Hash function version, pointing to a specific hash function in use. See <<sid-68355116,Hot Rod hash functions>> for details. 
 
 
 *  _Hash space size_ : Modulus used by Infinispan for for all module arithmetic related to hash code generation. Clients will likely require this information in order to apply the correct hash calculation to the keys. 
@@ -249,12 +249,12 @@ This is what hash-distribution-aware clients receive as response header when a t
 
 *  _Hashcode_ : 32 bit integer representing the hashcode of a cluster member that a Hot Rod client can use indentify in which cluster member a key is located having applied the CSA to it. 
 
-[[sid-65274056_HotRodProtocol-Version1.0-Operations]]
+[[sid-68355113_HotRodProtocol-Version1.0-Operations]]
 
 
 ==== Operations
 
-[[sid-65274056_HotRodProtocol-Version1.0-Get%2FRemove%2FContainsKey%2FGetWithVersion]]
+[[sid-68355113_HotRodProtocol-Version1.0-Get%2FRemove%2FContainsKey%2FGetWithVersion]]
 
 
 ===== Get/Remove/ContainsKey/GetWithVersion
@@ -319,7 +319,7 @@ This is what hash-distribution-aware clients receive as response header when a t
 
 *  _Entry Version_ : Unique value of an existing entry's modification. The protocol does not mandate that entry_version values are sequential. They just need to be unique per update at the key level. 
 
-[[sid-65274056_HotRodProtocol-Version1.0-BulkGet]]
+[[sid-68355113_HotRodProtocol-Version1.0-BulkGet]]
 
 
 ===== BulkGet
@@ -350,7 +350,7 @@ This is what hash-distribution-aware clients receive as response header when a t
 
 *  _More_ : One byte representing whether more entries need to be read from the stream. So, when it's set to 1, it means that an entry followes, whereas when it's set to 0, it's the end of stream and no more entries are left to read. For more information on BulkGet look link:$$http://community.jboss.org/docs/DOC-15592$$[here] 
 
-[[sid-65274056_HotRodProtocol-Version1.0-Put%2FPutIfAbsent%2FReplace]]
+[[sid-68355113_HotRodProtocol-Version1.0-Put%2FPutIfAbsent%2FReplace]]
 
 
 ===== Put/PutIfAbsent/Replace
@@ -398,7 +398,7 @@ This is what hash-distribution-aware clients receive as response header when a t
 
 *  Put/PutIfAbsent/Replace response: If ForceReturnPreviousValue has been passed, these responses will contain previous value (and corresponding value length) for that key. If the key does not exist or previous was null, value length would be 0. Otherwise, if no ForceReturnPreviousValue was sent, the response would be empty. 
 
-[[sid-65274056_HotRodProtocol-Version1.0-ReplaceIfUnmodified]]
+[[sid-68355113_HotRodProtocol-Version1.0-ReplaceIfUnmodified]]
 
 
 ===== ReplaceIfUnmodified
@@ -431,7 +431,7 @@ This is what hash-distribution-aware clients receive as response header when a t
 
 *  Response: If ForceReturnPreviousValue has been passed, this responses will contain previous value (and corresponding value length) for that key. If the key does not exist or previous was null, value length would be 0. Otherwise, if no ForceReturnPreviousValue was sent, the response would be empty. 
 
-[[sid-65274056_HotRodProtocol-Version1.0-RemoveIfUnmodified]]
+[[sid-68355113_HotRodProtocol-Version1.0-RemoveIfUnmodified]]
 
 
 ===== RemoveIfUnmodified
@@ -461,7 +461,7 @@ This is what hash-distribution-aware clients receive as response header when a t
 
 *  Response: If ForceReturnPreviousValue has been passed, this responses will contain previous value (and corresponding value length) for that key. If the key does not exist or previous was null, value length would be 0. Otherwise, if no ForceReturnPreviousValue was sent, the response would be empty. 
 
-[[sid-65274056_HotRodProtocol-Version1.0-Clear]]
+[[sid-68355113_HotRodProtocol-Version1.0-Clear]]
 
 
 ===== Clear
@@ -482,7 +482,7 @@ This is what hash-distribution-aware clients receive as response header when a t
 
 *  0x00 status if infinispan was cleared 
 
-[[sid-65274056_HotRodProtocol-Version1.0-Stats]]
+[[sid-68355113_HotRodProtocol-Version1.0-Stats]]
 
 
 ===== Stats
@@ -530,7 +530,7 @@ Returns a summary of all available statistics. For each statistic returned, a na
 
 *  _Value_ : String containing statistic value. 
 
-[[sid-65274056_HotRodProtocol-Version1.0-Ping]]
+[[sid-68355113_HotRodProtocol-Version1.0-Ping]]
 
 
 ===== Ping
@@ -543,7 +543,7 @@ Application level request to see if the server is available.
 
 *  0x00 - if no errors 
 
-[[sid-65274056_HotRodProtocol-Version1.0-ErrorHandling]]
+[[sid-68355113_HotRodProtocol-Version1.0-ErrorHandling]]
 
 
 ==== Error Handling
@@ -563,14 +563,14 @@ Response header contains error op code response and corresponding error status n
 
 *  _Error message_ : Error message. In the case of 0x84 , this error field contains the latest version supported by the hot rod server. Length is defined by total body length. 
 
-[[sid-65274056_HotRodProtocol-Version1.0-MultiGetOperations]]
+[[sid-68355113_HotRodProtocol-Version1.0-MultiGetOperations]]
 
 
 ==== Multi-Get Operations
 
 A multi-get operation is a form of get operation that instead of requesting a single key, requests a set of keys. The Hot Rod protocol does not include such operation but remote Hot Rod clients could easily implement this type of operations by either parallelizing/pipelining individual get requests. Another possibility would be for remote clients to use async or non-blocking get requests. For example, if a client wants N keys, it could send send N async get requests and then wait for all the replies. Finally, multi-get is not to be confused with bulk-get operations. In bulk-gets, either all or a number of keys are retrieved, but the client does not know which keys to retrieve, whereas in multi-get, the client defines which keys to retrieve.
 
-[[sid-65274056_HotRodProtocol-Version1.0-ExamplePutrequest]]
+[[sid-68355113_HotRodProtocol-Version1.0-ExamplePutrequest]]
 
 
 ==== Example - Put request
@@ -632,12 +632,12 @@ A multi-get operation is a form of get operation that instead of requesting a si
 |===============
 
 
-[[sid-65274057]]
+[[sid-68355114]]
 
 
 === Hot Rod Protocol - Version 1.1
 
-[[sid-65274057_HotRodProtocol-Version1.1-Introduction]]
+[[sid-68355114_HotRodProtocol-Version1.1-Introduction]]
 
 
 ==== Introduction
@@ -672,7 +672,7 @@ All key and values are sent and stored as byte arrays. Hot Rod makes no assumpti
 ==== 
 
 
-[[sid-65274057_HotRodProtocol-Version1.1-RequestHeader]]
+[[sid-68355114_HotRodProtocol-Version1.1-RequestHeader]]
 
 
 ==== Request Header
@@ -778,7 +778,7 @@ The header for a request is composed of:
 
 *  _Transaction Id_ : The byte array uniquely identifying the transaction associated to this call. It's length is determined by the transaction type. If transaction type is 0, no transaction id will be present. 
 
-[[sid-65274057_HotRodProtocol-Version1.1-ResponseHeader]]
+[[sid-68355114_HotRodProtocol-Version1.1-ResponseHeader]]
 
 
 ==== Response Header
@@ -810,14 +810,14 @@ The header for a request is composed of:
 
 *  _Topology Change Marker_ : This is a marker byte that indicates whether the response is prepended with topology change information. When no topology change follows, the content of this byte is 0. If a topology change follows, its contents are 1. 
 
-[[sid-65274057_HotRodProtocol-Version1.1-TopologyChangeHeaders]]
+[[sid-68355114_HotRodProtocol-Version1.1-TopologyChangeHeaders]]
 
 
 ===== Topology Change Headers
 
 The following section discusses how the response headers look for topology-aware or hash-distribution-aware clients when there's been a cluster or view formation change. Note that it's the server that makes the decision on whether it sends back the new topology based on the current topology id and the one the client sent. If they're different, it will send back the new topology.
 
-[[sid-65274057_HotRodProtocol-Version1.1-TopologyAwareClientTopologyChangeHeader]]
+[[sid-68355114_HotRodProtocol-Version1.1-TopologyAwareClientTopologyChangeHeader]]
 
 
 ===== =Topology-Aware Client Topology Change Header
@@ -846,7 +846,7 @@ This is what topology-aware clients receive as response header when a topology c
 
 *  _Port_ : Port that Hot Rod clients can use to communicat with this cluster member. 
 
-[[sid-65274057_HotRodProtocol-Version1.1-HashDistributionAwareClientTopologyChangeHeader]]
+[[sid-68355114_HotRodProtocol-Version1.1-HashDistributionAwareClientTopologyChangeHeader]]
 
 
 ===== =Distribution-Aware Client Topology Change Header
@@ -877,7 +877,7 @@ This is what hash-distribution-aware clients receive as response header when a t
 *  _Number key owners_ : Globally configured number of copies for each Infinispan distributed key. If the cache is not configured with distribution, this field will return 0 . 
 
 
-*  _Hash function version_ : Hash function version, pointing to a specific hash function in use. See <<sid-65274059,Hot Rod hash functions>> for details. If cache is not configured with distribution, this field will contain 0 . 
+*  _Hash function version_ : Hash function version, pointing to a specific hash function in use. See <<sid-68355116,Hot Rod hash functions>> for details. If cache is not configured with distribution, this field will contain 0 . 
 
 
 *  _Hash space size_ : Modulus used by Infinispan for for all module arithmetic related to hash code generation. Clients will likely require this information in order to apply the correct hash calculation to the keys. If cache is not configured with distribution, this field will contain 0 . 
@@ -888,7 +888,7 @@ This is what hash-distribution-aware clients receive as response header when a t
 
 *  _Number virtual nodes_ : Field added in version 1.1 of the protocol that represents the number of configured virtual nodes. If no virtual nodes are configured or the cache is not configured with distribution, this field will contain 0 . 
 
-[[sid-65274057_HotRodProtocol-Version1.1-Servernodehashcodecalculation]]
+[[sid-68355114_HotRodProtocol-Version1.1-Servernodehashcodecalculation]]
 
 
 ===== ==Server node hash code calculation
@@ -923,12 +923,12 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 }
 ----
 
-[[sid-65274057_HotRodProtocol-Version1.1-Operations]]
+[[sid-68355114_HotRodProtocol-Version1.1-Operations]]
 
 
 ==== Operations
 
-[[sid-65274057_HotRodProtocol-Version1.1-Get%2FRemove%2FContainsKey%2FGetWithVersion]]
+[[sid-68355114_HotRodProtocol-Version1.1-Get%2FRemove%2FContainsKey%2FGetWithVersion]]
 
 
 ===== Get/Remove/ContainsKey/GetWithVersion
@@ -993,7 +993,7 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 
 *  _Entry Version_ : Unique value of an existing entry's modification. The protocol does not mandate that entry_version values are sequential. They just need to be unique per update at the key level. 
 
-[[sid-65274057_HotRodProtocol-Version1.1-BulkGet]]
+[[sid-68355114_HotRodProtocol-Version1.1-BulkGet]]
 
 
 ===== BulkGet
@@ -1024,7 +1024,7 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 
 *  _More_ : One byte representing whether more entries need to be read from the stream. So, when it's set to 1, it means that an entry followes, whereas when it's set to 0, it's the end of stream and no more entries are left to read. For more information on BulkGet look link:$$http://community.jboss.org/docs/DOC-15592$$[here] 
 
-[[sid-65274057_HotRodProtocol-Version1.1-Put%2FPutIfAbsent%2FReplace]]
+[[sid-68355114_HotRodProtocol-Version1.1-Put%2FPutIfAbsent%2FReplace]]
 
 
 ===== Put/PutIfAbsent/Replace
@@ -1072,7 +1072,7 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 
 *  Put/PutIfAbsent/Replace response: If ForceReturnPreviousValue has been passed, these responses will contain previous value (and corresponding value length) for that key. If the key does not exist or previous was null, value length would be 0. Otherwise, if no ForceReturnPreviousValue was sent, the response would be empty. 
 
-[[sid-65274057_HotRodProtocol-Version1.1-ReplaceIfUnmodified]]
+[[sid-68355114_HotRodProtocol-Version1.1-ReplaceIfUnmodified]]
 
 
 ===== ReplaceIfUnmodified
@@ -1105,7 +1105,7 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 
 *  Response: If ForceReturnPreviousValue has been passed, this responses will contain previous value (and corresponding value length) for that key. If the key does not exist or previous was null, value length would be 0. Otherwise, if no ForceReturnPreviousValue was sent, the response would be empty. 
 
-[[sid-65274057_HotRodProtocol-Version1.1-RemoveIfUnmodified]]
+[[sid-68355114_HotRodProtocol-Version1.1-RemoveIfUnmodified]]
 
 
 ===== RemoveIfUnmodified
@@ -1135,7 +1135,7 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 
 *  Response: If ForceReturnPreviousValue has been passed, this responses will contain previous value (and corresponding value length) for that key. If the key does not exist or previous was null, value length would be 0. Otherwise, if no ForceReturnPreviousValue was sent, the response would be empty. 
 
-[[sid-65274057_HotRodProtocol-Version1.1-Clear]]
+[[sid-68355114_HotRodProtocol-Version1.1-Clear]]
 
 
 ===== Clear
@@ -1156,7 +1156,7 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 
 *  0x00 status if infinispan was cleared 
 
-[[sid-65274057_HotRodProtocol-Version1.1-Stats]]
+[[sid-68355114_HotRodProtocol-Version1.1-Stats]]
 
 
 ===== Stats
@@ -1204,7 +1204,7 @@ Returns a summary of all available statistics. For each statistic returned, a na
 
 *  _Value_ : String containing statistic value. 
 
-[[sid-65274057_HotRodProtocol-Version1.1-Ping]]
+[[sid-68355114_HotRodProtocol-Version1.1-Ping]]
 
 
 ===== Ping
@@ -1217,7 +1217,7 @@ Application level request to see if the server is available.
 
 *  0x00 - if no errors 
 
-[[sid-65274057_HotRodProtocol-Version1.1-ErrorHandling]]
+[[sid-68355114_HotRodProtocol-Version1.1-ErrorHandling]]
 
 
 ==== Error Handling
@@ -1237,14 +1237,14 @@ Response header contains error op code response and corresponding error status n
 
 *  _Error message_ : Error message. In the case of 0x84 , this error field contains the latest version supported by the hot rod server. Length is defined by total body length. 
 
-[[sid-65274057_HotRodProtocol-Version1.1-MultiGetOperations]]
+[[sid-68355114_HotRodProtocol-Version1.1-MultiGetOperations]]
 
 
 ==== Multi-Get Operations
 
 A multi-get operation is a form of get operation that instead of requesting a single key, requests a set of keys. The Hot Rod protocol does not include such operation but remote Hot Rod clients could easily implement this type of operations by either parallelizing/pipelining individual get requests. Another possibility would be for remote clients to use async or non-blocking get requests. For example, if a client wants N keys, it could send send N async get requests and then wait for all the replies. Finally, multi-get is not to be confused with bulk-get operations. In bulk-gets, either all or a number of keys are retrieved, but the client does not know which keys to retrieve, whereas in multi-get, the client defines which keys to retrieve.
 
-[[sid-65274057_HotRodProtocol-Version1.1-ExamplePutrequest]]
+[[sid-68355114_HotRodProtocol-Version1.1-ExamplePutrequest]]
 
 
 ==== Example - Put request
@@ -1306,12 +1306,12 @@ A multi-get operation is a form of get operation that instead of requesting a si
 |===============
 
 
-[[sid-65274058]]
+[[sid-68355115]]
 
 
 === Hot Rod Protocol - Version 1.2
 
-[[sid-65274058_HotRodProtocol-Version1.2-Introduction]]
+[[sid-68355115_HotRodProtocol-Version1.2-Introduction]]
 
 
 ==== Introduction
@@ -1322,7 +1322,7 @@ This article provides detailed information about the first version of the custom
 [TIP]
 .Infinispan versions
 ==== 
-This version of the protocol is implemented since Infinispan 5.2.0.FINAL
+This version of the protocol is implemented since Infinispan 5.2.0.Final. Since Infinispan 5.3.0, HotRod supports encryption via SSL. However, since this only affects the transport, the version number of the protocol has not been incremented.
 
 
 ==== 
@@ -1346,7 +1346,7 @@ All key and values are sent and stored as byte arrays. Hot Rod makes no assumpti
 ==== 
 
 
-[[sid-65274058_HotRodProtocol-Version1.2-RequestHeader]]
+[[sid-68355115_HotRodProtocol-Version1.2-RequestHeader]]
 
 
 ==== Request Header
@@ -1456,7 +1456,7 @@ The header for a request is composed of:
 
 *  _Transaction Id_ : The byte array uniquely identifying the transaction associated to this call. It's length is determined by the transaction type. If transaction type is 0, no transaction id will be present. 
 
-[[sid-65274058_HotRodProtocol-Version1.2-ResponseHeader]]
+[[sid-68355115_HotRodProtocol-Version1.2-ResponseHeader]]
 
 
 ==== Response Header
@@ -1488,14 +1488,14 @@ The header for a request is composed of:
 
 *  _Topology Change Marker_ : This is a marker byte that indicates whether the response is prepended with topology change information. When no topology change follows, the content of this byte is 0. If a topology change follows, its contents are 1. 
 
-[[sid-65274058_HotRodProtocol-Version1.2-TopologyChangeHeaders]]
+[[sid-68355115_HotRodProtocol-Version1.2-TopologyChangeHeaders]]
 
 
 ===== Topology Change Headers
 
 The following section discusses how the response headers look for topology-aware or hash-distribution-aware clients when there's been a cluster or view formation change. Note that it's the server that makes the decision on whether it sends back the new topology based on the current topology id and the one the client sent. If they're different, it will send back the new topology.
 
-[[sid-65274058_HotRodProtocol-Version1.2-TopologyAwareClientTopologyChangeHeader]]
+[[sid-68355115_HotRodProtocol-Version1.2-TopologyAwareClientTopologyChangeHeader]]
 
 
 ===== =Topology-Aware Client Topology Change Header
@@ -1524,7 +1524,7 @@ This is what topology-aware clients receive as response header when a topology c
 
 *  _Port_ : Port that Hot Rod clients can use to communicat with this cluster member. 
 
-[[sid-65274058_HotRodProtocol-Version1.2-HashDistributionAwareClientTopologyChangeHeader]]
+[[sid-68355115_HotRodProtocol-Version1.2-HashDistributionAwareClientTopologyChangeHeader]]
 
 
 ===== =Distribution-Aware Client Topology Change Header
@@ -1545,7 +1545,7 @@ This is what hash-distribution-aware clients receive as response header when a t
 *  _Number key owners_ : Globally configured number of copies for each Infinispan distributed key. If the cache is not configured with distribution, this field will return 0 . 
 
 
-*  _Hash function version_ : Hash function version, pointing to a specific hash function in use. See <<sid-65274059,Hot Rod hash functions>> for details. If cache is not configured with distribution, this field will contain 0 . 
+*  _Hash function version_ : Hash function version, pointing to a specific hash function in use. See <<sid-68355116,Hot Rod hash functions>> for details. If cache is not configured with distribution, this field will contain 0 . 
 
 
 *  _Hash space size_ : Modulus used by Infinispan for for all module arithmetic related to hash code generation. Clients will likely require this information in order to apply the correct hash calculation to the keys. If cache is not configured with distribution, this field will contain 0 . 
@@ -1556,7 +1556,7 @@ This is what hash-distribution-aware clients receive as response header when a t
 
 *  _Number virtual nodes_ : Field added in version 1.1 of the protocol that represents the number of configured virtual nodes. If no virtual nodes are configured or the cache is not configured with distribution, this field will contain 0 . 
 
-[[sid-65274058_HotRodProtocol-Version1.2-Servernodehashcodecalculation]]
+[[sid-68355115_HotRodProtocol-Version1.2-Servernodehashcodecalculation]]
 
 
 ===== ==Server node hash code calculation
@@ -1591,12 +1591,12 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 }
 ----
 
-[[sid-65274058_HotRodProtocol-Version1.2-Operations]]
+[[sid-68355115_HotRodProtocol-Version1.2-Operations]]
 
 
 ==== Operations
 
-[[sid-65274058_HotRodProtocol-Version1.2-Get%2FRemove%2FContainsKey%2FGetWithVersion%2FGetWithM...]]
+[[sid-68355115_HotRodProtocol-Version1.2-Get%2FRemove%2FContainsKey%2FGetWithVersion%2FGetWithM...]]
 
 
 ===== Get/Remove/ContainsKey/GetWithVersion/GetWithMetadata
@@ -1689,7 +1689,7 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 
 *  _Entry Version_ : Unique value of an existing entry's  modification. The protocol does not mandate that entry_version values  are sequential. They just need to be unique per update at the key level. 
 
-[[sid-65274058_HotRodProtocol-Version1.2-BulkGet]]
+[[sid-68355115_HotRodProtocol-Version1.2-BulkGet]]
 
 
 ===== BulkGet
@@ -1720,7 +1720,7 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 
 *  _More_ : One byte representing whether more entries need to be read from the stream. So, when it's set to 1, it means that an entry followes, whereas when it's set to 0, it's the end of stream and no more entries are left to read. For more information on BulkGet look link:$$http://community.jboss.org/docs/DOC-15592$$[here] 
 
-[[sid-65274058_HotRodProtocol-Version1.2-BulkKeysGet]]
+[[sid-68355115_HotRodProtocol-Version1.2-BulkKeysGet]]
 
 
 ===== BulkKeysGet
@@ -1751,7 +1751,7 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 
 *  _More_ : One byte representing whether more keys need to be read from the stream. So, when it's set to 1, it means that a key followes, whereas when it's set to 0, it's the end of stream and no more entries are left to read. 
 
-[[sid-65274058_HotRodProtocol-Version1.2-Put%2FPutIfAbsent%2FReplace]]
+[[sid-68355115_HotRodProtocol-Version1.2-Put%2FPutIfAbsent%2FReplace]]
 
 
 ===== Put/PutIfAbsent/Replace
@@ -1799,7 +1799,7 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 
 *  Put/PutIfAbsent/Replace response: If ForceReturnPreviousValue has been passed, these responses will contain previous value (and corresponding value length) for that key. If the key does not exist or previous was null, value length would be 0. Otherwise, if no ForceReturnPreviousValue was sent, the response would be empty. 
 
-[[sid-65274058_HotRodProtocol-Version1.2-ReplaceIfUnmodified]]
+[[sid-68355115_HotRodProtocol-Version1.2-ReplaceIfUnmodified]]
 
 
 ===== ReplaceIfUnmodified
@@ -1832,7 +1832,7 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 
 *  Response: If ForceReturnPreviousValue has been passed, this responses will contain previous value (and corresponding value length) for that key. If the key does not exist or previous was null, value length would be 0. Otherwise, if no ForceReturnPreviousValue was sent, the response would be empty. 
 
-[[sid-65274058_HotRodProtocol-Version1.2-RemoveIfUnmodified]]
+[[sid-68355115_HotRodProtocol-Version1.2-RemoveIfUnmodified]]
 
 
 ===== RemoveIfUnmodified
@@ -1862,7 +1862,7 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 
 *  Response: If ForceReturnPreviousValue has been passed, this responses will contain previous value (and corresponding value length) for that key. If the key does not exist or previous was null, value length would be 0. Otherwise, if no ForceReturnPreviousValue was sent, the response would be empty. 
 
-[[sid-65274058_HotRodProtocol-Version1.2-Clear]]
+[[sid-68355115_HotRodProtocol-Version1.2-Clear]]
 
 
 ===== Clear
@@ -1883,7 +1883,7 @@ public static int virtualNodeHashCode(int nodeBaseHashCode, int id, Hash hashFct
 
 *  0x00 status if infinispan was cleared 
 
-[[sid-65274058_HotRodProtocol-Version1.2-Stats]]
+[[sid-68355115_HotRodProtocol-Version1.2-Stats]]
 
 
 ===== Stats
@@ -1931,7 +1931,7 @@ Returns a summary of all available statistics. For each statistic returned, a na
 
 *  _Value_ : String containing statistic value. 
 
-[[sid-65274058_HotRodProtocol-Version1.2-Ping]]
+[[sid-68355115_HotRodProtocol-Version1.2-Ping]]
 
 
 ===== Ping
@@ -1944,7 +1944,7 @@ Application level request to see if the server is available.
 
 *  0x00 - if no errors 
 
-[[sid-65274058_HotRodProtocol-Version1.2-ErrorHandling]]
+[[sid-68355115_HotRodProtocol-Version1.2-ErrorHandling]]
 
 
 ==== Error Handling
@@ -1964,14 +1964,14 @@ Response header contains error op code response and corresponding error status n
 
 *  _Error message_ : Error message. In the case of 0x84 , this error field contains the latest version supported by the hot rod server. Length is defined by total body length. 
 
-[[sid-65274058_HotRodProtocol-Version1.2-MultiGetOperations]]
+[[sid-68355115_HotRodProtocol-Version1.2-MultiGetOperations]]
 
 
 ==== Multi-Get Operations
 
 A multi-get operation is a form of get operation that instead of requesting a single key, requests a set of keys. The Hot Rod protocol does not include such operation but remote Hot Rod clients could easily implement this type of operations by either parallelizing/pipelining individual get requests. Another possibility would be for remote clients to use async or non-blocking get requests. For example, if a client wants N keys, it could send send N async get requests and then wait for all the replies. Finally, multi-get is not to be confused with bulk-get operations. In bulk-gets, either all or a number of keys are retrieved, but the client does not know which keys to retrieve, whereas in multi-get, the client defines which keys to retrieve.
 
-[[sid-65274058_HotRodProtocol-Version1.2-ExamplePutrequest]]
+[[sid-68355115_HotRodProtocol-Version1.2-ExamplePutrequest]]
 
 
 ==== Example - Put request

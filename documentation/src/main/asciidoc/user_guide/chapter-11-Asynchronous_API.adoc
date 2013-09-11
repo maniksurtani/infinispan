@@ -1,4 +1,4 @@
-[[sid-65273985]]
+[[sid-68355036]]
 
 ==  Asynchronous API
 
@@ -8,7 +8,7 @@
 
 For example, in a cache paramerized as Cache&lt;String, String&gt;, Cache.put(String key, String value) returns a String.  Cache.putAsync(String key, String value) would return a Future&lt;String&gt;.
 
-[[sid-65273985_AsynchronousAPI-WhyusesuchanAPI%3F]]
+[[sid-68355036_AsynchronousAPI-WhyusesuchanAPI%3F]]
 
 
 === Why use such an API?
@@ -32,14 +32,14 @@ for (Future<?> f: futures) f.get();
 
 ----
 
-[[sid-65273985_AsynchronousAPI-Whichprocessesactuallyhappenasynchronously%3F]]
+[[sid-68355036_AsynchronousAPI-Whichprocessesactuallyhappenasynchronously%3F]]
 
 
 === Which processes actually happen asynchronously?
 
  There are 4 things in Infinispan that can be considered to be on the critical path of a typical write operation.  These are, in terms of cost, network calls, marshalling, writing to a cache store (optional), and locking.  As of Infinispan 4.0, using the async methods will take the network calls and marshalling off the critical path.  For various technical reasons, writing to a cache store and acquiring locks, however, still happens in the caller's thread.  In future, we plan to take these offline as well.  See link:$$http://lists.jboss.org/pipermail/infinispan-dev/2010-January/002219.html$$[this developer mail list thread] about this topic. 
 
-[[sid-65273985_AsynchronousAPI-Notifyingfutures]]
+[[sid-68355036_AsynchronousAPI-Notifyingfutures]]
 
 
 === Notifying futures
@@ -65,7 +65,7 @@ cache.putAsync("key", "value").attachListener(futureListener);
 
 ----
 
-[[sid-65273985_AsynchronousAPI-Furtherreading]]
+[[sid-68355036_AsynchronousAPI-Furtherreading]]
 
 
 === Further reading

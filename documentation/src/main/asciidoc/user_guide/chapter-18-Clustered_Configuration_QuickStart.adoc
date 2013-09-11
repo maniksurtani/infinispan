@@ -1,10 +1,10 @@
-[[sid-65273995]]
+[[sid-68355047]]
 
 ==  Clustered Configuration QuickStart
 
  Infinispan ships with _pre-configured_ JGroups stacks that make it easy for you to jump-start a clustered configuration. 
 
-[[sid-65273995_ClusteredConfigurationQuickStart-UsinganexternalJGroupsfile]]
+[[sid-68355047_ClusteredConfigurationQuickStart-UsinganexternalJGroupsfile]]
 
 
 === Using an external JGroups file
@@ -40,7 +40,7 @@ GlobalConfiguration gc = new GlobalConfigurationBuilder().transport().addPropert
 
  In both cases above, Infinispan looks for _jgroups.xml_ first in your classpath, and then for an absolute path name if not found in the classpath. 
 
-[[sid-65273995_ClusteredConfigurationQuickStart-UseoneofthepreconfiguredJGroupsfiles]]
+[[sid-68355047_ClusteredConfigurationQuickStart-UseoneofthepreconfiguredJGroupsfiles]]
 
 
 === Use one of the pre-configured JGroups files
@@ -58,7 +58,7 @@ The configurations available are:
 
 *  jgroups-ec2.xml - Uses TCP as a transport and link:$$http://community.jboss.org/docs/DOC-15925$$[S3_PING] for discovery.  Suitable on link:$$http://$$[Amazon EC2] nodes where UDP multicast isn't available. 
 
-[[sid-65273995_ClusteredConfigurationQuickStart-FinetuningJGroupssettings]]
+[[sid-68355047_ClusteredConfigurationQuickStart-FinetuningJGroupssettings]]
 
 
 ==== tuning JGroups settings
@@ -70,7 +70,7 @@ The settings above can be further tuned without editing the XML files themselves
 $ java -cp ... -Djgroups.tcp.port=1234 -Djgroups.tcp.address=10.11.12.13
 ----
 
-[[sid-65273995_ClusteredConfigurationQuickStart-jgroupsudp.xml]]
+[[sid-68355047_ClusteredConfigurationQuickStart-jgroupsudp.xml]]
 
 
 ===== jgroups-udp.xml
@@ -85,7 +85,7 @@ $ java -cp ... -Djgroups.tcp.port=1234 -Djgroups.tcp.address=10.11.12.13
 |===============
 
 
-[[sid-65273995_ClusteredConfigurationQuickStart-jgroupstcp.xml]]
+[[sid-68355047_ClusteredConfigurationQuickStart-jgroupstcp.xml]]
 
 
 ===== jgroups-tcp.xml
@@ -102,7 +102,7 @@ $ java -cp ... -Djgroups.tcp.port=1234 -Djgroups.tcp.address=10.11.12.13
 |===============
 
 
-[[sid-65273995_ClusteredConfigurationQuickStart-jgroupsec2.xml]]
+[[sid-68355047_ClusteredConfigurationQuickStart-jgroupsec2.xml]]
 
 
 ===== jgroups-ec2.xml
@@ -119,7 +119,7 @@ $ java -cp ... -Djgroups.tcp.port=1234 -Djgroups.tcp.address=10.11.12.13
 |===============
 
 
-[[sid-65273995_ClusteredConfigurationQuickStart-Furtherreading]]
+[[sid-68355047_ClusteredConfigurationQuickStart-Furtherreading]]
 
 
 === Further reading

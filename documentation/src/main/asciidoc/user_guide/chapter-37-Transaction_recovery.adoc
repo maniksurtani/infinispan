@@ -1,20 +1,20 @@
-[[sid-65274024]]
+[[sid-68355080]]
 
 ==  Transaction recovery
 
-[[sid-65274024_Transactionrecovery-]]
+[[sid-68355080_Transactionrecovery-]]
 
 
 === 
 
-[[sid-65274024_Transactionrecovery-Whentouserecovery]]
+[[sid-68355080_Transactionrecovery-Whentouserecovery]]
 
 
 === When to use recovery
 
 Consider a distributed transaction in which money are transfered from an account stored in the database to an account stored in Infinispan. When TransactionManager.commit() is invoked, both resources prepare successfully(1st phase). During commit (2nd phase), the database successfully applies the changes whilst Infinispan fails before receiving the commit request from the TransactionManager. At this point the system is in an inconsistent state: money are taken from the datbase account but not visible yet in Infinispan(locks are only released during 2nd phase of 2PC). Recovery deals with this situation to make sure data in both the database and Infinispan ends up in a consistent state.
 
-[[sid-65274024_Transactionrecovery-Howdoesitwork]]
+[[sid-68355080_Transactionrecovery-Howdoesitwork]]
 
 
 === How does it work
@@ -23,7 +23,7 @@ Recovery is coordinated by the TransactionManager (TM). The TM works with Infini
 
  Knowing the in-doubt transaction ids, the SA can now connect to the Infinispan cluster and replay the commit of transactions or force the rollback. Infinispan provides JMX tooling for this - this is explained extensively in the link:$$http://community.jboss.org/docs/DOC-16646?uniqueTitle=false#Reconciliate_state$$[Reconciliate state] section. 
 
-[[sid-65274024_Transactionrecovery-Configuringrecovery%C2%A0%C2%A0%C2%A0]]
+[[sid-68355080_Transactionrecovery-Configuringrecovery%C2%A0%C2%A0%C2%A0]]
 
 
 === Configuring recovery   
@@ -57,14 +57,14 @@ boolean isRecoveryEnabled = configuration.isTransactionRecoveryEnabled();
 
 Recovery can be enabled/disabled o a per cache level: e..g it is possible to have a transaction spanning a cache that is has it enabled and another one that doesn't.
 
-[[sid-65274024_Transactionrecovery-EnableJMXsupport]]
+[[sid-68355080_Transactionrecovery-EnableJMXsupport]]
 
 
 ==== Enable JMX support
 
  _Important:_ In order to be able to use JMX for managing recovery JMX support must be explicitly enabled. More about enabling JMX link:$$http://community.jboss.org/docs/DOC-14865#Enabling_JMX_Statistics$$[here] . 
 
-[[sid-65274024_Transactionrecovery-Recoverycache]]
+[[sid-68355080_Transactionrecovery-Recoverycache]]
 
 
 ==== Recovery cache
@@ -75,7 +75,7 @@ This in-doubt transaction data is held within a local cache: this allows one to 
 
  It is possible (though not mandated) to share same recovery cache between all the Infinispan caches that have recovery enabled.  If default recovery cache is overridden then the specified recovery cache must use a link:$$http://docs.jboss.org/infinispan/4.0/apidocs/org/infinispan/transaction/lookup/class-use/TransactionManagerLookup.html$$[TransactionManagerLookup] that returns a different TM than the one used by the cache itself. 
 
-[[sid-65274024_Transactionrecovery-IntegrationwiththeTM]]
+[[sid-68355080_Transactionrecovery-IntegrationwiththeTM]]
 
 
 === Integration with the TM
@@ -90,7 +90,7 @@ XAResource xar = cache.getAdvancedCache().getXAResource(); 
 
  Note: It is a common practice to run the recovery in a different process than the one running the transaction. At the moment it is not possible to do this with infinispan: the recovery must be run from the same process where the infinispan instance exists. This limitation will be dropped once link:$$https://issues.jboss.org/browse/ISPN-375$$[ransactions over HotRod are available] . 
 
-[[sid-65274024_Transactionrecovery-Reconciliatestate]]
+[[sid-68355080_Transactionrecovery-Reconciliatestate]]
 
 
 === conciliate state
@@ -125,14 +125,14 @@ image::[]
 
  _Note:_ All JMX operations described above can be executed on any node, disregarding where the transaction originated. 
 
-[[sid-65274024_Transactionrecovery-Forcecommit%2FrollbackbasedonXID]]
+[[sid-68355080_Transactionrecovery-Forcecommit%2FrollbackbasedonXID]]
 
 
 ==== Force commit/rollback based on XID
 
 XID-based JMX operations for forcing in-doubt transactions' commit/rollback are available as well: these methods receive byte[] arrays describing the XID instead of the number associated with the transactions (as previously described at step 2). These can be useful e.g. if one wants to set up an automatic completion job for certain in-doubt transactions. This process is plugged into TM's recovery and has access to the TM's XID objects.
 
-[[sid-65274024_Transactionrecovery-Wanttoknowmore%3F]]
+[[sid-68355080_Transactionrecovery-Wanttoknowmore%3F]]
 
 
 === Want to know more?

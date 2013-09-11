@@ -1,10 +1,10 @@
-[[sid-65274061]]
+[[sid-68355118]]
 
 ==  Cross site replication
 
  Cross site (x-site) replication allows backing up the data from one cluster to other clusters, potentially situated in different geographical location. The cross-site replication is built on top of JGroups' link:$$http://www.jgroups.org/manual-3.x/html/user-advanced.html#Relay2Advanced$$[RELAY2 protocol] . link:$$https://community.jboss.org/wiki/DesignForCrossSiteReplication$$[This document] describes the technical design of cross site replication in more detail. 
 
-[[sid-65274061_Crosssitereplication-Sampledeployment]]
+[[sid-68355118_Crosssitereplication-Sampledeployment]]
 
 
 === Sample deployment
@@ -39,16 +39,16 @@ image::[]
 The cross-site replication configuration spreads over the following files:
 
 
-.  the backup policy for each individual cache is defined in infinispan's .xml configuration file ( link:$$https://docs.jboss.org/author/download/attachments/65274061/infinispan.xml?version=1&amp;modificationDate=1362652288000$$[infinispan.xml] in attachment) 
+.  the backup policy for each individual cache is defined in infinispan's .xml configuration file ( link:$$https://docs.jboss.org/author/download/attachments/68355118/infinispan.xml?version=1&amp;modificationDate=1362652288000$$[infinispan.xml] in attachment) 
 
 
-.  cluster's jgroups xml configuration file: link:$$http://www.jgroups.org/manual-3.x/html/user-advanced.html#Relay2Advanced$$[RELAY2] protocol needs to be added to the JGroups protocol stack ( link:$$https://docs.jboss.org/author/download/attachments/65274061/jgroups.xml?version=1&amp;modificationDate=1348082252000$$[jgroups.xml] ) 
+.  cluster's jgroups xml configuration file: link:$$http://www.jgroups.org/manual-3.x/html/user-advanced.html#Relay2Advanced$$[RELAY2] protocol needs to be added to the JGroups protocol stack ( link:$$https://docs.jboss.org/author/download/attachments/68355118/jgroups.xml?version=1&amp;modificationDate=1348082252000$$[jgroups.xml] ) 
 
 
-.  RELAY2 configuration file: RELAY2 has an own configuration file ( link:$$https://docs.jboss.org/author/download/attachments/65274061/relay2.xml?version=1&amp;modificationDate=1348082291000$$[relay2.xml] ) 
+.  RELAY2 configuration file: RELAY2 has an own configuration file ( link:$$https://docs.jboss.org/author/download/attachments/68355118/relay2.xml?version=1&amp;modificationDate=1348082291000$$[relay2.xml] ) 
 
 
-.  the jgroups channel that is used by RELAY2 has its own configuration file ( link:$$https://docs.jboss.org/author/download/attachments/65274061/jgroups-relay2.xml?version=1&amp;modificationDate=1348082201000$$[jgroups-relay2.xml] ) Infinispan XML configuration file 
+.  the jgroups channel that is used by RELAY2 has its own configuration file ( link:$$https://docs.jboss.org/author/download/attachments/68355118/jgroups-relay2.xml?version=1&amp;modificationDate=1348082201000$$[jgroups-relay2.xml] ) Infinispan XML configuration file 
 
 The local site is defined in the the global configuration section. The local is the site where the node using this configuration file resides (in the example above local site is "LON").
 
@@ -161,7 +161,7 @@ cb.sites().backupFor().remoteCache("users").remoteSite("LON");
 
 ----
 
-[[sid-65274061_Crosssitereplication-Localcluster%27sjgroups.xmlconfiguration]]
+[[sid-68355118_Crosssitereplication-Localcluster%27sjgroups.xmlconfiguration]]
 
 
 ==== Local cluster's jgroups .xml configuration
@@ -185,44 +185,44 @@ This is the configuration file for the local (intra-site) infinispan cluster. It
 
 ----
 
- In order to allow inter-site calls, the RELAY2 protocol needs to be added to the protocol stack defined in the jgroups configuration (see attached link:$$https://docs.jboss.org/author/download/attachments/65274061/jgroups.xml?version=1&amp;modificationDate=1348082252000$$[jgroups.xml] for an example). 
+ In order to allow inter-site calls, the RELAY2 protocol needs to be added to the protocol stack defined in the jgroups configuration (see attached link:$$https://docs.jboss.org/author/download/attachments/68355118/jgroups.xml?version=1&amp;modificationDate=1348082252000$$[jgroups.xml] for an example). 
 
-[[sid-65274061_Crosssitereplication-RELAY2configurationfile]]
+[[sid-68355118_Crosssitereplication-RELAY2configurationfile]]
 
 
 ==== RELAY2 configuration file
 
- The RELAY2 configuration file is linked from the jgroups.xml (see attached link:$$https://docs.jboss.org/author/download/attachments/65274061/relay2.xml?version=1&amp;modificationDate=1348082291000$$[relay2.xml] ). It defines the sites seen by this cluster and also the jgroups configuration file that is used by RELAY2 in order to communicate with the remote sites. 
+ The RELAY2 configuration file is linked from the jgroups.xml (see attached link:$$https://docs.jboss.org/author/download/attachments/68355118/relay2.xml?version=1&amp;modificationDate=1348082291000$$[relay2.xml] ). It defines the sites seen by this cluster and also the jgroups configuration file that is used by RELAY2 in order to communicate with the remote sites. 
 
-[[sid-65274061_Crosssitereplication-Datareplication]]
+[[sid-68355118_Crosssitereplication-Datareplication]]
 
 
 === Data replication
 
 For both transactional and non-transactional caches, the backup calls are performed in parallel with local cluster calls, e.g. if we write data to node N1 in LON then replication to the local nodes N2 and N3 and remote backup sites SFO and NYC happen in parallel.
 
-[[sid-65274061_Crosssitereplication-Nontransactionalcaches]]
+[[sid-68355118_Crosssitereplication-Nontransactionalcaches]]
 
 
 ==== Non transactional caches
 
 In the case of non-transactional caches the replication happens during each operation. Given that data is sent in parallel to backups and local caches, it is possible for the operations to succeed locally and fail remotely, or the other way, causing inconsistencies
 
-[[sid-65274061_Crosssitereplication-Transactionalcaches]]
+[[sid-68355118_Crosssitereplication-Transactionalcaches]]
 
 
 ==== Transactional caches
 
  For synchronous transactional caches, Infinispan internally uses a two phase commit protocol: lock acquisition during the 1st phase (prepare) and apply changes during the 2nd phase (commit). For asynchronous caches the two phases are merged, the "apply changes" message being sent asynchronously to the owners of data. This 2PC protocol maps to 2PC received from the JTA transaction manager. For transactional caches, both optimistic and pessimistic, the backup to remote sites happens during the prepare and commit phase only. 
 
-[[sid-65274061_Crosssitereplication-Synchronouslocalclusterwithasyncbackup]]
+[[sid-68355118_Crosssitereplication-Synchronouslocalclusterwithasyncbackup]]
 
 
 ===== Synchronous local cluster with async backup
 
 In this scenario the backup call happens during local commit phase(2nd phase). That means that if the local prepare fails, no remote data is being sent to the remote backup.
 
-[[sid-65274061_Crosssitereplication-Synchronouslocalclusterwithsyncbackup]]
+[[sid-68355118_Crosssitereplication-Synchronouslocalclusterwithsyncbackup]]
 
 
 ===== Synchronous local cluster with sync backup
@@ -249,7 +249,7 @@ In this case there are two backup calls:
 
 Both the local and the backup call(if the "backupFailurePolicy" is set to "FAIL") can veto transaction's prepare outcome
 
-[[sid-65274061_Crosssitereplication-Asynchronouslocalcluster]]
+[[sid-68355118_Crosssitereplication-Asynchronouslocalcluster]]
 
 
 ===== Asynchronous local cluster
@@ -257,14 +257,14 @@ Both the local and the backup call(if the "backupFailurePolicy" is set to "FAIL"
 
 * In the case of asynchronous local clusters, the backup data is sent during the commit phase. If the backup call fails and the "backupFailurePolicy" is set to "FAIL" then the user is notified through an exception.
 
-[[sid-65274061_Crosssitereplication-Takingasiteoffline]]
+[[sid-68355118_Crosssitereplication-Takingasiteoffline]]
 
 
 === Taking a site offline
 
 If backing up to a site fails for a certain number of times during an time interval, then it is possible to automatically mark that site as offline. When a site is marked as offline the local site won't try to backup data to it anymore. In order to be taken online a system administrator intervention being required.
 
-[[sid-65274061_Crosssitereplication-Configuration]]
+[[sid-68355118_Crosssitereplication-Configuration]]
 
 
 ==== Configuration
@@ -305,14 +305,14 @@ lon.sites().addBackup()
 
 ----
 
-[[sid-65274061_Crosssitereplication-Takingasitebackonline]]
+[[sid-68355118_Crosssitereplication-Takingasitebackonline]]
 
 
 ==== Taking a site back online
 
  In order to bring a site back online after being taken offline, one can use the JMX console and invoke the "bringSiteOnline(siteName)" operation on the _XSiteAdmin_ managed bean. At the moment this method would need to be invoked on all the nodes within the site(further releases will overcome this limitation). 
 
-[[sid-65274061_Crosssitereplication-Reference]]
+[[sid-68355118_Crosssitereplication-Reference]]
 
 
 === Reference

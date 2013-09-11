@@ -1,8 +1,8 @@
-[[sid-65273979]]
+[[sid-68355030]]
 
 ==  Configuring cache programmatically
 
-[[sid-65273979_Configuringcacheprogrammatically-ProgrammaticConfiguration]]
+[[sid-68355030_Configuringcacheprogrammatically-ProgrammaticConfiguration]]
 
 
 === Programmatic Configuration
@@ -61,7 +61,7 @@ Cache<String, String> cache = manager.getCache(newCacheName);
 
  Refer to link:$$http://docs.jboss.org/infinispan/4.0/apidocs/org/infinispan/manager/CacheManager.html$$[CacheManager] , link:$$http://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/configuration/cache/ConfigurationBuilder.html$$[ConfigurationBuilder] , link:$$http://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/configuration/cache/Configuration.html$$[Configuration] , and link:$$http://docs.jboss.org/infinispan/5.1/apidocs/org/infinispan/configuration/global/GlobalConfiguration.html$$[GlobalConfiguration] javadocs for more details. 
 
-[[sid-65273979_Configuringcacheprogrammatically-ConfigurationBuilderProgrammaticConfigurationAPI]]
+[[sid-68355030_Configuringcacheprogrammatically-ConfigurationBuilderProgrammaticConfigurationAPI]]
 
 
 === ConfigurationBuilder Programmatic Configuration API
@@ -157,7 +157,7 @@ Configuration config = new ConfigurationBuilder()
 
 ----
 
- Configuring Infinispan with <<sid-65274001,one or several chained persistent stores>> is simple too: 
+ Configuring Infinispan with <<sid-68355053,one or several chained persistent stores>> is simple too: 
 
 
 ----
@@ -167,7 +167,7 @@ Configuration config = new ConfigurationBuilder()
         .addFileCacheStore().location("/tmp").streamBufferSize(1800).async().enable().threadPoolSize(20).build();
 ----
 
-[[sid-65273979_Configuringcacheprogrammatically-Advancedprogrammaticconfiguration]]
+[[sid-68355030_Configuringcacheprogrammatically-Advancedprogrammaticconfiguration]]
 
 
 ==== Advanced programmatic configuration

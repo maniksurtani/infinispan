@@ -1,15 +1,15 @@
-[[sid-65274023]]
+[[sid-68355079]]
 
 ==  Key affinity service
 
-[[sid-65274023_Keyaffinityservice-Introduction]]
+[[sid-68355079_Keyaffinityservice-Introduction]]
 
 
 === Introduction
 
  The key affinity service solves the following problem: for a distributed Infinispan cluster one wants to make sure that a value is placed in a certain node. Based on a supplied cluster link:$$http://docs.jboss.org/infinispan/4.1/apidocs/org/infinispan/remoting/transport/Address.html$$[address] identifying the node, the service returns a key that will be hashed to that particular node. 
 
-[[sid-65274023_Keyaffinityservice-API]]
+[[sid-68355079_Keyaffinityservice-API]]
 
 
 === API
@@ -36,7 +36,7 @@ cache.put(localKey, "yourValue");
 
 The service is started at step 2: after this point it uses the supplied Excutor to generate and queue keys. At step 3, we obtain a key for this service, and use it at step 4, with that guarantee that it is distributed in node identified by cacheManager.getAddress().
 
-[[sid-65274023_Keyaffinityservice-Lifecycle]]
+[[sid-68355079_Keyaffinityservice-Lifecycle]]
 
 
 === Lifecycle
@@ -58,7 +58,7 @@ The KeyAffinityService, once started, needs to be explicitly stopped. This stops
 
 The only situation in which KeyAffinityService stops by itself is when the cache manager with wich it was registered is shutdown.
 
-[[sid-65274023_Keyaffinityservice-Topologychanges]]
+[[sid-68355079_Keyaffinityservice-Topologychanges]]
 
 
 === Topology changes

@@ -1,22 +1,22 @@
-[[sid-65274066_GettingStartedGuide-AccessinganInfinispandatagridremotely]]
+[[sid-68355130_GettingStartedGuide-AccessinganInfinispandatagridremotely]]
 
 ==  Accessing an Infinispan data grid remotely
 
-[[sid-65274066_GettingStartedGuide-UsingHotRodtoaccessanInfinispandatagrid]]
+[[sid-68355130_GettingStartedGuide-UsingHotRodtoaccessanInfinispandatagrid]]
 
 
 === Using Hot Rod to access an Infinispan data-grid
 
 TODO
 
-[[sid-65274066_GettingStartedGuide-UsingRESTtoaccessanInfinipsandatagrid]]
+[[sid-68355130_GettingStartedGuide-UsingRESTtoaccessanInfinipsandatagrid]]
 
 
 === Using REST to access an Infinipsan data-grid
 
 TODO
 
-[[sid-65274066_GettingStartedGuide-UsingmemcachedtoaccessanInfinispandatagrid]]
+[[sid-68355130_GettingStartedGuide-UsingmemcachedtoaccessanInfinispandatagrid]]
 
 
 === Using memcached to access an Infinispan data-grid

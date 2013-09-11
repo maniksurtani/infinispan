@@ -1,8 +1,8 @@
-[[sid-65274013]]
+[[sid-68355067]]
 
 ==  Using Infinispan as JPA-Hibernate Second Level Cache Provider
 
-[[sid-65274013_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-Overview]]
+[[sid-68355067_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-Overview]]
 
 
 === Overview
@@ -21,7 +21,7 @@
 ==== 
 
 
-[[sid-65274013_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-Configuration]]
+[[sid-68355067_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-Configuration]]
 
 
 === Configuration
@@ -92,14 +92,14 @@
 
  This is all the configuration you need to have JPA/Hibernate use Infinispan as cache provider with the default settings. You will still need to define which entities and queries need to be cached as defined in the Hibernate reference documentation, but that configuration aspect is not peculiar to Infinispan. This default configuration should suit the majority of use cases but sometimes, further configuration is required and to help with such situations, please check the following section where more advanced settings are discussed. 
 
-[[sid-65274013_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-DefaultConfigurationExplained]]
+[[sid-68355067_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-DefaultConfigurationExplained]]
 
 
 === Default Configuration Explained
 
 The aim of this section is to explain the default settings for each of the different global data type (entity, collection, query and timestamps) caches, why these were chosen and what are the available alternatives.
 
-[[sid-65274013_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-DefaultsforEntity%2FCollectionCaching]]
+[[sid-68355067_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-DefaultsforEntity%2FCollectionCaching]]
 
 
 ==== Defaults for Entity/Collection Caching
@@ -135,7 +135,7 @@ The aim of this section is to explain the default settings for each of the diffe
 
 *  By default _entites and collections are configured with lazy deserialization_ which helps deserialization when entities or collections are stored in isolated deployments. If you're sure you'll never deploy your entities or collections in classloader isolated deployment archives, you can disable this setting. 
 
-[[sid-65274013_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-DefaultsforQueryCaching]]
+[[sid-68355067_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-DefaultsforQueryCaching]]
 
 
 ==== Defaults for Query Caching
@@ -158,7 +158,7 @@ The aim of this section is to explain the default settings for each of the diffe
 
 *  By default, _query cache has initial state transfer disabled_ . It is not recommended that this is enabled. 
 
-[[sid-65274013_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-DefaultsforTimestampsCache]]
+[[sid-68355067_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-DefaultsforTimestampsCache]]
 
 
 ==== Defaults for Timestamps Cache
@@ -169,7 +169,7 @@ The aim of this section is to explain the default settings for each of the diffe
 
 *  By default, the _timestamps cache is configured with a cluster cache loader (in Hibernate 3.6.0 or earlier it had state transfer enabled)_ so that joining nodes can retrieve all timestamps. You shouldn't attempt to disable the cluster cache loader for the timestamps cache. 
 
-[[sid-65274013_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-JTATransactionsConfiguration]]
+[[sid-68355067_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-JTATransactionsConfiguration]]
 
 
 === JTA Transactions Configuration
@@ -276,14 +276,14 @@ For Example if you were running with the JBoss Application Server you would set:
 </property>
 ----
 
-[[sid-65274013_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-StandaloneJTAforJPA%2FHibernateusingInfinispanas2LC]]
+[[sid-68355067_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-StandaloneJTAforJPA%2FHibernateusingInfinispanas2LC]]
 
 
 ==== Standalone JTA for JPA/Hibernate using Infinispan as 2LC
 
  The JBoss standalone JTA example referred to in the previous section is inspired by the great work of Guenther Demetz, one of the members of the Infinispan community, who wrote an link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737126$$[impressive wiki explaining how to set up standalone JTA with different transaction managers running outside of an EE server, and how to get this to work with an Infinispan backed JPA/Hibernate application] . 
 
-[[sid-65274013_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-AdvancedConfiguration]]
+[[sid-68355067_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-AdvancedConfiguration]]
 
 
 === Advanced Configuration
@@ -507,7 +507,7 @@ The query would be stored under "AccountRegion" cache instance and users could c
 </property>
 ----
 
-[[sid-65274013_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-IntegrationwithJBossApplicationServer]]
+[[sid-68355067_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-IntegrationwithJBossApplicationServer]]
 
 
 === Integration with JBoss Application Server
@@ -518,7 +518,7 @@ Infinispan based Hibernate 2LC was developed as part of Hibernate 3.5 release an
 
  Recently, William Decoste has helped migrate the Infinispan 2LC module to Hibernate 3.3, and link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737057$$[in this wiki] , he explains how to integrate Infinispan Hibernate 2LC with JBoss AS/EAP 5.x. 
 
-[[sid-65274013_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-UsingInfinispanasremoteSecondLevelCache%3F]]
+[[sid-68355067_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-UsingInfinispanasremoteSecondLevelCache%3F]]
 
 
 === Using Infinispan as remote Second Level Cache?
@@ -548,10 +548,10 @@ There are however some edge cases where it might make sense to have a remote sec
 
 *  To pin the cache and the application server onto different CPU cores (using _numactl_ ), and even pin them to different physically memory based on the NUMA nodes. 
 
-[[sid-65274013_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-FrequentlyAskedQuestions]]
+[[sid-68355067_UsingInfinispanasJPA-HibernateSecondLevelCacheProvider-FrequentlyAskedQuestions]]
 
 
 === Frequently Asked Questions
 
- To find out more please go to the link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=5832912$$[Hibernate 2nd level cache  section] in the <<sid-65273893,Technical FAQ wiki>> . 
+ To find out more please go to the link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=5832912$$[Hibernate 2nd level cache  section] in the <<sid-68354942,Technical FAQ wiki>> . 
 

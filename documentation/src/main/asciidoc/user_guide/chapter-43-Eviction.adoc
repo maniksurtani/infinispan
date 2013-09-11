@@ -1,4 +1,4 @@
-[[sid-65274032]]
+[[sid-68355088]]
 
 ==  Eviction
 
@@ -15,7 +15,7 @@ Passivation is also a popular option when using eviction, so that only a single 
 
  Note that eviction occurs on a _local_ basis, and is not cluster-wide.  Each node runs an eviction thread to analyse the contents of its in-memory container and decide what to evict. Eviction does not take into account the amount of free memory in the JVM as threshold to  starts evicting entries. You have to set maxEntries attribute of the eviction element to be greater than zero in order for eviction to be turned on. If maxEntries is too large you can run out of memory. maxEntries attribute will probably take some tuning in each use case. 
 
-[[sid-65274032_Eviction-Evictionin5.2]]
+[[sid-68355088_Eviction-Evictionin5.2]]
 
 
 === Eviction in 5.2
@@ -24,35 +24,35 @@ Passivation is also a popular option when using eviction, so that only a single 
 
 All cache entry are evicted by piggybacking   on user threads that are hitting the cache. Periodic pruning   of expired cache entries from cache is done on a dedicated thread which is turned on   by enabling reaper in expiration configuration element/API.
 
-[[sid-65274032_Eviction-NONE]]
+[[sid-68355088_Eviction-NONE]]
 
 
 ==== NONE
 
 This eviction strategy effectively disables the eviction thread.
 
-[[sid-65274032_Eviction-UNORDERED]]
+[[sid-68355088_Eviction-UNORDERED]]
 
 
 ==== UNORDERED
 
 UNORDERED eviction strategy is a legacy eviction strategy that has been deprecated. If UNORDERED strategy is specified LRU eviction algorithm will be used.
 
-[[sid-65274032_Eviction-LRU]]
+[[sid-68355088_Eviction-LRU]]
 
 
 ==== LRU
 
 If LRU eviction is used cache entries are selected for eviction using a well known least-recently-used pattern.
 
-[[sid-65274032_Eviction-LIRS]]
+[[sid-68355088_Eviction-LIRS]]
 
 
 ==== LIRS
 
 LRU eviction algorithm, although simple and easy to understand, under performs in cases of weak access locality (one time access entries are not timely replaced, entries to be accessed soonest are unfortunately replaced, and so on). Recently, a new eviction algorithm - LIRS has gathered a lot of attention because it addresses weak access locality shortcomings of LRU yet it retains LRU's simplicity. Eviction in LIRS algorithm relies on history information of cache entries accesses using so called Inter-Reference Recency (a.k.a IRR) and the Recency. The IRR of a cache entry A refers to number of other distinct entries accessed between the last two consecutive accesses to cache entry A, while recency refers to the number of other entries accessed from last reference to A up to current time point. If we relied only on cache recency we would essentially have LRU functionality. However, in addition to recency LIRS tracks elements that are in low IRR and high IRR, aptly named LIR and HIR cache entry blocks respectively. LIRS eviction algorithm essentially keeps entries with a low IRR in the cache as much as possible while evicting high IRR entries if eviction is required. If recency of a LIR cache entry increases to a certain point and entry  in HIR gets accessed at a smaller recency than that of the LIR entry, the LIR/HIR statuses of the two blocks are switched. Entries in HIR may be evicted regardless of its recency, even if element was recently accessed.
 
-[[sid-65274032_Eviction-Configurationanddefaultsin5.2.x]]
+[[sid-68355088_Eviction-Configurationanddefaultsin5.2.x]]
 
 
 === Configuration and defaults in 5.2.x
@@ -78,14 +78,14 @@ In case there is an eviction element, this table describes behaviour of eviction
 |===============
 
 
-[[sid-65274032_Eviction-AdvancedEvictionInternals]]
+[[sid-68355088_Eviction-AdvancedEvictionInternals]]
 
 
 === Advanced Eviction Internals
 
  Implementing eviction in a scalable, low lock contention  approach while  at the same time doing meaningful selection of entries for eviction is  not an easy feat. Data container needs to be locked until appropriate  eviction entries are selected. Having  such a lock protected data  container in turn causes high lock contention  offsetting any eviction  precision gained by sophisticated eviction  algorithms. In order to get  superior throughput while retaining high  eviction precision both low  lock contention data container and  high precision eviction algorithm  implementation are needed. Infinispan evicts entries from cache on a  segment level (segments  similar to ConcurrentHashMap), once segment is  full entries are evicted  according to eviction algorithm. However,  there are two drawbacks with this approach. Entries might get evicted  from cache even though maxEntries has not been reached yet and  maxEntries is a theoretical  limit for cache size but in practical   terms it will be slightly less  than maxEntries. For more details refer to link:$$http://infinispan.blogspot.com/2010/03/infinispan-eviction-batching-updates.html$$[Infinispan eviction design] . 
 
-[[sid-65274032_Eviction-Expiration]]
+[[sid-68355088_Eviction-Expiration]]
 
 
 === Expiration
@@ -103,7 +103,7 @@ Unlike eviction, expired entries are removed globally - from memory, cache store
 
  By default entries created are immortal and do not have a lifespan or maximum idle time.  Using the cache API, mortal entries can be created with lfiespans and/or maximum idle times.  Further, default lifespans and/or maximum idle times can be configured by adding the link:$$http://docs.jboss.org/infinispan/5.1/configdocs/urn_infinispan_config_5.1/complexType/configuration.expiration.html$$[&lt;expiration /&gt;] element to your &lt;default /&gt; or &lt;namedCache /&gt; configuration sections. 
 
-[[sid-65274032_Eviction-DifferencebetweenEvictionandExpiration]]
+[[sid-68355088_Eviction-DifferencebetweenEvictionandExpiration]]
 
 
 === Difference between Eviction and Expiration

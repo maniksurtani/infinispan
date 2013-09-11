@@ -1,10 +1,10 @@
-[[sid-65274140]]
+[[sid-68355206]]
 
 ==  Upgrading from 5.0 to 5.1
 
 Please find below tips and recommendations when upgrading from Infinispan 5.0 to 5.1:
 
-[[sid-65274140_Upgradingfrom5.0to5.1-API]]
+[[sid-68355206_Upgradingfrom5.0to5.1-API]]
 
 
 === API
@@ -61,7 +61,7 @@ RemoteCacheManager cacheContainer = new RemoteCacheManager();
 RemoteCache cache = cacheContainer.getCache();
 ----
 
-[[sid-65274140_Upgradingfrom5.0to5.1-EvictionandExpiration]]
+[[sid-68355206_Upgradingfrom5.0to5.1-EvictionandExpiration]]
 
 
 === Eviction and Expiration
@@ -77,7 +77,7 @@ RemoteCache cache = cacheContainer.getCache();
 
 .  Eviction's maxEntries is used as guide for the entire cache, but eviction happens on a per cache segment, so when the segment is full, the segment is evicted. That's why maxEntries is a theoretical limit but in practical terms, it'll be a bit less than that. This is done for performance reasons. 
 
-[[sid-65274140_Upgradingfrom5.0to5.1-Transactions]]
+[[sid-68355206_Upgradingfrom5.0to5.1-Transactions]]
 
 
 === Transactions
@@ -88,7 +88,7 @@ RemoteCache cache = cacheContainer.getCache();
 
 . In 5.0, commit and rollback phases were asynchronous by default. Starting with 5.1, these are now synchronous by default, to provide the guarantees required by a single lock-owner model.
 
-[[sid-65274140_Upgradingfrom5.0to5.1-Statetransfer]]
+[[sid-68355206_Upgradingfrom5.0to5.1-Statetransfer]]
 
 
 === State transfer
@@ -97,7 +97,7 @@ One of the big changes we made in 5.1 was to use the same push-based state trans
 
  As a consequence we've unified the state transfer configuration as well, there is now a stateTransfer element holding a simplified state transfer configuration. The corresponding attributes in the stateRetrieval and hash elements have been deprecated, as have been some attributes that are no longer used. 
 
-[[sid-65274140_Upgradingfrom5.0to5.1-Configuration]]
+[[sid-68355206_Upgradingfrom5.0to5.1-Configuration]]
 
 
 === Configuration
@@ -171,7 +171,7 @@ The schema documentation has changed format, as it is now produced using the sta
 
 We are in the process of adding in support for this configuration style for modules (such as cache stores). In the meantime, please use the old configuration or XML if you require support for cache store module configuration.
 
-[[sid-65274140_Upgradingfrom5.0to5.1-FlagsandClassLoaders]]
+[[sid-68355206_Upgradingfrom5.0to5.1-FlagsandClassLoaders]]
 
 
 === Flags and ClassLoaders
@@ -191,14 +191,14 @@ cache.withFlags(f1, f2).withClassLoader(cl).put(k, v);
 
 The above pattern has always been the intention of this API anyway.
 
-[[sid-65274140_Upgradingfrom5.0to5.1-JGroupsBindAddress]]
+[[sid-68355206_Upgradingfrom5.0to5.1-JGroupsBindAddress]]
 
 
 === JGroups Bind Address
 
  Since upgrading to JGroups 3.x, -Dbind.address is ignored. This should be replaced with -Djgroups.bind_addr . 
 
-[[sid-65274141]]
+[[sid-68355207]]
 
 
 === Configuration changes from 5.0 to 5.1

@@ -1,4 +1,4 @@
-[[sid-65274064]]
+[[sid-68355121]]
 
 ==  Rolling upgrades
 
@@ -6,7 +6,7 @@
 
 In  the following description we will refer to the Source and Target  clusters, where the Source cluster is the old cluster which is currently  in use and the Target cluster is the new cluster to which the data will  be migrated to.
 
-[[sid-65274064_Rollingupgrades-Steps]]
+[[sid-68355121_Rollingupgrades-Steps]]
 
 
 === Steps

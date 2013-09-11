@@ -1,8 +1,8 @@
-[[sid-65274010]]
+[[sid-68355064]]
 
 ==  Infinispan transactions
 
-[[sid-65274010_Infinispantransactions-JTASupport]]
+[[sid-68355064_Infinispantransactions-JTASupport]]
 
 
 === JTA Support
@@ -42,7 +42,7 @@ TransactionManager tm = cache.getAdvancedCache().getTransactionManager();
 
 ----
 
-[[sid-65274010_Infinispantransactions-Configuringtransactions]]
+[[sid-68355064_Infinispantransactions-Configuringtransactions]]
 
 
 === Configuring transactions
@@ -70,7 +70,7 @@ Transactions are being configured at cache level; bellow is a sample configurati
 
  For more details on how two phase commit (2PC) is implemented in Infinispan and how locks are being acquired see the section below. All possible transactional settings are available in link:$$http://docs.jboss.org/infinispan/5.1/configdocs/$$[Configuration reference] 
 
-[[sid-65274010_Infinispantransactions-Transactionalmodes]]
+[[sid-68355064_Infinispantransactions-Transactionalmodes]]
 
 
 === Transactional modes
@@ -109,7 +109,7 @@ Do not forget to configure a TransactionManagerLookup for transactional caches.
 
 Supported transaction models are optimistic and pessimistic. Optimistic model is an improvement over the old transaction model as it completely defers lock acquisition to transaction prepare time. New approach reduces lock acquisition duration and increases throughput which in turn avoids deadlocks significantly. In pessimistic model, cluster wide-locks are acquired on each write operation only being released after the transaction completed.
 
-[[sid-65274010_Infinispantransactions-OptimisticTransactions]]
+[[sid-68355064_Infinispantransactions-OptimisticTransactions]]
 
 
 ==== Optimistic Transactions
@@ -146,7 +146,7 @@ By default, a transactional cache is optimistic.
 ==== 
 
 
-[[sid-65274010_Infinispantransactions-PessimisticTransactions]]
+[[sid-68355064_Infinispantransactions-PessimisticTransactions]]
 
 
 ==== Pessimistic Transactions
@@ -186,7 +186,7 @@ assert c.transaction().lockingMode() == LockingMode.PESSIMISTIC;
 
 ----
 
-[[sid-65274010_Infinispantransactions-Backwardcompatibility]]
+[[sid-68355064_Infinispantransactions-Backwardcompatibility]]
 
 
 ==== Backward compatibility
@@ -206,7 +206,7 @@ The autoCommit feature can be managed through configuration:
 
 ----
 
-[[sid-65274010_Infinispantransactions-WhatdoIneedpessimisticoroptimistictransactions%3F]]
+[[sid-68355064_Infinispantransactions-WhatdoIneedpessimisticoroptimistictransactions%3F]]
 
 
 ==== What do I need - pessimistic or optimistic transactions?
@@ -215,7 +215,7 @@ The autoCommit feature can be managed through configuration:
 
 On the other hand, pessimistic transactions might be a better fit when there is high contention on the keys and transaction rollbacks are less desirable. Pessimistic transactions are more costly by their nature: each write operation potentially involves a RPC for lock acquisition.
 
-[[sid-65274010_Infinispantransactions-Deadlockdetection]]
+[[sid-68355064_Infinispantransactions-Deadlockdetection]]
 
 
 === Deadlock detection
@@ -232,21 +232,21 @@ On the other hand, pessimistic transactions might be a better fit when there is 
 
 Note: deadlock detection only runs on an a per cache basis: deadlocks that spread over two or more caches won't be detected.
 
-[[sid-65274010_Infinispantransactions-Transactionandexceptions]]
+[[sid-68355064_Infinispantransactions-Transactionandexceptions]]
 
 
 === Transaction and exceptions
 
  If a link:$$http://docs.jboss.org/infinispan/4.0/apidocs/org/infinispan/CacheException.html$$[CacheException] (or a subclass of it) is thrown by a cache method within the scope of a JTA transaction, then the transaction is automatically marked for rollback. 
 
-[[sid-65274010_Infinispantransactions-Transactionrecoveryonnodefailures]]
+[[sid-68355064_Infinispantransactions-Transactionrecoveryonnodefailures]]
 
 
 === Transaction recovery on node failures
 
  Transaction recovery is discussed in link:$$http://community.jboss.org/docs/DOC-16646?uniqueTitle=false$$[this] document. 
 
-[[sid-65274010_Infinispantransactions-EnlistingSynchronization]]
+[[sid-68355064_Infinispantransactions-EnlistingSynchronization]]
 
 
 === Enlisting Synchronization

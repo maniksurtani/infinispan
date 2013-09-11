@@ -1,4 +1,4 @@
-[[sid-65274066_GettingStartedGuide-InfinispaninactionGUIDemo]]
+[[sid-68355130_GettingStartedGuide-InfinispaninactionGUIDemo]]
 
 ==  Infinispan in action - GUIDemo
 

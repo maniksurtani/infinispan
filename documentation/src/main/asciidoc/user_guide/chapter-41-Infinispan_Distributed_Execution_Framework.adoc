@@ -1,8 +1,8 @@
-[[sid-65274030]]
+[[sid-68355086]]
 
 ==  Infinispan Distributed Execution Framework
 
-[[sid-65274030_InfinispanDistributedExecutionFramework-Introduction]]
+[[sid-68355086_InfinispanDistributedExecutionFramework-Introduction]]
 
 
 === Introduction
@@ -13,7 +13,7 @@ Infinispan's distributed task executors use data from Infinispan cache nodes as 
 
 Our distributed execution framework capitalizes on the fact input data in Infinispan data grid is already load balanced (in case of DIST mode). Since input data is already balanced execution tasks will be automatically balanced as well; users do not have to explicitly assign work tasks to specific Infinispan nodes. However, our framework accommodates users to specify arbitrary subset of cache keys as input for distributed execution tasks.
 
-[[sid-65274030_InfinispanDistributedExecutionFramework-DistributedCallableAPI]]
+[[sid-68355086_InfinispanDistributedExecutionFramework-DistributedCallableAPI]]
 
 
 === DistributedCallable API
@@ -42,7 +42,7 @@ public interface DistributedCallable<K, V, T> extends Callable<T> {
 
 ----
 
-[[sid-65274030_InfinispanDistributedExecutionFramework-CallableandCDI]]
+[[sid-68355086_InfinispanDistributedExecutionFramework-CallableandCDI]]
 
 
 === Callable and CDI
@@ -67,7 +67,7 @@ public interface DistributedCallable<K, V, T> extends Callable<T> {
 }
 ----
 
-[[sid-65274030_InfinispanDistributedExecutionFramework-DistributedExecutorService%2CDistributedTaskBuilderandDistributedTaskAPI]]
+[[sid-68355086_InfinispanDistributedExecutionFramework-DistributedExecutorService%2CDistributedTaskBuilderandDistributedTaskAPI]]
 
 
 === DistributedExecutorService, DistributedTaskBuilder and DistributedTask API
@@ -102,7 +102,7 @@ Boolean r = future.get();
 
 ----
 
-[[sid-65274030_InfinispanDistributedExecutionFramework-Distributedtaskfailover]]
+[[sid-68355086_InfinispanDistributedExecutionFramework-Distributedtaskfailover]]
 
 
 === Distributed task failover
@@ -159,7 +159,7 @@ Boolean r = future.get();
 
 ----
 
-[[sid-65274030_InfinispanDistributedExecutionFramework-Distributedtaskexecutionpolicy]]
+[[sid-68355086_InfinispanDistributedExecutionFramework-Distributedtaskexecutionpolicy]]
 
 
 === Distributed task execution policy
@@ -176,7 +176,7 @@ Future<Boolean> future = des.submit(distributedTask);
 Boolean r = future.get();
 ----
 
-[[sid-65274030_InfinispanDistributedExecutionFramework-Examples]]
+[[sid-68355086_InfinispanDistributedExecutionFramework-Examples]]
 
 
 === Examples

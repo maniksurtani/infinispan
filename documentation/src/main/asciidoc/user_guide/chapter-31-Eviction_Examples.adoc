@@ -1,8 +1,8 @@
-[[sid-65274017]]
+[[sid-68355071]]
 
 ==  Eviction Examples
 
-[[sid-65274017_EvictionExamples-Introduction]]
+[[sid-68355071_EvictionExamples-Introduction]]
 
 
 === Introduction
@@ -19,7 +19,7 @@
 
 .  Four eviction strategies are shipped, link:$$http://docs.jboss.org/infinispan/5.0/apidocs/org/infinispan/eviction/EvictionStrategy.html#NONE$$[EvictionStrategy.NONE] , link:$$http://docs.jboss.org/infinispan/5.0/apidocs/org/infinispan/eviction/EvictionStrategy.html#LRU$$[EvictionStrategy.LRU] , link:$$http://docs.jboss.org/infinispan/5.0/apidocs/org/infinispan/eviction/EvictionStrategy.html#UNORDERED$$[EvictionStrategy.UNORDERED] , and link:$$http://docs.jboss.org/infinispan/5.0/apidocs/org/infinispan/eviction/EvictionStrategy.html#LIRS$$[EvictionStrategy.LIRS] . 
 
-[[sid-65274017_EvictionExamples-Configuration]]
+[[sid-68355071_EvictionExamples-Configuration]]
 
 
 === Configuration
@@ -60,7 +60,7 @@ Configuration c = new ConfigurationBuilder().eviction().strategy(EvictionStrateg
 
 ----
 
-[[sid-65274017_EvictionExamples-Defaultvalues]]
+[[sid-68355071_EvictionExamples-Defaultvalues]]
 
 
 ==== Default values
@@ -84,7 +84,7 @@ Eviction is disabled by default.  If enabled (using an empty &lt;eviction /&gt; 
 
 Expiration lifespan and maxIdle both default to -1.
 
-[[sid-65274017_EvictionExamples-Usingexpiration]]
+[[sid-68355071_EvictionExamples-Usingexpiration]]
 
 
 ==== Using expiration
@@ -118,7 +118,7 @@ cache.put("riesling", rieslingPrice, 5,
 
 ----
 
-[[sid-65274017_EvictionExamples-Evictiondesigns]]
+[[sid-68355071_EvictionExamples-Evictiondesigns]]
 
 
 === Eviction designs

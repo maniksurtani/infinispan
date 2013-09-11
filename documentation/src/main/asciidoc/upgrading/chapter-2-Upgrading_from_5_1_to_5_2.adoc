@@ -1,8 +1,8 @@
-[[sid-65274142]]
+[[sid-68355208]]
 
 ==  Upgrading from 5.1 to 5.2
 
-[[sid-65274142_Upgradingfrom5.1to5.2-Declarativeconfiguration]]
+[[sid-68355208_Upgradingfrom5.1to5.2-Declarativeconfiguration]]
 
 
 === Declarative configuration
@@ -18,7 +18,7 @@ In order to use all of the latest features, make sure you change the namespace d
 
 ----
 
-[[sid-65274142_Upgradingfrom5.1to5.2-Transaction]]
+[[sid-68355208_Upgradingfrom5.1to5.2-Transaction]]
 
 
 === Transaction
@@ -46,14 +46,14 @@ builder.transaction().useSynchronization(false).recovery().enabled(false)
 
 ----
 
-[[sid-65274142_Upgradingfrom5.1to5.2-CacheLoaderandStoreconfiguration]]
+[[sid-68355208_Upgradingfrom5.1to5.2-CacheLoaderandStoreconfiguration]]
 
 
 === Cache Loader and Store configuration
 
  Cache Loader and Store configuration has changed greatly in Infinispan 5.2. Please refer to the link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737103$$[Cache Loaders and Stores] documentation. 
 
-[[sid-65274142_Upgradingfrom5.1to5.2-VirtualNodes%3ESegments]]
+[[sid-68355208_Upgradingfrom5.1to5.2-VirtualNodes%3ESegments]]
 
 
 === Virtual Nodes &gt; Segments

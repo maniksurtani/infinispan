@@ -1,15 +1,15 @@
-[[sid-65274052]]
+[[sid-68355108]]
 
 ==  CDI Support
 
-[[sid-65274052_CDISupport-Introduction]]
+[[sid-68355108_CDISupport-Introduction]]
 
 
 === Introduction
 
  Infinispan includes integration with CDI in the infinispan-cdi module. Configuration and injection of the Inifispan's Cache API is provided, and it is planned to bridge Cache listeners to the CDI event system. The module also provide partial support of the JCache (JSR-107) caching annotations - for further details see link:$$https://docs.google.com/document/d/1YZ-lrH6nW871Vd9Z34Og_EqbX_kxxJi55UrSn4yL2Ak/edit?hl=en&amp;pli=1#heading=h.jdfazu3s6oly$$[Chapter 8] of the JCACHE specification. 
 
-[[sid-65274052_CDISupport-MavenDependencies]]
+[[sid-68355108_CDISupport-MavenDependencies]]
 
 
 === Maven Dependencies
@@ -37,12 +37,12 @@
 ==== 
 
 
-[[sid-65274052_CDISupport-Embeddedcacheintegration]]
+[[sid-68355108_CDISupport-Embeddedcacheintegration]]
 
 
 === Embedded cache integration
 
-[[sid-65274052_CDISupport-Injectanembeddedcache]]
+[[sid-68355108_CDISupport-Injectanembeddedcache]]
 
 
 ==== Inject an embedded cache
@@ -131,7 +131,7 @@ public class Config {
 
  To use this cache in the GreetingService add the @GeetingCache qualifier on your cache injection point. Simple! 
 
-[[sid-65274052_CDISupport-Overridethedefaultembeddedcachemanagerandconfiguration]]
+[[sid-68355108_CDISupport-Overridethedefaultembeddedcachemanagerandconfiguration]]
 
 
 ==== Override the default embedded cache manager and configuration
@@ -187,7 +187,7 @@ public class Config {
 
 ----
 
-[[sid-65274052_CDISupport-Configurethetransportforclustereduse]]
+[[sid-68355108_CDISupport-Configurethetransportforclustereduse]]
 
 
 ==== Configure the transport for clustered use
@@ -211,12 +211,12 @@ public EmbeddedCacheManager defaultClusteredCacheManager() {
 
 ----
 
-[[sid-65274052_CDISupport-Remotecacheintegration]]
+[[sid-68355108_CDISupport-Remotecacheintegration]]
 
 
 === Remote cache integration
 
-[[sid-65274052_CDISupport-Injectaremotecache]]
+[[sid-68355108_CDISupport-Injectaremotecache]]
 
 
 ==== Inject a remote cache
@@ -273,7 +273,7 @@ public @interface RemoteGreetingCache {
 
  To use this cache in the GreetingService add the qualifier @RemoteGreetingCache qualifier on your cache injection. 
 
-[[sid-65274052_CDISupport-Overridethedefaultremotecachemanager]]
+[[sid-68355108_CDISupport-Overridethedefaultremotecachemanager]]
 
 
 ==== Override the default remote cache manager
@@ -293,7 +293,7 @@ public class Config {
 
 ----
 
-[[sid-65274052_CDISupport-Useacustomremote%2Fembeddedcachemanagerforoneormorecache]]
+[[sid-68355108_CDISupport-Useacustomremote%2Fembeddedcachemanagerforoneormorecache]]
 
 
 === Use a custom remote/embedded cache manager for one or more cache
@@ -336,7 +336,7 @@ public class Config {
 ==== 
 
 
-[[sid-65274052_CDISupport-UseaJBossAS7configuredcache]]
+[[sid-68355108_CDISupport-UseaJBossAS7configuredcache]]
 
 
 === Use a JBoss AS 7 configured cache
@@ -360,7 +360,7 @@ public class Config {
 
 ----
 
-[[sid-65274052_CDISupport-UseJCachecachingannotations]]
+[[sid-68355108_CDISupport-UseJCachecachingannotations]]
 
 
 === Use JCache caching annotations

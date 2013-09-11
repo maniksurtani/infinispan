@@ -1,15 +1,15 @@
-[[sid-65274051]]
+[[sid-68355107]]
 
 ==  Infinispan REST Server
 
-[[sid-65274051_InfinispanRESTServer-Introduction]]
+[[sid-68355107_InfinispanRESTServer-Introduction]]
 
 
 === Introduction
 
  This server provides easy to use link:$$http://en.wikipedia.org/wiki/Representational_State_Transfer$$[RESTful] HTTP access to the Infinispan data grid, build on RESTEasy.  This application is delivered (currently) as a war, which you can deploy to a servlet container (as many instances as you need). 
 
-[[sid-65274051_InfinispanRESTServer-Configuration]]
+[[sid-68355107_InfinispanRESTServer-Configuration]]
 
 
 === Configuration
@@ -56,21 +56,21 @@ Creation of new named caches on the fly is not supported.
 
 As a result, if you don't use a custom configuration file, you'll only be able to interact with the default cache. To interact with more caches, use a configuration file with the desired named caches.
 
-[[sid-65274051_InfinispanRESTServer-AccessingDataviaURLs]]
+[[sid-68355107_InfinispanRESTServer-AccessingDataviaURLs]]
 
 
 === Accessing Data - via URLs
 
  HTTP PUT and POST methods are used to place data in the cache, with URLs to address the cache name and key(s) - the data being the body of the request (the data can be anything you like). It is important that a Content-Type header is set. GET/HEAD are used to retrieve data link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737132$$[Please see here for the details] . Other headers are used to control the cache settings and behaviour (detailed in that link). 
 
-[[sid-65274051_InfinispanRESTServer-Clientsidecode]]
+[[sid-68355107_InfinispanRESTServer-Clientsidecode]]
 
 
 === Client side code
 
 Part of the point of a RESTful service is that you don't need to have tightly coupled client libraries/bindings. All you need is a HTTP client library. For Java, Apache HTTP Commons Client works just fine (and is used in the integration tests), or you can use java.net API.
 
-[[sid-65274051_InfinispanRESTServer-Rubyclientcode%3A]]
+[[sid-68355107_InfinispanRESTServer-Rubyclientcode%3A]]
 
 
 ==== Ruby client code:
@@ -112,7 +112,7 @@ http.put('/infinispan/rest/Users/data/0', data.to_json, {"Content-Type" => "appl
 
 ----
 
-[[sid-65274051_InfinispanRESTServer-Pythonclientcode%3A]]
+[[sid-68355107_InfinispanRESTServer-Pythonclientcode%3A]]
 
 
 ==== Python client code:
@@ -143,7 +143,7 @@ print response.read()
 
 ----
 
-[[sid-65274051_InfinispanRESTServer-Javaclientcode%3A]]
+[[sid-68355107_InfinispanRESTServer-Javaclientcode%3A]]
 
 
 ==== Java client code:
@@ -253,7 +253,7 @@ public class RestExample {
 
 ....
 
-[[sid-65274051_InfinispanRESTServer-Future%3A]]
+[[sid-68355107_InfinispanRESTServer-Future%3A]]
 
 
 === Future:

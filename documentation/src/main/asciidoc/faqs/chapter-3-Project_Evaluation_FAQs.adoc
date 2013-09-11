@@ -1,38 +1,38 @@
-[[sid-65273881]]
+[[sid-68354930]]
 
 ==  Project Evaluation FAQs
 
 
-*  <<sid-65273883>> 
+*  <<sid-68354932>> 
 
 
-*  <<sid-65273892>> 
+*  <<sid-68354941>> 
 
 
-*  <<sid-65273884>> 
+*  <<sid-68354933>> 
 
 
-*  <<sid-65273885>> 
+*  <<sid-68354934>> 
 
 
-*  <<sid-65273886>> 
+*  <<sid-68354935>> 
 
 
-*  <<sid-65273887,How come Infinispan's first release is 4.0.0?  This sounds weird!>> 
+*  <<sid-68354936,How come Infinispan's first release is 4.0.0?  This sounds weird!>> 
 
 
-*  <<sid-65273888>> 
+*  <<sid-68354937>> 
 
 
-*  <<sid-65273889>> 
+*  <<sid-68354938>> 
 
 
-*  <<sid-65273890>> 
+*  <<sid-68354939>> 
 
 
-*  <<sid-65273891>> 
+*  <<sid-68354940>> 
 
-[[sid-65273883]]
+[[sid-68354932]]
 
 
 === What is Infinispan?
@@ -62,14 +62,14 @@ So, why would you use it? Infinispan offers:
 
 *  _Support for Compute Grids_ - Infinispan 5 adds the ability to pass a Runnable around the grid. This allows you to push complex processing towards the server where data is local, and pull back results using a Future . This map/reduce style paradigm is common in applications where a large amount of data is needed to compute relatively small results. 
 
-[[sid-65273892]]
+[[sid-68354941]]
 
 
 === What would I use Infinispan for?
 
  Infinispan's link:$$http://docs.jboss.org/infinispan/4.0/apidocs/org/infinispan/Cache.html$$[org.infinispan.Cache] is a simple, flat data structure that can optionally include characteristics such as distribution, eviction, link:$$http://en.wikipedia.org/wiki/Java_Transaction_API$$[JTA] compatibility. 
 
-[[sid-65273884]]
+[[sid-68354933]]
 
 
 === How is Infinispan related to JBoss Cache?
@@ -80,42 +80,42 @@ The current release of JBoss Cache, 3.2.3, is considered stable enough.  No new
 
 So, why not just call it JBoss Cache 4?. Several reasons.  Binary and even API compatibility with older JBoss Cache releases is no longer maintained, and the new API is simpler and easier to use.  Also, the internal data structure used is not compatible with JBoss Cache.
 
-[[sid-65273885]]
+[[sid-68354934]]
 
 
 === What version of Java does Infinispan need to run? Does Infinispan need an application server to run?
 
  All that is needed is a Java 6.0 compatible JVM. An application server is _not_ a requirement. 
 
-[[sid-65273886]]
+[[sid-68354935]]
 
 
 === Will there be a POJO Cache replacement in Infinispan?
 
  Yes, and this is called link:$$http://www.hibernate.org/subprojects/ogm.html$$[Hibernate OGM] . 
 
-[[sid-65273887]]
+[[sid-68354936]]
 
 
 === How come Infinispan's first release is 4.0.0?  This sounds weird!
 
 We didn't want to release Infinispan as a 1.0, as in all fairness it is not a virgin codebase.  A lot of the code, designs and ideas in Infinispan are from JBoss Cache, and has been tried and tested, proven in high stress environments.  Infinispan should thus be viewed as a mature and stable platform and not a new, experimental one.
 
-[[sid-65273888]]
+[[sid-68354937]]
 
 
 === What should I use, JBoss Cache or Infinispan?
 
 If you are starting a new project, by all means use Infinispan.  If you already use JBoss Cache, consider upgrading to Infinispan as this is where most of our focus and efforts will be.  There is a compatibility layer to help people migrate, although we recommend only using this if you (a) absolutely need a tree structure, or (b) only for a short time as a stepping stone.  You will find that Infinispan's Map based API performs much better.  In addition, we plan to provide migration guides and configuration conversion tools.
 
-[[sid-65273889]]
+[[sid-68354938]]
 
 
 === Where can I get more information on Infinispan?
 
  The link:$$http://www.jboss.org/infinispan$$[Infinispan project page] is your best place to start things off, whether you are interested in using Infinispan in your work or are interested in collaborating on and contributing to Infinispan. 
 
-[[sid-65273890]]
+[[sid-68354939]]
 
 
 === How is this related to JSR 107, the JCACHE specification?
@@ -124,7 +124,7 @@ If you are starting a new project, by all means use Infinispan.  If you already
 
  link:$$http://community.jboss.org/people/manik$$[Manik Surtani] , who is project lead on Infinispan, and link:$$http://in.relation.to/Bloggers/Pete$$[Pete Muir] are on the JSR 107 expert group. 
 
-[[sid-65273891]]
+[[sid-68354940]]
 
 
 === Can I use Infinispan with Hibernate?
@@ -135,7 +135,7 @@ Yes, you can combine one or more of these integrations in the same application:
 *  _Caching database access_ : Hibernate can cache frequently loaded entities and queries in Infinispan, taking advantage of state of the art eviction algorithms, and clustering if needed but it provides a good performance boost in non-clustered deployments too. See link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=3737110$$[Using Infinispan as JPA/Hibernate Second Level Cache Provider] for details on how to do this. 
 
 
-*  _Storing Lucene indexes_ : When using Hibernate Search to provide full-text capabilities to your Hibernate/JPA enabled application, you need to store an Apache Lucene index separately from the database. You can store the index in Infinispan: this is ideal for clustered applications since it's otherwise tricky to share the index with correct locking on shared file systems, but is an interesting option for non-clustered deployments too as it can combine the benefits of in-memory performance with reliability and write-through to cloud storage backends like S3, or the Hibernate database itself. See link:$$http://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/#infinispan-directories$$[Infinispan Directory Configuration] in the Hibernate Search reference documentation for the integration details, or learn more about it at <<sid-65273988>> . 
+*  _Storing Lucene indexes_ : When using Hibernate Search to provide full-text capabilities to your Hibernate/JPA enabled application, you need to store an Apache Lucene index separately from the database. You can store the index in Infinispan: this is ideal for clustered applications since it's otherwise tricky to share the index with correct locking on shared file systems, but is an interesting option for non-clustered deployments too as it can combine the benefits of in-memory performance with reliability and write-through to cloud storage backends like S3, or the Hibernate database itself. See link:$$http://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/#infinispan-directories$$[Infinispan Directory Configuration] in the Hibernate Search reference documentation for the integration details, or learn more about it at <<sid-68355039>> . 
 
 
 *  _Using Infinispan as a database replacement_ : using the experimental Hibernate Object/Grid Mapper (OGM) you can remove the database and store your entities and relations in the grid directly, interacting with it through the well known JPA(2) interface, with some limitations in the query capabilities. For more details see link:$$http://www.hibernate.org/subprojects/ogm.html$$[Hibernate Object/Grid Mapper (OGM)] . 

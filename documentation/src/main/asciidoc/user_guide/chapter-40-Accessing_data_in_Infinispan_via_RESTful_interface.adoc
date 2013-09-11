@@ -1,4 +1,4 @@
-[[sid-65274029]]
+[[sid-68355085]]
 
 ==  Accessing data in Infinispan via RESTful interface
 
@@ -6,30 +6,30 @@
 .TODO Gliffy image title empty
 image::[]
 
- _Standards_ Red Hat is working towards standardization of the REST API as a part of the link:$$http://www.rest-star.org$$[REST-*] effort.  To participate in this standard, please visit link:$$http://groups.google.com/group/reststar-caching$$[this Google Group] 
+ _Standards_ Red Hat is working towards standardization of the REST API as a part of the link:$$http://www.rest-star.org$$[REST-*] effort.  To participate in this standard, please visit link:$$http://groups.google.com/group/reststar-caching$$[this Google Group] 
 
-[[sid-65274029_AccessingdatainInfinispanviaRESTfulinterface-Puttingdatain]]
+[[sid-68355085_AccessingdatainInfinispanviaRESTfulinterface-Puttingdatain]]
 
 
 === Putting data in
 
  HTTP PUT and POST methods are used to place data in the cache - the data being the body of the request (the data can be anything you like). It is important that a Content-Type header is set. 
 
-[[sid-65274029_AccessingdatainInfinispanviaRESTfulinterface-PUT%2F%5C%2F%5C]]
+[[sid-68355085_AccessingdatainInfinispanviaRESTfulinterface-PUT%2F%5C%2F%5C]]
 
 
 ==== PUT /{cacheName}/{cacheKey}
 
  A PUT request of the above URL form will place the payload (body) in the given cache, with the given key (the named cache must exist on the server). For example link:$$http://someserver/hr/payRoll/3$$[] (in which case "hr" is the cache name, and "payRoll/3" is the key). Any existing data will be replaced, and Time-To-Live and Last-Modified values etc will updated (if applicable). 
 
-[[sid-65274029_AccessingdatainInfinispanviaRESTfulinterface-POST%2F%5C%2F%5C]]
+[[sid-68355085_AccessingdatainInfinispanviaRESTfulinterface-POST%2F%5C%2F%5C]]
 
 
 ==== POST /{cacheName}/{cacheKey}
 
  Exactly the same as PUT, only if a value in a cache/key already exists, it will return a Http CONFLICT status (and the content will not be updated). 
 
-[[sid-65274029_AccessingdatainInfinispanviaRESTfulinterface-Headers%3A]]
+[[sid-68355085_AccessingdatainInfinispanviaRESTfulinterface-Headers%3A]]
 
 
 ==== Headers:
@@ -79,21 +79,41 @@ image::[]
 ==== 
 
 
-[[sid-65274029_AccessingdatainInfinispanviaRESTfulinterface-Gettingdatabackout]]
+[[sid-68355085_AccessingdatainInfinispanviaRESTfulinterface-Gettingdatabackout]]
 
 
 === Getting data back out
 
  HTTP GET and HEAD are used to retrieve data from entries. 
 
-[[sid-65274029_AccessingdatainInfinispanviaRESTfulinterface-GET%2F%5C%2F%5C]]
+[[sid-68355085_AccessingdatainInfinispanviaRESTfulinterface-GET%2F%5C%2F%5C]]
 
 
 ==== GET /{cacheName}/{cacheKey}
 
- This will return the data found in the given cacheName, under the given key - as the body of the response. A Content-Type header will be supplied which matches what the data was inserted as (other then if it is a Java object, see below). Browsers can use the cache directly of course (eg as a CDN). An link:$$http://en.wikipedia.org/wiki/HTTP_ETag$$[ETag] will be returned unique for each entry, as will the Last-Modified header field indicating the state of the data at the given URL. ETags allow browsers (and other clients) to ask for data only in the case where it has changed (to save on bandwidth) - this is standard HTTP and is honoured by Infinispan. 
+ This will return the data found in the given cacheName, under the given key - as the body of the response. A Content-Type header will be supplied which matches what the data was inserted as (other then if it is a Java object, see below). Browsers can use the cache directly of course (eg as a CDN). An link:$$http://en.wikipedia.org/wiki/HTTP_ETag$$[ETag] will be returned unique for each entry, as will the Last-Modified and Expires headers field indicating the state of the data at the given URL. ETags allow browsers (and other clients) to ask for data only in the case where it has changed (to save on bandwidth) - this is standard HTTP and is honoured by Infinispan. 
 
-[[sid-65274029_AccessingdatainInfinispanviaRESTfulinterface-HEAD%2F%5C%2F%5C]]
+Since Infinispan 5.3 it is possible to obtain additional information by appending the "extended" parameter on the query string, as follows:
+
+
+----
+
+GET /cacheName/cacheKey?extended
+
+----
+
+This will return the following custom headers:
+
+
+* Cluster-Primary-Owner: the node name of the primary owner for this key
+
+
+* Cluster-Node-Name: the JGroups node name of the server that has handled the request
+
+
+* Cluster-Physical-Address: the physical JGroups address of the server that has handled the request.
+
+[[sid-68355085_AccessingdatainInfinispanviaRESTfulinterface-HEAD%2F%5C%2F%5C]]
 
 
 ==== HEAD /{cacheName}/{cacheKey}
@@ -104,7 +124,7 @@ The same as GET, only no content is returned (only the header fields). You will 
 [WARNING]
 .Prior to Infinispan 4.2
 ==== 
- The behaivour was as follows: If the data in the grid is a Java object - there are a few options in how it can be returned, which use the HTTP Accept header: 
+ The behaviour was as follows: If the data in the grid is a Java object - there are a few options in how it can be returned, which use the HTTP Accept header: 
 
 
 *  application/xml - the object will be serialized via XStream to XML representation 
@@ -119,21 +139,51 @@ The same as GET, only no content is returned (only the header fields). You will 
 ==== 
 
 
-[[sid-65274029_AccessingdatainInfinispanviaRESTfulinterface-Removingdata]]
+Similarly to the GET method, the HEAD method also supports returning extended information via headers. See above.
+
+[[sid-68355085_AccessingdatainInfinispanviaRESTfulinterface-GET%2F%5C]]
+
+
+==== GET /{cacheName}
+
+This will return a list of keys present in the given cacheName as the body of the response. The format of the response can be controlled via the Accept header as follows:
+
+
+* application/xml - the list of keys will be returned in XML format.
+
+
+* application/json - the list of keys will be return in JSON format.
+
+
+* text/html - the list of keys will be returned in HTML format.
+
+
+* text/plain - the list of keys will be returned in plain text format, one key per line
+
+If the cache identified by cacheName is distributed, only the keys owned by the node handling the request will be returned. To return all keys, append the "global" parameter to the query, as follows:
+
+
+----
+
+GET /cacheName?global
+
+----
+
+[[sid-68355085_AccessingdatainInfinispanviaRESTfulinterface-Removingdata]]
 
 
 === Removing data
 
 Data can be removed at the cache key/element level, or via a whole cache name using the HTTP delete method.
 
-[[sid-65274029_AccessingdatainInfinispanviaRESTfulinterface-DELETE%2F%5C%2F%5C]]
+[[sid-68355085_AccessingdatainInfinispanviaRESTfulinterface-DELETE%2F%5C%2F%5C]]
 
 
 ==== DELETE /{cacheName}/{cacheKey}
 
 Removes the given key name from the cache.
 
-[[sid-65274029_AccessingdatainInfinispanviaRESTfulinterface-DELETE%2F%5C]]
+[[sid-68355085_AccessingdatainInfinispanviaRESTfulinterface-DELETE%2F%5C]]
 
 
 ==== DELETE /{cacheName}

@@ -1,15 +1,15 @@
-[[sid-65274039]]
+[[sid-68355095]]
 
 ==  Using Hot Rod Server
 
-[[sid-65274039_UsingHotRodServer-Introduction]]
+[[sid-68355095_UsingHotRodServer-Introduction]]
 
 
 === Introduction
 
  Starting with version 4.1, Infinispan distribution contains a server module that implements link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=9470083$$[Infinispan's custom binary protocol called Hot Rod] . The protocol was designed to enable faster client/server interactions compared to other existing text based protocols and to allow clients to make more intelligent decisions with regards to load balancing, failover and even data location operations. 
 
-[[sid-65274039_UsingHotRodServer-StartinganInfinispanHotRodserver]]
+[[sid-68355095_UsingHotRodServer-StartinganInfinispanHotRodserver]]
 
 
 === Starting an Infinispan Hot Rod server
@@ -23,7 +23,7 @@ The simplest way to start up  Hot Rod  server is to simply unzip the all distr
 
  When the script is called without any further parameters, the started Hot Rod server bounds to port 11222 (Infinispan 4.2.0.BETA1 or earlier listened on port 11311 by default) on localhost (127.0.0.1). If no further parameters is given at startup, this means that any cache instance queried will be based on the default cache instance which will be a local (unclustered) Infinispan cache instance configured with default values. Please visit the link:$$http://docs.jboss.org/infinispan/4.1/apidocs/config.html$$[Configuration Reference Guide] for more information on these values. If you want to use non-default values, please check the next section on command line options. 
 
-[[sid-65274039_UsingHotRodServer-CommandLineOptions]]
+[[sid-68355095_UsingHotRodServer-CommandLineOptions]]
 
 
 ==== Command Line Options
@@ -32,7 +32,7 @@ The simplest way to start up  Hot Rod  server is to simply unzip the all distr
 
 So, following the discussion earlier on configuring a Hot Rod server with a custom Infinispan configuration, you'd use -c parameter to pass the corresponding file. Hot Rod clients could then send requests to specific cache instances whose name match one of the names in the custom configuration file.
 
-[[sid-65274039_UsingHotRodServer-PredefiningHotRodCaches]]
+[[sid-68355095_UsingHotRodServer-PredefiningHotRodCaches]]
 
 
 ==== Predefining Hot Rod Caches

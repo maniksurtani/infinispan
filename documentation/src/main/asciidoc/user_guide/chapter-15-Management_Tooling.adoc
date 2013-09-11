@@ -1,22 +1,22 @@
-[[sid-65273990]]
+[[sid-68355041]]
 
 ==  Management Tooling
 
-[[sid-65273990_ManagementTooling-Introduction]]
+[[sid-68355041_ManagementTooling-Introduction]]
 
 
 === Introduction
 
 Management of Infinispan instances is all about exposing as much relevant statistical information that allows administrators to get view of the state of each Infinispan instance. Taking in account that a single installation could be made up of several tens or hundreds Infinispan instances, providing clear and concise information in an efficient manner is imperative. The following sections dive into the range of management tooling that Infinispan provides.
 
-[[sid-65273990_ManagementTooling-JMX]]
+[[sid-68355041_ManagementTooling-JMX]]
 
 
 === JMX
 
  Over the years, link:$$http://java.sun.com/javase/technologies/core/mntr-mgmt/javamanagement/$$[JMX] has become the de facto standard for management and administration of middleware and as a result, the Infinispan team has decided to standarize on this technology for the exposure of management or statistical information. 
 
-[[sid-65273990_ManagementTooling-EnablingJMXStatistics]]
+[[sid-68355041_ManagementTooling-EnablingJMXStatistics]]
 
 
 ==== Enabling JMX Statistics
@@ -67,7 +67,7 @@ Understanding The MBeans
 
  Once you have enabled JMX reporting at either the CacheManager or Cache level, you should be able to connect to VM(s) where Infinispan is running using a standard JMX GUI such as link:$$http://java.sun.com/developer/technicalArticles/J2SE/jconsole.html$$[JConsole] or link:$$http://java.sun.com/javase/6/docs/technotes/guides/visualvm/$$[VisualVM] , and you should find the following MBeans: 
 
-[[sid-65273990_ManagementTooling-Infinispan4.1orearlier]]
+[[sid-68355041_ManagementTooling-Infinispan4.1orearlier]]
 
 
 ===== Infinispan 4.1 or earlier
@@ -91,7 +91,7 @@ For example, the cache store JMX component MBean for a default cache configured 
 
 Please note that any cache names that contain ':' or '=' characters will be substituted by '_' character. Infinispan does this because ':' and '=' are control characters for JMX object names.
 
-[[sid-65273990_ManagementTooling-Infinispan4.2orlater]]
+[[sid-68355041_ManagementTooling-Infinispan4.2orlater]]
 
 
 ===== Infinispan 4.2 or later
@@ -121,14 +121,14 @@ Please note that any cache names that contain ':' or '=' characters will be subs
 
 Please note that cache and cache manager names are quoted to protect against illegal characters being used in these user-defined names.
 
-[[sid-65273990_ManagementTooling-MultipleJMXDomains]]
+[[sid-68355041_ManagementTooling-MultipleJMXDomains]]
 
 
 ==== Multiple JMX Domains
 
 There can be situations where several CacheManager instances are created in a single VM, or Cache names belonging to different CacheManagers under the same VM clash.
 
-[[sid-65273990_ManagementTooling-Infinispan4.1orearlierx]]
+[[sid-68355041_ManagementTooling-Infinispan4.1orearlierx]]
 
 
 ===== Infinispan 4.1 or earlier
@@ -181,7 +181,7 @@ globalConfiguration.setAllowDuplicateDomains(true)
 
 Remember that by default, duplicate domains are disallowed.
 
-[[sid-65273990_ManagementTooling-Infinispan4.2orlaterx]]
+[[sid-68355041_ManagementTooling-Infinispan4.2orlaterx]]
 
 
 ===== Infinispan 4.2 or later
@@ -213,7 +213,7 @@ Using either of these options should result on the CacheManager MBean name being
 
 For the time being, you can still set your own jmxDomain if you need to and we also allow duplicate domains, or rather duplicate JMX names, but these should be limited to very special cases where different cache managers within the same JVM are named equally.
 
-[[sid-65273990_ManagementTooling-RegisteringMBeansInNonDefaultMBeanServers]]
+[[sid-68355041_ManagementTooling-RegisteringMBeansInNonDefaultMBeanServers]]
 
 
 ==== Registering MBeans In Non-Default MBean Servers
@@ -249,7 +249,7 @@ There has been a couple of noticeable additions in Infinispan 5.0 in terms of MB
 
 .  When global JMX statistics are enabled, JGroups MBeans are also registered automatically, so you can get key information of the group communication transport layer that's used to cluster Infinispan instances. To find out more about the information provided, check the link:$$http://community.jboss.org/docs/10938$$[JGroups JMX documentation] . 
 
-[[sid-65273990_ManagementTooling-RHQ]]
+[[sid-68355041_ManagementTooling-RHQ]]
 
 
 === RHQ
@@ -316,7 +316,7 @@ The actual port value used does not really matter here, but what matters is that
 
 .  Once Infinispan instances have been discovered, you should see a new resource for each of the cache manager running appearing in the link:$$http://rhq-project.org/display/JOPR2/Initial+Auto-discovery+and+Import$$[Inventory/Discovery Queue] of the RHQ server. Simply import it now and you should see each cache manager appearing with as many child cache resources as caches are running in each cache manager. You're now ready to monitor Infinispan! 
 
-[[sid-65273990_ManagementTooling-RHQmonitoringtips]]
+[[sid-68355041_ManagementTooling-RHQmonitoringtips]]
 
 
 ==== RHQ monitoring tips
@@ -349,7 +349,7 @@ ____
 ==== 
 
 
-[[sid-65273990_ManagementTooling-Writingpluginsforothermanagementtools]]
+[[sid-68355041_ManagementTooling-Writingpluginsforothermanagementtools]]
 
 
 === Writing plugins for other management tools

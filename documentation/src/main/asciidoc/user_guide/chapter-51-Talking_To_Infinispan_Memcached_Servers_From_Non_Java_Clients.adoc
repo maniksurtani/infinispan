@@ -1,10 +1,10 @@
-[[sid-65274042]]
+[[sid-68355098]]
 
 ==  Talking To Infinispan Memcached Servers From Non-Java Clients
 
 This wiki shows how to talk to Infinispan memcached server via non-java client, such as a python script.
 
-[[sid-65274042_TalkingToInfinispanMemcachedServersFromNon-JavaClients-MultiClusteredServerTutorial]]
+[[sid-68355098_TalkingToInfinispanMemcachedServersFromNon-JavaClients-MultiClusteredServerTutorial]]
 
 
 === Multi Clustered Server Tutorial

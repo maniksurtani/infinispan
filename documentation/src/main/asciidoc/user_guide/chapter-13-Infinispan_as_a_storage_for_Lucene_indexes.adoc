@@ -1,4 +1,4 @@
-[[sid-65273988]]
+[[sid-68355039]]
 
 ==  Infinispan as a storage for Lucene indexes
 
@@ -10,42 +10,46 @@ This directory closely mimicks the same semantics of the traditional filesystem 
 
  Two different _LockFactory_ implementations are provided to guarantee only one _IndexWriter_ at a time will make changes to the index, again implementing the same semantics as when opening an index on a local filesystem. As with other Lucene Directories, you can override the _LockFactory_ if you prefer to use an alternative implementation. 
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-AdditionalLinks]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-AdditionalLinks]]
 
 
 === Additional Links
 
- Javadoc: link:$$http://docs.jboss.org/infinispan/5.2/apidocs/org/infinispan/lucene/InfinispanDirectory.html$$[] Issue tracker: link:$$https://jira.jboss.org/browse/ISPN/component/12312732$$[] Source code: link:$$http://www.jboss.org/infinispan/sourcecode.html$$[] 
+ Javadoc: link:$$http://docs.jboss.org/infinispan/5.3/apidocs/org/infinispan/lucene/InfinispanDirectory.html$$[] Issue tracker: link:$$https://jira.jboss.org/browse/ISPN/component/12312732$$[] Source code: link:$$http://www.jboss.org/infinispan/sourcecode.html$$[] 
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-Lucenecompatibility]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-Lucenecompatibility]]
 
 
 === Lucene compatibility
 
-Current version was developed and compiled against Lucene 3.6.0, and also tested to work with Lucene versions from 3.0.x to 3.5.0, version 2.9.x, and  the older 2.4.1.
+ Current version was developed and compiled against both _Lucene 3.6.2_ and _Lucene 4.3.0_ (separately and then assembled in a single jar for your convenience as most code is shared). It is also regularly tested to work with Lucene versions from 3.0.x to 3.5.0, version 2.9.x, the older 2.4.1 and newer version 4.0, 4.1, 4.2. 
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-Howtouseit]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-Howtouseit]]
 
 
 === How to use it
 
- To create a Directory instance: 
+To create a Directory instance:
 
 
 ----
 import org.apache.lucene.store.Directory;
-import org.infinispan.lucene.InfinispanDirectory;
+import org.infinispan.lucene.directory.DirectoryBuilder;
 import org.infinispan.Cache;
 
 Cache cache = // create an Infinispan cache, configured as you like
-Directory indexDir = new InfinispanDirectory(cache, "indexName");
+Directory indexDir = DirectoryBuilder.newDirectoryInstance(cache, cache, cache, indexName)
+                                     .create();
+
 ----
 
- The _indexName_ is a unique key to identify your index. It takes the same role as the path did on filesystem based indexes: you can create several different indexes giving them different names. When you use the same _indexName_ in another instance connected to the same network (or instantiated on the same machine, useful for testing) they will join, form a cluster and share all content. 
+ The _indexName_ is a unique key to identify your index. It takes the same role as the path did on filesystem based indexes: you can create several different indexes giving them different names. When you use the same _indexName_ in another instance connected to the same network (or instantiated on the same machine, useful for testing) they will join, form a cluster and share all content. Using a different _indexName_ allows you to store different indexes in the same set of Caches. 
+
+ The _cache_ is passed three times in this example, as that is ok for a quick demo, but as the API suggests it's a good idea to tune each cache separately as they will be used in different ways. More details provided below. 
 
 New nodes can be added or removed dynamically, making the service administration very easy and also suited for cloud environments: it's simple to react to load spikes, as adding more memory and CPU power to the search system is done by just starting more nodes.
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-Limitations]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-Limitations]]
 
 
 === Limitations
@@ -56,7 +60,7 @@ New nodes can be added or removed dynamically, making the service administration
 
 Reading (searching) is of course possible in parallel, from any number of threads on each node; changes applied to the single IndexWriter are affecting results of all threads on all nodes in a very short time, or guaranteed to be visible after a commit when using transactions.
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-Configuration]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-Configuration]]
 
 
 === Configuration
@@ -69,7 +73,7 @@ Batching was required in previous versions, it's not strictly needed anymore.
 
 Any Infinispan configuration should work fine as long as caches are not configured to remove entries after thresholds.
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-Demo]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-Demo]]
 
 
 === Demo
@@ -78,7 +82,7 @@ Any Infinispan configuration should work fine as long as caches are not configur
 
 Start several instances, then try adding text in one instance and searching for it on the other. The configuration is not tuned at all, but should work out-of-the box without any changes. If your network interface has multicast enabled, it will cluster across the local network with other instances of the demo.
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-Mavendependencies]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-Mavendependencies]]
 
 
 === Maven dependencies
@@ -90,21 +94,21 @@ Start several instances, then try adding text in one instance and searching for 
 <dependency>
    <groupId>org.infinispan</groupId>
    <artifactId>infinispan-lucene-directory</artifactId>
-   <version>5.2.4.Final</version>
+   <version>5.3.0.Beta1</version>
 </dependency>
 
 ----
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-UsingaCacheLoader]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-UsingaCacheLoader]]
 
 
 === Using a CacheLoader
 
- Using a CacheLoader you can have the index content backed up to a permanent storage; you can use a shared store for all nodes or one per node, see <<sid-65274001>> for more details. 
+ Using a CacheLoader you can have the index content backed up to a permanent storage; you can use a shared store for all nodes or one per node, see <<sid-68355053>> for more details. 
 
  When using a CacheLoader to store a Lucene index, to get best write performance you would need to configure the CacheLoader with _async=true_ . 
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-Storingtheindexinadatabase]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-Storingtheindexinadatabase]]
 
 
 ==== Storing the index in a database
@@ -118,7 +122,7 @@ Start several instances, then try adding text in one instance and searching for 
 
 ----
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-LoadinganexistingLuceneIndex]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-LoadinganexistingLuceneIndex]]
 
 
 ==== Loading an existing Lucene Index
@@ -138,7 +142,7 @@ Start several instances, then try adding text in one instance and searching for 
 
 Implementing write-through should not be hard: you're welcome to try implementing it.
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-Architecturallimitations]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-Architecturallimitations]]
 
 
 === Architectural limitations
@@ -156,40 +160,40 @@ Implementing write-through should not be hard: you're welcome to try implementin
 
  The _Infinispan Lucene Directory_ protects its content by implementing a distributed locking strategy, though this is designed as a last line of defense and is not to be considered an efficient mechanism to coordinate multiple writes: if you don't apply one of the above suggestions and get high write contention from multiple nodes you will likely get timeout exception. 
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-Suggestionsforoptimalperformance]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-Suggestionsforoptimalperformance]]
 
 
 === Suggestions for optimal performance
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-JGroups%26Neworkingstack]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-JGroups%26Neworkingstack]]
 
 
 ==== JGroups &amp; Neworking stack
 
  JGroups manages all network IO and as such it is a critical component to tune for your specific environment. Make sure to read the link:$$http://jgroups.org/manual-3.x/html/index.html$$[JGroups reference documentation] , and play with the performance tests included in JGroups to make sure your network stack is setup appropriately. Don't forget to check also operating system level parameters, for example buffer sizes dedicated for networking. JGroups will log warning when it detects something wrong, but there is much more you can look into. 
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-UsingaCacheStore]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-UsingaCacheStore]]
 
 
 ==== Using a CacheStore
 
  Currently all CacheStore implementations provided by Infinispan have a significant slowdown; we hope to resolve that soon but for the time being if you need high performance on writes with the Lucene Directory the best option is to disable any CacheStore; the second best option is to configure the CacheStore as _async_ . If you only need to load a Lucene index from read-only storage, see the above description for _org.infinispan.lucene.cachestore.LuceneCacheLoader_ . 
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-ApplystandardLucenetuning]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-ApplystandardLucenetuning]]
 
 
 ==== Apply standard Lucene tuning
 
  All known options of Lucene apply to the Infinispan Lucene Directory as well; of course the effect might be less significant in some cases, but you should definitely read the link:$$http://lucene.apache.org/core/index.html$$[Apache Lucene documentation] . 
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-Disablebatchingandtransactions]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-Disablebatchingandtransactions]]
 
 
 ==== Disable batching and transactions
 
 Early versions required Infinispan to have batching or transactions enabled. This is no longer a requirement, and in fact disabling them should provide little improvement in performance.
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-Settherightchunksize]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-Settherightchunksize]]
 
 
 ==== Set the right chunk size
@@ -204,7 +208,7 @@ Early versions required Infinispan to have batching or transactions enabled. Thi
 
  Using the _org.apache.lucene.index.IndexWriterConfig_ you can tune your index writing to _approximately_ keep your segment size to a reasonable level, from there then tune the chunksize, after having defined the chunksize you might want to revisit your network configuration settings. 
 
-[[sid-65273988_InfinispanasastorageforLuceneindexes-UsededicatedCacheinstances]]
+[[sid-68355039_InfinispanasastorageforLuceneindexes-UsededicatedCacheinstances]]
 
 
 ==== Use dedicated Cache instances

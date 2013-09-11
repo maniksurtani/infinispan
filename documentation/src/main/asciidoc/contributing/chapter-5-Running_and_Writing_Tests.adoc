@@ -1,10 +1,10 @@
-[[sid-65274091_ContributingtoInfinispan-RunningandWritingTests]]
+[[sid-68355157_ContributingtoInfinispan-RunningandWritingTests]]
 
 ==  Running and Writing Tests
 
  Tests are written using the link:$$http://testng.org/$$[TestNG] framework. 
 
-[[sid-65274091_ContributingtoInfinispan-Runningthetests]]
+[[sid-68355157_ContributingtoInfinispan-Runningthetests]]
 
 
 === Running the tests
@@ -55,7 +55,7 @@ rhusar    hard    nproc     16384
 ==== 
 
 
-[[sid-65274091_ContributingtoInfinispan-Specifyingwhichteststorun]]
+[[sid-68355157_ContributingtoInfinispan-Specifyingwhichteststorun]]
 
 
 ==== Specifying which tests to run
@@ -89,7 +89,7 @@ $ mvn -Dtest=org/infinispan/api/* test
 
 ----
 
-[[sid-65274091_ContributingtoInfinispan-Skippingthetestrun]]
+[[sid-68355157_ContributingtoInfinispan-Skippingthetestrun]]
 
 
 ==== Skipping the test run
@@ -105,14 +105,14 @@ $ mvn -Dmaven.test.skip.exec=true install
 
  Note that you should _never_ use -Dmaven.test.skip=true since modules' test classes depend on other module test classes, and this will cause compilation errors. 
 
-[[sid-65274091_ContributingtoInfinispan-Runningtestsusing%7B%7B@Parameters%7D%7D]]
+[[sid-68355157_ContributingtoInfinispan-Runningtestsusing%7B%7B@Parameters%7D%7D]]
 
 
 ==== Running tests using @Parameters
 
  If you want to execute tests relying on TestNG's @Parameters from an IDE (such as Eclipse or IntelliJ IDEA), please check link:$$http://infinispan.blogspot.com/2009/06/executing-testng-tests-relying-on.html$$[this blog entry] . 
 
-[[sid-65274091_ContributingtoInfinispan-EnablingTRACEintestlogs]]
+[[sid-68355157_ContributingtoInfinispan-EnablingTRACEintestlogs]]
 
 
 ==== Enabling TRACE in test logs
@@ -135,7 +135,7 @@ gunzip -c trace-infinispan.log.gz > trace-infinsipan.log
 
 ----
 
-[[sid-65274091_ContributingtoInfinispan-Enablingcodecoveragegeneration]]
+[[sid-68355157_ContributingtoInfinispan-Enablingcodecoveragegeneration]]
 
 
 ==== Enabling code coverage generation
@@ -166,14 +166,14 @@ mvn install -pl parent -PjacocoReport
 
  The jacoco-html/ directory will be generated in Infinispan Home directory, which will contain the code coverage report. 
 
-[[sid-65274091_ContributingtoInfinispan-Testgroups]]
+[[sid-68355157_ContributingtoInfinispan-Testgroups]]
 
 
 === Test groups
 
 Each test should belong to one or more group. The group acts as a filter, and is used to select which tests are ran as part of the maven test lifecycle.
 
-[[sid-65274091_ContributingtoInfinispan-WhichgroupshouldIuse%3F]]
+[[sid-68355157_ContributingtoInfinispan-WhichgroupshouldIuse%3F]]
 
 
 ==== Which group should I use?
@@ -208,7 +208,7 @@ Every test (except those not intended to be run by Hudson) should at least be in
 ==== 
 
 
-[[sid-65274091_ContributingtoInfinispan-Testpermutations]]
+[[sid-68355157_ContributingtoInfinispan-Testpermutations]]
 
 
 === Test permutations
@@ -224,21 +224,21 @@ $ mvn -Dinfinispan.test.jgroups.protocol=udp test
 
 Each permutation uses its own report directory, and its own html output file name. This allows you to execute multiple permutations without wiping the results from the previous run. Note that due to the way Maven operates, only one permutation can be executed per mvn command. So automating multiple runs requires shell scripting, or some other execution framework to make multiple calls to Maven.
 
-[[sid-65274091_ContributingtoInfinispan-RunningpermutationsmanuallyorinanIDE]]
+[[sid-68355157_ContributingtoInfinispan-RunningpermutationsmanuallyorinanIDE]]
 
 
 ==== Running permutations manually or in an IDE
 
  Sometimes you want to run a test using settings other than the defaults (such as UDP for _jgroups_ group tests or the DummyTransactionManager for _transaction_ group tests). This can be achieved by referring to the Maven POM file to figure out which system properties are passed in to the test when doing something different. For example to run a _jgroups_ group test in your IDE using TCP instead of the default UDP, set -Dinfinispan.test.jgroups.protocol=tcp . Or, to use JBoss JTA (Arjuna TM) instead of the DummyTransactionManager in a _transaction_ group test, set -Dinfinispan.test.jta.tm=jbosstm Please refer to the POM file for more properties and permutations. 
 
-[[sid-65274091_ContributingtoInfinispan-TheParallelTestSuite]]
+[[sid-68355157_ContributingtoInfinispan-TheParallelTestSuite]]
 
 
 === The Parallel Test Suite
 
 Infinispan runs its unit test suite in parallel; Infinispan tests are often IO rather than processor bound, so executing them in parallel offers significant speed up.
 
-[[sid-65274091_ContributingtoInfinispan-Tipsforwritinganddebuggingparalleltests]]
+[[sid-68355157_ContributingtoInfinispan-Tipsforwritinganddebuggingparalleltests]]
 
 
 ==== Tips for writing and debugging parallel tests

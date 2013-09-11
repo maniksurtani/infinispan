@@ -1,8 +1,8 @@
-[[sid-65274048]]
+[[sid-68355104]]
 
 ==  Interacting With Hot Rod Server From Within Same JVM
 
-[[sid-65274048_InteractingWithHotRodServerFromWithinSameJVM-Introduction]]
+[[sid-68355104_InteractingWithHotRodServerFromWithinSameJVM-Introduction]]
 
 
 === Introduction
@@ -11,11 +11,11 @@
 
  In this situations, we have to remember that link:$$https://docs.jboss.org/author/pages/viewpage.action?pageId=9470083$$[the Hot Rod protocol] specifies that keys and values are stored as byte arrays. This means that if the client code, using an existing Hot Rod client, stored Strings or Integers, or any other complex serializable or externalizable object, you won't be able to retrieve these objects straight from the cache that the Hot Rod server uses. 
 
- To actually get the fully constructed objects that you're after, you're gonna need to take the byte arrays stored within the Hot Rod server and unmarshall them into something that you can use. In the future, this is something that might be done for you, as suggested in link:$$https://jira.jboss.org/browse/ISPN-706$$[ISPN-706] , but for the time being, clients wanting to access Hot Rod server data will have to do it themselves. 
+ To actually get the fully constructed objects that you're after, you're gonna need to take the byte arrays stored within the Hot Rod server and unmarshall them into something that you can use. In the future, this is something that might be done for you, as suggested in link:$$https://jira.jboss.org/browse/ISPN-706$$[ISPN-706] (superseded by link:$$https://issues.jboss.org/browse/ISPN-2281$$[ISPN-2281] ), but for the time being, clients wanting to access Hot Rod server data will have to do it themselves. 
 
 Two different use cases need to be differentiated at this stage and to explain how to transform the Hot Rod server data into something usable, we'll assume that the clients are java clients:
 
-[[sid-65274048_InteractingWithHotRodServerFromWithinSameJVM-DataStoredDirectlyViaAHotRodClient]]
+[[sid-68355104_InteractingWithHotRodServerFromWithinSameJVM-DataStoredDirectlyViaAHotRodClient]]
 
 
 === Data Stored Directly Via A Hot Rod Client
@@ -59,7 +59,7 @@ GenericJBossMarshaller marshaller = new GenericJBossMarshaller();
 Object key = ...
 Object value = ...
 
-// Take the cache key and convert into a byte array, 
+// Take the cache key and convert into a byte array,
 // and wrap it with an instance of ByteArrayKey
 ByteArrayKey bytesKey = new ByteArrayKey(marshaller.objectToByteBuffer(key));
 
@@ -75,7 +75,7 @@ cache.put(bytesKey, cacheValue);
 
 ----
 
-[[sid-65274048_InteractingWithHotRodServerFromWithinSameJVM-DataStoredViaRemoteCacheStore]]
+[[sid-68355104_InteractingWithHotRodServerFromWithinSameJVM-DataStoredViaRemoteCacheStore]]
 
 
 === Data Stored Via Remote Cache Store
@@ -102,10 +102,10 @@ ByteArrayKey bytesKey = new ByteArrayKey(marshaller.objectToByteBuffer(key));
 CacheValue cacheValue = (CacheValue) cache.get(bytesKey);
 
 // However, in this case the data part of CacheValue does not contain directly
-// the value Instead, it contains an instance of CacheEntry, so we need to 
+// the value Instead, it contains an instance of CacheEntry, so we need to
 // unmarshall that and then get the actual value
-CacheEntry cacheEntry = (CacheEntry) 
-   marshaller.objectFromByteBuffer(cacheValue.data()); 
+CacheEntry cacheEntry = (CacheEntry)
+   marshaller.objectFromByteBuffer(cacheValue.data());
 Object value = cacheEntry.getValue();
 
 ----
